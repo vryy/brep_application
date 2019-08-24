@@ -16,6 +16,9 @@
 #include "custom_algebra/function/function.h"
 #include "custom_algebra/brep.h"
 #include "custom_algebra/and_brep.h"
+#ifdef BREP_APPLICATION_USE_OPENCASCADE
+#include "custom_algebra/occ_brep.h"
+#endif
 #include "custom_algebra/level_set/level_set.h"
 #include "custom_algebra/level_set/circular_level_set.h"
 #include "custom_algebra/level_set/doughnut_level_set.h"
@@ -100,16 +103,17 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     /************* EXPORT INTERFACE FOR BREP **********************/
     /**************************************************************/
 
-    int(BRep::*pointer_to_CutStatusElement)(Element::Pointer) const = &BRep::CutStatus;
-    int(BRep::*pointer_to_CutStatusGeometry)(Element::GeometryType::Pointer) const = &BRep::CutStatus;
-    int(BRep::*pointer_to_CutStatusBySamplingElement)(Element::Pointer, const std::size_t&) const = &BRep::CutStatusBySampling;
-    int(BRep::*pointer_to_CutStatusBySamplingGeometry)(Element::GeometryType::Pointer, const std::size_t&) const = &BRep::CutStatusBySampling;
+    int(BRep::*pointer_to_CutStatusElement)(Element::Pointer, const int&) const = &BRep::CutStatus;
+    int(BRep::*pointer_to_CutStatusGeometry)(Element::GeometryType::Pointer, const int&) const = &BRep::CutStatus;
+    int(BRep::*pointer_to_CutStatusBySamplingElement)(Element::Pointer, const std::size_t&, const int&) const = &BRep::CutStatusBySampling;
+    int(BRep::*pointer_to_CutStatusBySamplingGeometry)(Element::GeometryType::Pointer, const std::size_t&, const int&) const = &BRep::CutStatusBySampling;
 
     class_<BRep, BRep::Pointer, boost::noncopyable>
     ( "BRep", init<>() )
     .def("SetTolerance", &BRep::SetTolerance)
     .def("GetTolerance", &BRep::GetTolerance)
     .def("CutStatus", pointer_to_CutStatusElement)
+    .def("IsInside", &BRep::IsInside)
     .def("CutStatus", pointer_to_CutStatusGeometry)
     .def("CutStatusBySampling", pointer_to_CutStatusBySamplingElement)
     .def("CutStatusBySampling", pointer_to_CutStatusBySamplingGeometry)
@@ -215,7 +219,16 @@ void BRepApplication_AddBRepAndLevelSetToPython()
 
     class_<AndBRep, AndBRep::Pointer, bases<BRep>, boost::noncopyable>
     ( "AndBRep", init<BRep::Pointer, BRep::Pointer>() )
+    .def(self_ns::str(self))
     ;
+
+    #ifdef BREP_APPLICATION_USE_OPENCASCADE
+    class_<OCCBRep, OCCBRep::Pointer, bases<BRep>, boost::noncopyable>
+    ( "OCCBRep", init<>() )
+    .def("SetShape", &OCCBRep::SetShape)
+    .def(self_ns::str(self))
+    ;
+    #endif
 
 }
 }  // namespace Python.

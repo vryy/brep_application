@@ -19,6 +19,10 @@
 #include "includes/define.h"
 #include "brep_application.h"
 #include "custom_python/add_custom_algebra_to_python.h"
+#ifdef BREP_APPLICATION_USE_OPENCASCADE
+#include "custom_python/add_occ_to_python.h"
+#endif
+#include "custom_python/add_utilities_to_python.h"
 
 namespace Kratos
 {
@@ -35,6 +39,10 @@ namespace Python
 
         BRepApplication_AddFunctionsToPython();
         BRepApplication_AddBRepAndLevelSetToPython();
+        #ifdef BREP_APPLICATION_USE_OPENCASCADE
+        BRepApplication_AddOCCToPython();
+        #endif
+        BRepApplication_AddUtilitiesToPython();
 
         KRATOS_REGISTER_IN_PYTHON_VARIABLE( LOAD_FUNCTION )
         KRATOS_REGISTER_IN_PYTHON_VARIABLE( CUT_STATUS )
