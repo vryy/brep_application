@@ -33,7 +33,7 @@
 
 namespace Kratos
 {
-///@addtogroup FiniteCellApplication
+///@addtogroup BRepApplication
 ///@{
 
 ///@name Kratos Globals
@@ -102,7 +102,11 @@ public:
     ///@name Operations
     ///@{
 
-    /// Generate the sampling points on a geometry
+    /// Generate the sampling points on a geometry in the reference configuration
+    static void GenerateSamplingPoints0(std::vector<PointType>& SamplingPoints,
+            GeometryType& r_geom, const std::size_t& nsampling);
+
+    /// Generate the sampling points on a geometry in the current configuration
     static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
             GeometryType& r_geom, const std::size_t& nsampling);
 

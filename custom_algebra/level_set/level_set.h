@@ -36,7 +36,7 @@
 
 namespace Kratos
 {
-///@addtogroup FiniteCellApplication
+///@addtogroup BRepApplication
 ///@{
 
 ///@name Kratos Globals
@@ -201,13 +201,20 @@ public:
 
     /// inherit from BRep
     /// Check if a geometry is cut by the level set
-    virtual int CutStatus(GeometryType& r_geom) const
+    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const
     {
-        // return CutStatusOfPoints<GeometryType>(r_geom); // this is dangerous because it used the current position of node, e.g. in dynamics
-        std::vector<PointType> points(r_geom.size());
-        for (std::size_t i = 0; i < r_geom.size(); ++i)
-            noalias(points[i]) = r_geom[i].GetInitialPosition();
-        return CutStatusOfPoints(points);
+        if (configuration == 0)
+        {
+            std::vector<PointType> points(r_geom.size());
+            for (std::size_t i = 0; i < r_geom.size(); ++i)
+                noalias(points[i]) = r_geom[i].GetInitialPosition();
+            return CutStatusOfPoints(points, this->GetTolerance());
+        }
+        else if (configuration == 1)
+        {
+            return CutStatusOfPoints(r_geom, this->GetTolerance());
+            // REMARK: this will use the current position of node, e.g. in dynamics
+        }
     }
 
 
@@ -215,7 +222,7 @@ public:
     /// Check if a set of points is cut by the level set
     virtual int CutStatus(const std::vector<PointType>& r_points) const
     {
-        return CutStatusOfPoints(r_points);
+        return CutStatusOfPoints(r_points, this->GetTolerance());
     }
 
 
@@ -363,15 +370,15 @@ private:
 
 
     template<class TPointsContainerType>
-    int CutStatusOfPoints(const TPointsContainerType& r_points) const
+    int CutStatusOfPoints(const TPointsContainerType& r_points, const double& tolerance) const
     {
         std::vector<std::size_t> in_list, out_list, on_list;
         for(std::size_t v = 0; v < r_points.size(); ++v)
         {
             double phi = this->GetValue(r_points[v]);
-            if(phi < -this->GetTolerance())
+            if(phi < -tolerance)
                 in_list.push_back(v);
-            else if(phi > this->GetTolerance())
+            else if(phi > tolerance)
                 out_list.push_back(v);
             else
                 on_list.push_back(v);
@@ -385,7 +392,7 @@ private:
             KRATOS_WATCH(in_list.size())
             KRATOS_WATCH(out_list.size())
             KRATOS_WATCH(on_list.size())
-            KRATOS_WATCH(this->GetTolerance())
+            KRATOS_WATCH(tolerance)
             KRATOS_THROW_ERROR(std::logic_error, "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.", "")
         }
         else

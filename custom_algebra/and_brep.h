@@ -34,7 +34,7 @@
 
 namespace Kratos
 {
-///@addtogroup FiniteCellApplication
+///@addtogroup BRepApplication
 ///@{
 
 ///@name Kratos Globals
@@ -135,15 +135,15 @@ public:
     /// 0: the cell is completely inside the domain bounded by level set
     /// 1: completely outside
     /// -1: the cell is cut by level set
-    virtual int CutStatus(GeometryType& r_geom) const
+    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const
     {
-        if(mpBRep1->CutStatus(r_geom) == _OUT || mpBRep2->CutStatus(r_geom) == _OUT)
+        if(mpBRep1->CutStatus(r_geom, configuration) == _OUT || mpBRep2->CutStatus(r_geom, configuration) == _OUT)
         {
             return _OUT;
         }
         else
         {
-            if(mpBRep1->CutStatus(r_geom) == _IN && mpBRep2->CutStatus(r_geom) == _IN)
+            if(mpBRep1->CutStatus(r_geom, configuration) == _IN && mpBRep2->CutStatus(r_geom, configuration) == _IN)
             {
                 return _IN;
             }
