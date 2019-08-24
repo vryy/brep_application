@@ -32,7 +32,7 @@
 
 namespace Kratos
 {
-///@addtogroup FiniteCellApplication
+///@addtogroup BRepApplication
 ///@{
 
 ///@name Kratos Globals
