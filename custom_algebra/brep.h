@@ -157,6 +157,9 @@ public:
     /// Compute the intersection of the BRep with a line connect by 2 points.
     virtual PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const;
 
+    /// projects a point on the surface of level_set
+    virtual PointType ProjectOnSurface(const PointType& P) const;
+
     ///@}
     ///@name Access
     ///@{

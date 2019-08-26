@@ -382,9 +382,22 @@ private:
         return norm_2(P - Proj) - mR;
     }
 
-
     // compute the distance based on bisection algorithm, slow but stable
     double DoBisection(const PointType& P, double& t, const double& tmin, const double& tmax, const int& nsampling) const
+    {
+        PointType Proj = ProjectOnSurfaceUsingBisection(P, t, tmin, tmax, nsampling);
+        return norm_2(P - Proj) - mR;
+    }
+
+    /// projects a point on the surface of level_set using Bisection
+    virtual PointType ProjectOnSurface(const PointType& P) const
+    {
+        double t;
+        return ProjectOnSurfaceUsingBisection(P, t, -1.0, 2.0, 10);
+    }
+
+    /// projects a point on the surface of level_set using Bisection
+    PointType ProjectOnSurfaceUsingBisection(const PointType& P, double& t, const double& tmin, const double& tmax, const int& nsampling) const
     {
         const double tol = 1.0e-10;
 
@@ -463,8 +476,7 @@ private:
             KRATOS_THROW_ERROR(std::logic_error, "Bisection error: there are no valid segment", "")
         }
 
-        // compute the distance
-        return norm_2(P - Proj) - mR;
+        return Proj;
     }
 
     ///@}

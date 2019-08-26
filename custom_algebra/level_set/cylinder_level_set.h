@@ -248,6 +248,23 @@ public:
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 
+    /// projects a point on the surface of level_set
+    virtual PointType ProjectOnSurface(const PointType& P) const
+    {
+        PointType Proj;
+        double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
+        double pX = mcX + t*mdX;
+        double pY = mcY + t*mdY;
+        double pZ = mcZ + t*mdZ;
+
+        double distance_to_boundary = GetValue(P);
+        Proj(0) = ((P(0) - mcX) - pX) * mR / (mR + distance_to_boundary);
+        Proj(1) = ((P(1) - mcY) - pY) * mR / (mR + distance_to_boundary);
+        Proj(2) = ((P(2) - mcZ) - pZ) * mR / (mR + distance_to_boundary);
+
+        return Proj;
+    }
+
 
     ///@}
     ///@name Access
