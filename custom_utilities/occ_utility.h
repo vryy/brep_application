@@ -8,12 +8,12 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Hoang-Giang Bui
-//  Date:            5 Jan 2018
+//  Date:            23 Aug 2019
 //
 
 
-#if !defined(KRATOS_DOUGHNUT_LEVEL_SET_H_INCLUDED )
-#define  KRATOS_DOUGHNUT_LEVEL_SET_H_INCLUDED
+#if !defined(KRATOS_OPENCASCADE_UTILITY_H_INCLUDED )
+#define  KRATOS_OPENCASCADE_UTILITY_H_INCLUDED
 
 
 
@@ -23,11 +23,12 @@
 
 
 // External includes
+#include <TopoDS_Shape.hxx>
 
 
 // Project includes
 #include "includes/define.h"
-#include "custom_algebra/level_set/level_set.h"
+#include "custom_utilities/occ_define.h"
 
 
 namespace Kratos
@@ -55,37 +56,28 @@ namespace Kratos
 ///@{
 
 /// Short class definition.
-/** Detail class definition.
- * REF: Massing et al, CutFEM: Discretizing geometry and partial differential equations
-*/
-class DoughnutLevelSet : public LevelSet
+/**
+ * class for auxilliary routines for OpenCasCade
+ */
+class OCCUtility
 {
 public:
     ///@name Type Definitions
     ///@{
 
-    /// Pointer definition of DoughnutLevelSet
-    KRATOS_CLASS_POINTER_DEFINITION(DoughnutLevelSet);
+    /// Pointer definition of OCCUtility
+    KRATOS_CLASS_POINTER_DEFINITION(OCCUtility);
 
-    typedef LevelSet BaseType;
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    DoughnutLevelSet(const double& R, const double& r)
-    : BaseType(), mR(R), mr(r)
-    {
-    }
-
-    /// Copy constructor.
-    DoughnutLevelSet(DoughnutLevelSet const& rOther)
-    : BaseType(rOther), mR(rOther.mR), mr(rOther.mr)
-    {}
+    OCCUtility() {}
 
     /// Destructor.
-    virtual ~DoughnutLevelSet() {}
+    virtual ~OCCUtility() {}
 
 
     ///@}
@@ -97,35 +89,34 @@ public:
     ///@name Operations
     ///@{
 
-
-    virtual LevelSet::Pointer CloneLevelSet() const
+    /// Make the OCC bottle
+    // REF: https://www.opencascade.com/doc/occt-6.7.0/overview/html/tutorial.html#sec5
+    OCC::shared_ptr<TopoDS_Shape> MakeBottle(double width, double height, double thickness)
     {
-        return LevelSet::Pointer(new DoughnutLevelSet(*this));
+        return OCC::MakeBottle(width, height, thickness);
     }
 
-
-    virtual std::size_t WorkingSpaceDimension() const
+    /// Make the OCC sphere
+    // REF: https://algotopia.com/contents/opencascade/opencascade_basic
+    //      https://www.opencascade.com/doc/occt-6.9.1/refman/html/class_b_rep_prim_a_p_i___make_sphere.html
+    OCC::shared_ptr<TopoDS_Shape> MakeSphere(double cx, double cy, double cz, double r)
     {
-        return 3;
+        return OCC::MakeSphere(cx, cy, cz, r);
     }
 
-
-    virtual double GetValue(const PointType& P) const
+    /// Read the STEP file
+    // REF: https://www.opencascade.com/doc/occt-7.0.0/overview/html/occt_user_guides__step.html
+    OCC::shared_ptr<TopoDS_Shape> ReadSTEP(std::string filename)
     {
-        return pow(mR - sqrt(pow(P(0), 2) + pow(P(1), 2)), 2) + pow(P(2), 2) - pow(mr, 2);
+        return OCC::ReadSTEP(Standard_CString(filename.c_str()));
     }
 
-
-    virtual Vector GetGradient(const PointType& P) const
+    /// Write the STEP file
+    // REF: https://www.opencascade.com/doc/occt-7.0.0/overview/html/occt_user_guides__step.html
+    void WriteSTEP(OCC::shared_ptr<TopoDS_Shape> pShape, std::string filename)
     {
-        Vector grad(3);
-        double aux = pow(mR - sqrt(pow(P(0), 2) + pow(P(1), 2)), 2);
-        grad(0) = 2.0 * aux * ( -P(0) / sqrt(pow(P(0), 2) + pow(P(1), 2)) );
-        grad(1) = 2.0 * aux * ( -P(1) / sqrt(pow(P(0), 2) + pow(P(1), 2)) );
-        grad(2) = 2.0 * P(2);
-        return grad;
+        return OCC::WriteSTEP(pShape, Standard_CString(filename.c_str()));
     }
-
 
     ///@}
     ///@name Access
@@ -144,16 +135,18 @@ public:
     /// Turn back information as a string.
     virtual std::string Info() const
     {
-        return "Doughnut Level Set";
+        return "OpenCasCade Utility";
     }
 
     /// Print information about this object.
-//    virtual void PrintInfo(std::ostream& rOStream) const;
+    virtual void PrintInfo(std::ostream& rOStream) const
+    {
+        rOStream << Info();
+    }
 
     /// Print object's data.
     virtual void PrintData(std::ostream& rOStream) const
     {
-        rOStream << ", R: " << mR << ", r: " << mr;
     }
 
 
@@ -202,6 +195,7 @@ protected:
     ///@}
 
 private:
+
     ///@name Static Member Variables
     ///@{
 
@@ -209,9 +203,6 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-
-
-    double mR, mr;
 
 
     ///@}
@@ -239,11 +230,14 @@ private:
     ///@{
 
     /// Assignment operator.
-    DoughnutLevelSet& operator=(DoughnutLevelSet const& rOther);
+    OCCUtility& operator=(OCCUtility const& rOther);
+
+    /// Copy constructor.
+    OCCUtility(OCCUtility const& rOther);
 
     ///@}
 
-}; // Class DoughnutLevelSet
+}; // Class OCCUtility
 
 ///@}
 
@@ -257,13 +251,13 @@ private:
 
 
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                DoughnutLevelSet& rThis)
-{}
+inline std::istream& operator >> (std::istream& rIStream, OCCUtility& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                const DoughnutLevelSet& rThis)
+inline std::ostream& operator << (std::ostream& rOStream, const OCCUtility& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -277,4 +271,5 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_DOUGHNUT_LEVEL_SET_H_INCLUDED  defined
+
+#endif // KRATOS_OPENCASCADE_UTILITY_H_INCLUDED  defined

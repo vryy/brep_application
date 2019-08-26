@@ -22,6 +22,152 @@
 namespace Kratos
 {
 
+
+void BRepMeshUtility::GenerateSamplingPoints0(std::vector<PointType>& SamplingPoints,
+        BRepMeshUtility::GeometryType& r_geom, const std::size_t& nsampling)
+{
+    Matrix DeltaPosition(r_geom.size(), 3);
+    for ( unsigned int node = 0; node < r_geom.size(); ++node )
+        noalias( row( DeltaPosition, node ) ) = r_geom[node].Coordinates() - r_geom[node].GetInitialPosition();
+
+    if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Triangle )
+    {
+        double xi_min = 0.0, xi_max = 1.0;
+        double eta_min = 0.0, eta_max = 1.0;
+
+        double dxi = (xi_max - xi_min) / nsampling;
+        double deta = (eta_max - eta_min) / nsampling;
+
+        SamplingPoints.clear();
+        CoordinatesArrayType loc;
+        PointType P;
+        for(std::size_t i = 0; i < nsampling+1; ++i)
+        {
+            loc[0] = xi_min + i*dxi;
+            for(std::size_t j = 0; j < nsampling+1; ++j)
+            {
+                loc[1] = eta_min + j*deta;
+                if ( (loc[0] + loc[1]) < 1.0 + 1.0e-10 )
+                {
+                    r_geom.GlobalCoordinates(P, loc, DeltaPosition);
+                    SamplingPoints.push_back(P);
+                }
+            }
+        }
+    }
+    else if( r_geom.GetGeometryFamily() == GeometryData::Kratos_Quadrilateral
+        || (r_geom.GetGeometryFamily() == GeometryData::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::Kratos_Bezier2D) )
+    {
+        double xi_min, xi_max, eta_min, eta_max;
+
+        if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Quadrilateral)
+        {
+            xi_min = -1.0; xi_max = 1.0;
+            eta_min = -1.0; eta_max = 1.0;
+        }
+        else
+        {
+            xi_min = 0.0; xi_max = 1.0;
+            eta_min = 0.0; eta_max = 1.0;
+        }
+
+        double dxi = (xi_max - xi_min) / nsampling;
+        double deta = (eta_max - eta_min) / nsampling;
+
+        SamplingPoints.reserve((nsampling+1) * (nsampling+1));
+        CoordinatesArrayType loc;
+        PointType P;
+        for(std::size_t i = 0; i < nsampling+1; ++i)
+        {
+            loc[0] = xi_min + i*dxi;
+            for(std::size_t j = 0; j < nsampling+1; ++j)
+            {
+                loc[1] = eta_min + j*deta;
+                r_geom.GlobalCoordinates(P, loc, DeltaPosition);
+                SamplingPoints.push_back(P);
+            }
+        }
+    }
+    else if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Tetrahedra )
+    {
+        double xi_min = 0.0, xi_max = 1.0;
+        double eta_min = 0.0, eta_max = 1.0;
+        double zeta_min = 0.0, zeta_max = 1.0;
+
+        double dxi = (xi_max - xi_min) / nsampling;
+        double deta = (eta_max - eta_min) / nsampling;
+        double dzeta = (zeta_max - zeta_min) / nsampling;
+
+        SamplingPoints.clear();
+        CoordinatesArrayType loc;
+        PointType P;
+        for(std::size_t i = 0; i < nsampling+1; ++i)
+        {
+            loc[0] = xi_min + i*dxi;
+            for(std::size_t j = 0; j < nsampling+1; ++j)
+            {
+                loc[1] = eta_min + j*deta;
+                for(std::size_t k = 0; k < nsampling+1; ++k)
+                {
+                    loc[2] = zeta_min + k*dzeta;
+                    if ( (loc[0] + loc[1] + loc[2]) < 1.0 + 1.0e-10 )
+                    {
+                        r_geom.GlobalCoordinates(P, loc, DeltaPosition);
+                        SamplingPoints.push_back(P);
+                    }
+                }
+            }
+        }
+    }
+    else if( r_geom.GetGeometryFamily() == GeometryData::Kratos_Hexahedra
+        ||  (r_geom.GetGeometryFamily() == GeometryData::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::Kratos_Bezier3D) )
+    {
+        double xi_min, xi_max, eta_min, eta_max, zeta_min, zeta_max;
+
+        if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Hexahedra)
+        {
+            xi_min = -1.0; xi_max = 1.0;
+            eta_min = -1.0; eta_max = 1.0;
+            zeta_min = -1.0; zeta_max = 1.0;
+        }
+        else
+        {
+            xi_min = 0.0; xi_max = 1.0;
+            eta_min = 0.0; eta_max = 1.0;
+            zeta_min = 0.0; zeta_max = 1.0;
+        }
+
+        double dxi = (xi_max - xi_min) / nsampling;
+        double deta = (eta_max - eta_min) / nsampling;
+        double dzeta = (zeta_max - zeta_min) / nsampling;
+
+        SamplingPoints.reserve((nsampling+1) * (nsampling+1) * (nsampling+1));
+        CoordinatesArrayType loc;
+        PointType P;
+        for(std::size_t i = 0; i < nsampling+1; ++i)
+        {
+            loc[0] = xi_min + i*dxi;
+            for(std::size_t j = 0; j < nsampling+1; ++j)
+            {
+                loc[1] = eta_min + j*deta;
+                for(std::size_t k = 0; k < nsampling+1; ++k)
+                {
+                    loc[2] = zeta_min + k*dzeta;
+                    r_geom.GlobalCoordinates(P, loc, DeltaPosition);
+                    SamplingPoints.push_back(P);
+                }
+            }
+        }
+    }
+    else
+    {
+        std::stringstream ss;
+        ss << "Geometry " << r_geom.GetGeometryType() << " is not supported";
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+    }
+}
+
+
 void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
         BRepMeshUtility::GeometryType& r_geom, const std::size_t& nsampling)
 {

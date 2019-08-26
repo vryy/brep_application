@@ -34,7 +34,7 @@
 
 namespace Kratos
 {
-///@addtogroup FiniteCellApplication
+///@addtogroup BRepApplication
 ///@{
 
 ///@name Kratos Globals
@@ -85,13 +85,13 @@ public:
     ///@{
 
     /// Default constructor.
-    BRep();
+    BRep() : mTOL(1.0e-10) {}
 
     /// Copy constructor.
-    BRep(BRep const& rOther);
+    BRep(BRep const& rOther) : mTOL(rOther.mTOL) {}
 
     /// Destructor.
-    virtual ~BRep();
+    virtual ~BRep() {}
 
 
     ///@}
@@ -104,58 +104,94 @@ public:
     ///@{
 
     /// Clone this BRep
-    virtual BRep::Pointer CloneBRep() const;
+    virtual BRep::Pointer CloneBRep() const
+    {
+        return BRep::Pointer(new BRep(*this));
+    }
 
     /// Set for geometric tolerance
-    void SetTolerance(const double& TOL);
+    void SetTolerance(const double& TOL) {mTOL = TOL;}
 
     /// Get for geometric tolerance
-    const double GetTolerance() const;
+    const double GetTolerance() const {return mTOL;}
 
     /// Get working space dimension
-    virtual std::size_t WorkingSpaceDimension() const;
+    virtual std::size_t WorkingSpaceDimension() const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
 
     /// Get local space dimension
-    virtual std::size_t LocalSpaceDimension() const;
+    virtual std::size_t LocalSpaceDimension() const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
 
     /// Check if a point is inside/outside of the BRep
-    virtual bool IsInside(const PointType& P) const;
+    virtual bool IsInside(const PointType& P) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
 
     /// Check if a point is on the boundary within a tolerance
-    virtual bool IsOnBoundary(const PointType& P, const double& tol) const;
+    virtual bool IsOnBoundary(const PointType& P, const double& tol) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
 
     /// Check if an element is cut by the brep
-    int CutStatus(Element::Pointer p_elem) const;
+    int CutStatus(Element::Pointer p_elem, const int& configuration) const
+    {
+        return this->CutStatus(p_elem->GetGeometry(), configuration);
+    }
 
     /// Check if a geometry is cut by the brep
-    int CutStatus(GeometryType::Pointer p_geom) const;
+    int CutStatus(GeometryType::Pointer p_geom, const int& configuration) const
+    {
+        return this->CutStatus(*p_geom, configuration);
+    }
 
-    /// Check if a geometry is cut by the level set
-    /// 0: the cell is completely inside the domain bounded by level set
+    /// Check if a geometry is cut by the BRep
+    /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
-    /// -1: the cell is cut by level set
-    virtual int CutStatus(GeometryType& r_geom) const;
+    /// -1: the cell is cut by BRep
+    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
 
-    /// Check if a set of points is cut by the level set
-    /// 0: the cell is completely inside the domain bounded by level set
+    /// Check if a set of points is cut by the BRep
+    /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
-    /// -1: the cell is cut by level set
-    virtual int CutStatus(const std::vector<PointType>& r_points) const;
+    /// -1: the cell is cut by BRep
+    virtual int CutStatus(const std::vector<PointType>& r_points) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
 
     /// Check if an element is cut by the brep by sampling the elemental geometry
-    int CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling) const;
+    int CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const
+    {
+        return this->CutStatusBySampling(p_elem->GetGeometry(), nsampling, configuration);
+    }
 
     /// Check if a geometry is cut by the brep by sampling the geometry
-    int CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t& nsampling) const;
+    int CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t& nsampling, const int& configuration) const
+    {
+        return this->CutStatusBySampling(*p_geom, nsampling, configuration);
+    }
 
-    /// Check if a geometry is cut by the level set by sampling the geometry
-    /// 0: the cell is completely inside the domain bounded by level set
+    /// Check if a geometry is cut by the BRep by sampling the geometry
+    /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
-    /// -1: the cell is cut by level set
-    virtual int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling) const;
+    /// -1: the cell is cut by BRep
+    int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const;
 
     /// Compute the intersection of the BRep with a line connect by 2 points.
-    virtual PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const;
+    virtual PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
 
     /// projects a point on the surface of level_set
     virtual PointType ProjectOnSurface(const PointType& P) const;
