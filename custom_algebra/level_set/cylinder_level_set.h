@@ -249,20 +249,17 @@ public:
     }
 
     /// projects a point on the surface of level_set
-    virtual PointType ProjectOnSurface(const PointType& P) const
+    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
     {
-        PointType Proj;
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
         double pX = mcX + t*mdX;
         double pY = mcY + t*mdY;
         double pZ = mcZ + t*mdZ;
+        double vector_length = sqrt(pow(P(0)-pX, 2) + pow(P(1)-pY, 2) + pow(P(2)-pZ, 2));
 
-        double distance_to_boundary = GetValue(P);
-        Proj(0) = ((P(0) - mcX) - pX) * mR / (mR + distance_to_boundary);
-        Proj(1) = ((P(1) - mcY) - pY) * mR / (mR + distance_to_boundary);
-        Proj(2) = ((P(2) - mcZ) - pZ) * mR / (mR + distance_to_boundary);
-
-        return Proj;
+        Proj(0) = ((P(0) - mcX) - (mcX + t*mdX)) * mR / vector_length;
+        Proj(1) = ((P(1) - mcY) - (mcY + t*mdY)) * mR / vector_length;
+        Proj(2) = ((P(2) - mcZ) - (mcZ + t*mdZ)) * mR / vector_length;
     }
 
 

@@ -273,7 +273,7 @@ public:
     }
 
     /// projects a point on the surface of level_set
-    virtual PointType ProjectOnSurface(const PointType& P) const
+    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
