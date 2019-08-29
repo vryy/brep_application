@@ -123,6 +123,14 @@ public:
         return grad;
     }
 
+    /// projects a point on the surface of level_set
+    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
+    {
+        double vector_length = sqrt(pow(P(0)-mcX, 2) + pow(P(1)-mcY, 2) + pow(P(2)-mcZ, 2));
+        Proj(0) = (P(0) - mcX) * mR / vector_length;
+        Proj(1) = (P(1) - mcY) * mR / vector_length;
+        Proj(2) = (P(2) - mcZ) * mR / vector_length;
+    }
 
     ///@}
     ///@name Access
