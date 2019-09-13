@@ -257,7 +257,7 @@ public:
         double pZ = mcZ + t*mdZ;
         double vector_length = sqrt(pow(P(0)-pX, 2) + pow(P(1)-pY, 2) + pow(P(2)-pZ, 2));
         if (vector_length == 0)
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project node that's on center line  ", "");
+            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the center line  ", "");
 
         Proj(0) = (P(0) - pX) * mR / vector_length + pX;
         Proj(1) = (P(1) - pY) * mR / vector_length + pY;
