@@ -24,6 +24,7 @@
 #include "custom_algebra/level_set/doughnut_level_set.h"
 #include "custom_algebra/level_set/spherical_level_set.h"
 #include "custom_algebra/level_set/cylinder_level_set.h"
+#include "custom_algebra/level_set/cone_level_set.h"
 #include "custom_algebra/level_set/linear_level_set.h"
 #include "custom_algebra/level_set/planar_level_set.h"
 #include "custom_algebra/level_set/product_level_set.h"
@@ -170,6 +171,11 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def(self_ns::str(self))
     ;
 
+    class_<ConeLevelSet, ConeLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
+    ( "ConeLevelSet", init<const double&, const double&, const double&, const double&, const double&, const double&, const double&>() )
+    .def(self_ns::str(self))
+    ;
+
     class_<LinearLevelSet, LinearLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
     ( "LinearLevelSet", init<const double&, const double&, const double&>() )
     .def(self_ns::str(self))
@@ -233,4 +239,3 @@ void BRepApplication_AddBRepAndLevelSetToPython()
 }
 }  // namespace Python.
 }  // namespace Kratos.
-

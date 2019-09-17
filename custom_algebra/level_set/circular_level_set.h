@@ -175,8 +175,11 @@ public:
     virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
     {
         double vector_length = sqrt(pow(P(0)-mcX, 2) + pow(P(1)-mcY, 2));
-        Proj(0) = (P(0) - mcX) * mR / vector_length;
-        Proj(1) = (P(1) - mcY) * mR / vector_length;
+        if (vector_length == 0)
+            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project node that's in the center of Brep circle", "");
+
+        Proj(0) = (P(0) - mcX) * mR / vector_length + mcX;
+        Proj(1) = (P(1) - mcY) * mR / vector_length + mcY;
     }
 
     ///@}

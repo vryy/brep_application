@@ -395,7 +395,11 @@ private:
     {
         double t;
         ProjectOnCurveUsingBisection(P, t, -1.0, 2.0, 10, Proj);
-        Proj = (P - Proj) * mR / norm_2(P - Proj);
+        
+        if (P(0) == Proj(0) && P(1) == Proj(1) && P(2) == Proj(2))
+            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the curve of Brep distance_to_curve  ", "");
+
+        Proj = (P - Proj) * mR / norm_2(P - Proj) + Proj;
     }
 
     /// projects a point on the surface of level_set using Bisection
