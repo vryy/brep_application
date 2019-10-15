@@ -8,12 +8,12 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Hoang-Giang Bui
-//  Date:            20 Feb 2017
+//  Date:            26 Aug 2019
 //
 
 
-#if !defined(KRATOS_LOAD_FUNCTION_PLATE_WITH_THE_HOLE_H_INCLUDED )
-#define  KRATOS_LOAD_FUNCTION_PLATE_WITH_THE_HOLE_H_INCLUDED
+#if !defined(KRATOS_LOAD_FUNCTION_H_INCLUDED )
+#define  KRATOS_LOAD_FUNCTION_H_INCLUDED
 
 
 
@@ -48,7 +48,7 @@ namespace Kratos
 ///@{
 
 ///@}
-///@name  LoadFunctionR3RnPlateWithTheHoles
+///@name  LoadFunctionR3Rns
 ///@{
 
 ///@}
@@ -56,17 +56,16 @@ namespace Kratos
 ///@{
 
 /// Short class definition.
-/** Class for the load apply on the sides of the standard plate with the hole problem
+/** Class for the load apply on line/surface
 */
-template<std::size_t tload_side>
-class LoadFunctionR3RnPlateWithTheHole : public FunctionR3Rn
+class LoadFunctionR3Rn : public FunctionR3Rn
 {
 public:
     ///@name Type Definitions
     ///@{
 
-    /// Pointer definition of LoadFunctionR3RnPlateWithTheHole
-    KRATOS_CLASS_POINTER_DEFINITION(LoadFunctionR3RnPlateWithTheHole);
+    /// Pointer definition of LoadFunctionR3Rn
+    KRATOS_CLASS_POINTER_DEFINITION(LoadFunctionR3Rn);
 
     typedef FunctionR3Rn BaseType;
 
@@ -80,17 +79,17 @@ public:
     ///@{
 
     /// Default constructor.
-    LoadFunctionR3RnPlateWithTheHole(const double P, const double r)
-    : BaseType(), mP(P), mr(r)
+    LoadFunctionR3Rn()
+    : BaseType()
     {}
 
     /// Copy constructor.
-    LoadFunctionR3RnPlateWithTheHole(LoadFunctionR3RnPlateWithTheHole const& rOther)
-    : BaseType(rOther), mP(rOther.mP), mr(rOther.mr)
+    LoadFunctionR3Rn(LoadFunctionR3Rn const& rOther)
+    : BaseType(rOther)
     {}
 
     /// Destructor.
-    virtual ~LoadFunctionR3RnPlateWithTheHole()
+    virtual ~LoadFunctionR3Rn()
     {}
 
 
@@ -103,42 +102,26 @@ public:
     ///@name Operations
     ///@{
 
-
     virtual BaseType::Pointer CloneFunction() const
     {
-        return BaseType::Pointer(new LoadFunctionR3RnPlateWithTheHole(*this));
+        return BaseType::Pointer(new LoadFunctionR3Rn(*this));
     }
 
+    void AddComponent(FunctionR3R1::Pointer pComp)
+    {
+        mpLoadComponents.push_back(pComp);
+    }
 
     virtual OutputType GetValue(const InputType& P) const
     {
-        double r = sqrt(pow(P[0], 2) + pow(P[1], 2));
-        double theta = acos(P[0]/r);
-//        KRATOS_WATCH(P)
+        std::size_t ncomponent = mpLoadComponents.size();
+        Vector Load(ncomponent);
 
-        /// REF: Liu et al, Mesh Free Methods: Moving Beyond the Finite Element Method, example 6.11
-        double o_xx = mP * (1.0 - pow(mr/r, 2) * (1.5*cos(2.0*theta) + cos(4.0*theta)) + 1.5*pow(mr/r, 4)*cos(4.0*theta));
-        double o_yy = mP * (-pow(mr/r, 2) * (0.5*cos(2.0*theta) - cos(4.0*theta)) - 1.5*pow(mr/r, 4)*cos(4.0*theta));
-        double o_xy = mP * (-pow(mr/r, 2) * (0.5*sin(2.0*theta) + sin(4.0*theta)) + 1.5*pow(mr/r, 4)*sin(4.0*theta)); // here the equation in the book is wrong, I have to manually fix this
-
-        Vector Load(2);
-        double nx, ny;
-        if(tload_side == 0)
-        {
-            nx = 1.0;
-            ny = 0.0;
-        }
-        else if(tload_side == 1)
-        {
-            nx = 0.0;
-            ny = 1.0;
-        }
-        Load[0] = o_xx * nx + o_xy * ny;
-        Load[1] = o_xy * nx + o_yy * ny;
+        for (std::size_t i = 0; i < ncomponent; ++i)
+            Load(i) = mpLoadComponents[i]->GetValue(P);
 
         return Load;
     }
-
 
     ///@}
     ///@name Access
@@ -158,7 +141,7 @@ public:
     virtual std::string Info() const
     {
         std::stringstream ss;
-        ss << "Load Function for plate with the hole problem: P = " << mP << ", mr = " << mr;
+        ss << "Load Function R^3->R^" << mpLoadComponents.size();
         return ss.str();
     }
 
@@ -227,7 +210,7 @@ private:
     ///@name Member Variables
     ///@{
 
-    double mP, mr;
+    std::vector<FunctionR3R1::Pointer> mpLoadComponents;
 
     ///@}
     ///@name Private Operators
@@ -254,11 +237,11 @@ private:
     ///@{
 
     /// Assignment operator.
-    LoadFunctionR3RnPlateWithTheHole& operator=(LoadFunctionR3RnPlateWithTheHole const& rOther);
+    LoadFunctionR3Rn& operator=(LoadFunctionR3Rn const& rOther);
 
     ///@}
 
-}; // Class LoadFunctionR3RnPlateWithTheHole
+}; // Class LoadFunctionR3Rn
 
 ///@}
 
@@ -271,14 +254,12 @@ private:
 ///@{
 
 
-/// input stream LoadFunctionR3RnPlateWithTheHole
-template<std::size_t tload_side>
-inline std::istream& operator >> (std::istream& rIStream, LoadFunctionR3RnPlateWithTheHole<tload_side>& rThis)
+/// input stream LoadFunctionR3Rn
+inline std::istream& operator >> (std::istream& rIStream, LoadFunctionR3Rn& rThis)
 {}
 
-/// output stream LoadFunctionR3RnPlateWithTheHole
-template<std::size_t tload_side>
-inline std::ostream& operator << (std::ostream& rOStream, const LoadFunctionR3RnPlateWithTheHole<tload_side>& rThis)
+/// output stream LoadFunctionR3Rn
+inline std::ostream& operator << (std::ostream& rOStream, const LoadFunctionR3Rn& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -292,4 +273,4 @@ inline std::ostream& operator << (std::ostream& rOStream, const LoadFunctionR3Rn
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LOAD_FUNCTION_PLATE_WITH_THE_HOLE_H_INCLUDED  defined
+#endif // KRATOS_LOAD_FUNCTION_H_INCLUDED  defined

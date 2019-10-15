@@ -29,6 +29,7 @@
 #ifdef BREP_APPLICATION_USE_MASHPRESSO
 #include "custom_algebra/function/mathpresso_function.h"
 #endif
+#include "custom_algebra/function/load_function.h"
 #include "custom_algebra/function/load_function_plate_with_the_hole.h"
 
 
@@ -116,6 +117,7 @@ void BRepApplication_AddFunctionsToPython()
     .def("GetSecondDerivative", Helper_FunctionR1R1_GetSecondDerivative)
     .def("GetFormula", &FunctionR1R1::GetFormula)
     .def("GetDiffFunction", &FunctionR1R1::GetDiffFunction)
+    .def(self_ns::str(self))
     ;
 
     typedef ProductFunction<FunctionR1R1> ProductFunctionR1R1;
@@ -1755,12 +1757,20 @@ void BRepApplication_AddFunctionsToPython()
     ("MonomialFunctionR3R1X6Y6Z6", init<>())
     ;
 
+    class_<LoadFunctionR3Rn, LoadFunctionR3Rn::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
+    ("LoadFunctionR3Rn", init<>())
+    .def("AddComponent", &LoadFunctionR3Rn::AddComponent)
+    .def(self_ns::str(self))
+    ;
+
     class_<LoadFunctionR3RnPlateWithTheHole<0>, LoadFunctionR3RnPlateWithTheHole<0>::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
     ("LoadFunctionR3RnPlateWithTheHoleX", init<const double, const double>())
+    .def(self_ns::str(self))
     ;
 
     class_<LoadFunctionR3RnPlateWithTheHole<1>, LoadFunctionR3RnPlateWithTheHole<1>::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
     ("LoadFunctionR3RnPlateWithTheHoleY", init<const double, const double>())
+    .def(self_ns::str(self))
     ;
 
     #ifdef BREP_APPLICATION_USE_MASHPRESSO
@@ -1785,11 +1795,13 @@ void BRepApplication_AddFunctionsToPython()
     .def("GetValue", FunctionR3R3_pointer_to_GetValue)
     .def("GetFormula", &FunctionR3R3::GetFormula)
     .def("GetDiffFunction", &FunctionR3R3::GetDiffFunction)
+    .def(self_ns::str(self))
     ;
 
     typedef ScaleFunction<FunctionR3R3> ScaleFunctionR3R3;
     class_<ScaleFunctionR3R3, ScaleFunctionR3R3::Pointer, boost::noncopyable, bases<FunctionR3R3> >
     ("ScaleFunctionR3R3", init<const double, const FunctionR3R3::Pointer>())
+    .def(self_ns::str(self))
     ;
 
 }
