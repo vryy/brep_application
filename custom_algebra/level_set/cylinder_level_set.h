@@ -157,6 +157,26 @@ public:
     }
 
 
+    virtual Matrix GetGradientDerivatives(const PointType& P) const
+    {
+        Matrix Jac(3, 3);
+
+        Jac(0, 0) = 2.0 * (1.0 - mdX*mdX) * (1.0 - mdX*mdX);
+        Jac(0, 1) = 2.0 * (1.0 - mdX*mdX) * (-mdX*mdY);
+        Jac(0, 2) = 2.0 * (1.0 - mdX*mdX) * (-mdX*mdZ);
+
+        Jac(1, 0) = 2.0 * (1.0 - mdY*mdY) * (-mdY*mdX);
+        Jac(1, 1) = 2.0 * (1.0 - mdY*mdY) * (1.0 - mdY*mdY);
+        Jac(1, 2) = 2.0 * (1.0 - mdY*mdY) * (-mdY*mdZ);
+
+        Jac(2, 0) = 2.0 * (1.0 - mdZ*mdZ) * (-mdZ*mdX);
+        Jac(2, 1) = 2.0 * (1.0 - mdZ*mdZ) * (-mdZ*mdY);
+        Jac(2, 2) = 2.0 * (1.0 - mdZ*mdZ) * (1.0 - mdZ*mdZ);
+
+        return Jac;
+    }
+
+
     /// Generate the sampling points on the level set surface
     std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
         const double& start_angle, const double& end_angle) const
@@ -262,6 +282,51 @@ public:
         Proj(0) = (P(0) - pX) * mR / vector_length + pX;
         Proj(1) = (P(1) - pY) * mR / vector_length + pY;
         Proj(2) = (P(2) - pZ) * mR / vector_length + pZ;
+    }
+
+    /// compute the derivatives of the projection point w.r.t to the original point.
+    /// The derivatives are organized as;
+    ///     [d Proj[0] / d P[0], d Proj[0] / d P[1], d Proj[0] / d P[2]]
+    ///     [d Proj[1] / d P[0], d Proj[1] / d P[1], d Proj[1] / d P[2]]
+    ///     [d Proj[2] / d P[0], d Proj[2] / d P[1], d Proj[2] / d P[2]]
+    virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
+    {
+        if (Derivatives.size1() != 3 || Derivatives.size2() != 3)
+            Derivatives.resize(3, 3, false);
+
+        double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
+        double pX = mcX + t*mdX;
+        double pY = mcY + t*mdY;
+        double pZ = mcZ + t*mdZ;
+        double vector_length = sqrt(pow(P(0)-pX, 2) + pow(P(1)-pY, 2) + pow(P(2)-pZ, 2));
+        if (vector_length == 0)
+            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the center line  ", "");
+
+        Vector dt(3);
+        dt(0) = mdX; dt(1) = mdY; dt(2) = mdZ;
+
+        Vector dpX(3), dpY(3), dpZ(3);
+
+        noalias(dpX) = mdX*dt;
+        noalias(dpY) = mdY*dt;
+        noalias(dpZ) = mdZ*dt;
+
+        Vector dvector_length(3);
+        dvector_length(0) = ((P(0) - pX)*(1.0 - dpX(0)) + (P(1)-pY)*(-dpY(0)) + (P(2)-pZ)*(-dpZ(0))) / vector_length;
+        dvector_length(1) = ((P(0) - pX)*(-dpX(1)) + (P(1)-pY)*(1.0 - dpY(1)) + (P(2)-pZ)*(-dpZ(1))) / vector_length;
+        dvector_length(2) = ((P(0) - pX)*(-dpX(2)) + (P(1)-pY)*(-dpY(2)) + (P(2)-pZ)*(1.0 - dpZ(2))) / vector_length;
+
+        Derivatives(0, 0) = (1.0-dpX(0))*mR/vector_length + dpX(0) - (P(0)-pX)*mR*dvector_length(0)/pow(vector_length, 2);
+        Derivatives(0, 1) = (-dpX(1))*mR/vector_length + dpX(1) - (P(0)-pX)*mR*dvector_length(1)/pow(vector_length, 2);
+        Derivatives(0, 2) = (-dpX(2))*mR/vector_length + dpX(2) - (P(0)-pX)*mR*dvector_length(2)/pow(vector_length, 2);
+
+        Derivatives(1, 0) = (-dpY(0))*mR/vector_length + dpY(0) - (P(1)-pY)*mR*dvector_length(0)/pow(vector_length, 2);
+        Derivatives(1, 1) = (1.0-dpY(1))*mR/vector_length + dpY(1) - (P(1)-pY)*mR*dvector_length(1)/pow(vector_length, 2);
+        Derivatives(1, 2) = (-dpY(2))*mR/vector_length + dpY(2) - (P(1)-pY)*mR*dvector_length(2)/pow(vector_length, 2);
+
+        Derivatives(2, 0) = (-dpZ(0))*mR/vector_length + dpZ(0) - (P(2)-pZ)*mR*dvector_length(0)/pow(vector_length, 2);
+        Derivatives(2, 1) = (-dpZ(1))*mR/vector_length + dpZ(1) - (P(2)-pZ)*mR*dvector_length(1)/pow(vector_length, 2);
+        Derivatives(2, 2) = (1.0-dpZ(2))*mR/vector_length + dpZ(2) - (P(2)-pZ)*mR*dvector_length(2)/pow(vector_length, 2);
     }
 
 

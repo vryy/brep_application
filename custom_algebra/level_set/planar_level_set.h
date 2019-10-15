@@ -124,6 +124,49 @@ public:
     }
 
 
+    virtual Matrix GetGradientDerivatives(const PointType& P) const
+    {
+        Matrix Jac(this->WorkingSpaceDimension(), 3);
+        noalias(Jac) = ZeroMatrix(this->WorkingSpaceDimension(), 3);
+        return Jac;
+    }
+
+
+    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
+    {
+        double t = -(mA*P[0] + mB*P[1] + mC*P[2] + mD) / (pow(mA, 2) + pow(mB, 2) + pow(mC, 2));
+        Proj[0] = P[0] + mA*t;
+        Proj[1] = P[1] + mB*t;
+        Proj[2] = P[2] + mC*t;
+    }
+
+
+    /// compute the derivatives of the projection point w.r.t to the original point.
+    /// The derivatives are organized as;
+    ///     [d Proj[0] / d P[0], d Proj[0] / d P[1], d Proj[0] / d P[2]]
+    ///     [d Proj[1] / d P[0], d Proj[1] / d P[1], d Proj[1] / d P[2]]
+    ///     [d Proj[2] / d P[0], d Proj[2] / d P[1], d Proj[2] / d P[2]]
+    virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
+    {
+        if (Derivatives.size1() != 3 || Derivatives.size2() != 3)
+            Derivatives.resize(3, 3, false);
+
+        double aux = (pow(mA, 2) + pow(mB, 2) + pow(mC, 2));
+
+        Derivatives(0, 0) = 1.0 - pow(mA, 2) / aux;
+        Derivatives(0, 1) = -mA*mB / aux;
+        Derivatives(0, 2) = -mA*mC / aux;
+
+        Derivatives(1, 0) = -mB*mA / aux;
+        Derivatives(1, 1) = 1.0 - pow(mB, 2) / aux;
+        Derivatives(1, 2) = -mB*mC / aux;
+
+        Derivatives(2, 0) = -mC*mA / aux;
+        Derivatives(2, 1) = -mC*mB / aux;
+        Derivatives(2, 2) = 1.0 - pow(mC, 2) / aux;
+    }
+
+
     ///@}
     ///@name Access
     ///@{

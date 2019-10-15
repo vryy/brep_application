@@ -119,10 +119,26 @@ public:
 
     virtual Vector GetGradient(const PointType& P) const
     {
-        Vector grad(2);
+        Vector grad(3);
         grad(0) = 2.0 * (P(0) - mcX);
         grad(1) = 2.0 * (P(1) - mcY);
+        grad(2) = 0.0;
         return grad;
+    }
+
+
+    virtual Matrix GetGradientDerivatives(const PointType& P) const
+    {
+        Matrix Jac(3, 3);
+        noalias(Jac) = ZeroMatrix(3, 3);
+
+        Jac(0, 0) = 2.0;
+        Jac(0, 1) = 0.0;
+
+        Jac(1, 0) = 0.0;
+        Jac(1, 1) = 2.0;
+
+        return Jac;
     }
 
 
@@ -180,6 +196,30 @@ public:
 
         Proj(0) = (P(0) - mcX) * mR / vector_length + mcX;
         Proj(1) = (P(1) - mcY) * mR / vector_length + mcY;
+        Proj(2) = 0.0;
+    }
+
+    /// compute the derivatives of the projection point w.r.t to the original point.
+    virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
+    {
+        if (Derivatives.size1() != 3 || Derivatives.size2() != 3)
+            Derivatives.resize(3, 3, false);
+
+        double vector_length = sqrt(pow(P(0)-mcX, 2) + pow(P(1)-mcY, 2));
+        if (vector_length == 0)
+            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project node that's in the center of Brep circle", "");
+
+        noalias(Derivatives) = ZeroMatrix(3, 3);
+
+        Vector dvector_length(2);
+        dvector_length(0) = 2.0*(P(0) - mcX);
+        dvector_length(1) = 2.0*(P(1) - mcY);
+
+        Derivatives(0, 0) = mR/vector_length - (P(0)-mcX)*mR*dvector_length(0)/pow(vector_length, 2);
+        Derivatives(0, 1) = -(P(0)-mcX)*mR*dvector_length(1)/pow(vector_length, 2);
+
+        Derivatives(1, 0) = -(P(1)-mcY)*mR*dvector_length(0)/pow(vector_length, 2);
+        Derivatives(1, 1) = mR/vector_length - (P(1)-mcY)*mR*dvector_length(1)/pow(vector_length, 2);
     }
 
     ///@}

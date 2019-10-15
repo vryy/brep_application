@@ -164,6 +164,7 @@ public:
 //    }
 
 
+    /// Compute the gradient at a point
     Vector GetGradient(const double& X, const double& Y, const double& Z) const
     {
         PointType P;
@@ -174,6 +175,13 @@ public:
 
     /// inherit from Function
     virtual Vector GetGradient(const PointType& P) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
+
+
+    /// compute the derivatives of the gradient w.r.t the global point
+    virtual Matrix GetGradientDerivatives(const PointType& P) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
@@ -272,8 +280,36 @@ public:
         return P;
     }
 
+
+    /// inherit from BRep
+    virtual void GetNormal(const PointType& P, PointType& rNormal) const
+    {
+        Vector G = this->GetGradient(P);
+        noalias(rNormal) = ZeroVector(3);
+        for (std::size_t i = 0; i < G.size(); ++i)
+            rNormal[i] = G(i);
+    }
+
+
+    /// inherit from BRep
+    virtual void GetNormalDerivatives(const PointType& P, Matrix& Derivatives) const
+    {
+        Derivatives = this->GetGradientDerivatives(P);
+    }
+
+
     /// projects a point on the surface of level_set
     virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
+
+    /// compute the derivatives of the projection point w.r.t to the original point.
+    /// The derivatives are organized as;
+    ///     [d Proj[0] / d P[0], d Proj[0] / d P[1], d Proj[0] / d P[2]]
+    ///     [d Proj[1] / d P[0], d Proj[1] / d P[1], d Proj[1] / d P[2]]
+    ///     [d Proj[2] / d P[0], d Proj[2] / d P[1], d Proj[2] / d P[2]]
+    virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }

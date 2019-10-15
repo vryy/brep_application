@@ -193,11 +193,38 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
 
+    /// Get/compute the normal vector at a point on the BRep
+    virtual void GetNormal(const PointType& P, PointType& rNormal) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
+
+    /// Get/compute the normal vector derivatives w.r.t the global point
+    /// The derivatives are organized as;
+    ///     [d N[0] / d P[0], d N[0] / d P[1], d N[0] / d P[2]]
+    ///     [d N[1] / d P[0], d N[1] / d P[1], d N[1] / d P[2]]
+    ///     [d N[2] / d P[0], d N[2] / d P[1], d N[2] / d P[2]]
+    virtual void GetNormalDerivatives(const PointType& P, Matrix& Derivatives) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
+
     /// projects a point on the surface of level_set
     virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
+
+    /// compute the derivatives of the projection point w.r.t to the original point.
+    /// The derivatives are organized as;
+    ///     [d Proj[0] / d P[0], d Proj[0] / d P[1], d Proj[0] / d P[2]]
+    ///     [d Proj[1] / d P[0], d Proj[1] / d P[1], d Proj[1] / d P[2]]
+    ///     [d Proj[2] / d P[0], d Proj[2] / d P[1], d Proj[2] / d P[2]]
+    virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
+
     ///@}
     ///@name Access
     ///@{
