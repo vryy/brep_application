@@ -128,10 +128,8 @@ public:
 
     /// Generate the sampling points on the level set surface
     std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-        const double& start_angle, const double& end_angle) const
+        const double& start_angle, const double& end_angle, const double& tmin, const double& tmax) const
     {
-        const double tmin = 0.0;
-        const double tmax = 1.0;
         const double tol = 1.0e-10;
         // KRATOS_WATCH(nsampling_axial)
         // KRATOS_WATCH(nsampling_radial)
@@ -199,6 +197,14 @@ public:
 
 
     /// Generate the sampling points on the level set surface
+    std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
+        const double& start_angle, const double& end_angle) const
+    {
+        return GeneratePoints(nsampling_axial, nsampling_radial, start_angle, end_angle, 0.0, 1.0);
+    }
+
+
+    /// Generate the sampling points on the level set surface
     std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial) const
     {
         return GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI);
@@ -210,15 +216,28 @@ public:
         const std::string& sample_element_name,
         Properties::Pointer pProperties,
         const std::size_t& nsampling_axial,
-        const std::size_t& nsampling_radial) const
+        const std::size_t& nsampling_radial,
+        const double& tmin,
+        const double& tmax) const
     {
         // firstly create the sampling points on surface
-        std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial);
+        std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI, tmin, tmax);
         int order = 1;
         int close_dir = 2;
         int activation_dir = 1;
         BRepMeshUtility::MeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points, sample_element_name, order, close_dir, activation_dir, pProperties);
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
+    }
+
+
+    /// Create the elements based on sampling points on the surface
+    std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4ElementsClosedLoop(ModelPart& r_model_part,
+        const std::string& sample_element_name,
+        Properties::Pointer pProperties,
+        const std::size_t& nsampling_axial,
+        const std::size_t& nsampling_radial) const
+    {
+        return CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties, nsampling_axial, nsampling_radial, 0.0, 1.0);
     }
 
 

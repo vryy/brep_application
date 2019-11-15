@@ -98,6 +98,25 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoop(
     return Output;
 }
 
+template<class TLevelSel>
+boost::python::list LevelSet_CreateQ4ElementsClosedLoopWithRange(
+    TLevelSel& rDummy,
+    ModelPart& r_model_part,
+    const std::string& sample_element_name,
+    Properties::Pointer pProperties,
+    const std::size_t& nsampling_axial,
+    const std::size_t& nsampling_radial,
+    const double& tmin,
+    const double& tmax)
+{
+    std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
+        = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties, nsampling_axial, nsampling_radial, tmin, tmax);
+    boost::python::list Output;
+    Output.append(Results.first);
+    Output.append(Results.second);
+    return Output;
+}
+
 void BRepApplication_AddBRepAndLevelSetToPython()
 {
     /**************************************************************/
@@ -216,6 +235,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "DistanceToCurveLevelSet", init<const FunctionR1R3::Pointer, const double&>() )
     .def("CreateQ4Elements", &LevelSet_CreateQ4Elements<DistanceToCurveLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoop<DistanceToCurveLevelSet>)
+    .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoopWithRange<DistanceToCurveLevelSet>)
     .def(self_ns::str(self))
     ;
 
