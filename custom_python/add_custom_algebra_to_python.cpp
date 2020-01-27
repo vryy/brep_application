@@ -213,6 +213,7 @@ void BRepApplication_AddFunctionsToPython()
     /**************************************************************/
 
     array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetValue)(const double&) const = &FunctionR1R3::GetValue;
+    array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetDerivative)(const int&, const double&) const = &FunctionR1R3::GetDerivative;
     array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_Integrate)(Element::Pointer&) const = &FunctionR1R3::Integrate;
     array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_Integrate2)(Element::Pointer&, const int) const = &FunctionR1R3::Integrate;
 
@@ -221,6 +222,7 @@ void BRepApplication_AddFunctionsToPython()
     .def("Integrate", FunctionR1R3_pointer_to_Integrate)
     .def("Integrate", FunctionR1R3_pointer_to_Integrate2)
     .def("GetValue", FunctionR1R3_pointer_to_GetValue)
+    .def("GetDerivative", FunctionR1R3_pointer_to_GetDerivative)
     .def("GetFormula", &FunctionR1R3::GetFormula)
     .def("GetDiffFunction", &FunctionR1R3::GetDiffFunction)
     ;

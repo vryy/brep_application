@@ -12,7 +12,7 @@
 // Project includes
 #include "includes/element.h"
 #include "containers/array_1d.h"
-#include "custom_python/add_custom_algebra_to_python.h"
+#include "custom_python/add_brep_and_level_set_to_python.h"
 #include "custom_algebra/function/function.h"
 #include "custom_algebra/brep.h"
 #include "custom_algebra/and_brep.h"
@@ -132,8 +132,8 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "BRep", init<>() )
     .def("SetTolerance", &BRep::SetTolerance)
     .def("GetTolerance", &BRep::GetTolerance)
-    .def("CutStatus", pointer_to_CutStatusElement)
     .def("IsInside", &BRep::IsInside)
+    .def("CutStatus", pointer_to_CutStatusElement)
     .def("CutStatus", pointer_to_CutStatusGeometry)
     .def("CutStatusBySampling", pointer_to_CutStatusBySamplingElement)
     .def("CutStatusBySampling", pointer_to_CutStatusBySamplingGeometry)

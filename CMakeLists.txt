@@ -32,8 +32,9 @@ set( KRATOS_BREP_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/brep_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_algebra/brep.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/brep_mesh_utility.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_custom_algebra_1_to_python.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_custom_algebra_2_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_custom_algebra_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_transformation_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_brep_and_level_set_to_python.cpp
 )
 
 IF(${OCC_FOUND} MATCHES TRUE)

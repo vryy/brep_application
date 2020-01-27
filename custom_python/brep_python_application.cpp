@@ -19,6 +19,8 @@
 #include "includes/define.h"
 #include "brep_application.h"
 #include "custom_python/add_custom_algebra_to_python.h"
+#include "custom_python/add_brep_and_level_set_to_python.h"
+#include "custom_python/add_transformation_to_python.h"
 #ifdef BREP_APPLICATION_USE_OPENCASCADE
 #include "custom_python/add_occ_to_python.h"
 #endif
@@ -39,6 +41,7 @@ namespace Python
 
         BRepApplication_AddFunctionsToPython();
         BRepApplication_AddBRepAndLevelSetToPython();
+        BRepApplication_AddTransformationToPython();
         #ifdef BREP_APPLICATION_USE_OPENCASCADE
         BRepApplication_AddOCCToPython();
         #endif
