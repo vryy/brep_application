@@ -153,7 +153,9 @@ public:
     /// Turn back information as a string.
     virtual std::string Info() const
     {
-        return "Intersection Level Set";
+        std::stringstream ss;
+        ss << "Intersection Level Set of (" << mp_level_set_1->Info() << ") and (" << mp_level_set_2->Info() << ")";
+        return ss.str();
     }
 
     /// Print information about this object.

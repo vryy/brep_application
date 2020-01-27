@@ -159,7 +159,9 @@ public:
     /// Turn back information as a string.
     virtual std::string Info() const
     {
-        return "Inverse Level Set";
+        std::stringstream ss;
+        ss << "Inverse Level Set of (" << mp_level_set->Info() << ")";
+        return ss.str();
     }
 
     /// Print information about this object.

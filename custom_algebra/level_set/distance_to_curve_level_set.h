@@ -130,9 +130,10 @@ public:
     std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
         const double& start_angle, const double& end_angle, const double& tmin, const double& tmax) const
     {
-        const double tol = 1.0e-10;
         // KRATOS_WATCH(nsampling_axial)
         // KRATOS_WATCH(nsampling_radial)
+        // KRATOS_WATCH(tmin)
+        // KRATOS_WATCH(tmax)
 
         std::vector<std::vector<PointType> > results;
         double small_angle = (end_angle - start_angle) / nsampling_radial;
