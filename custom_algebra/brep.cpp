@@ -20,6 +20,42 @@
 namespace Kratos
 {
 
+BRep::BRep() : mTOL(1.0e-10)
+{}
+
+BRep::~BRep()
+{}
+
+int BRep::CutStatus(Element::Pointer p_elem, const int& configuration) const
+{
+    return this->CutStatus(p_elem->GetGeometry(), configuration);
+}
+
+int BRep::CutStatus(GeometryType::Pointer p_geom, const int& configuration) const
+{
+    return this->CutStatus(*p_geom, configuration);
+}
+
+int BRep::CutStatus(GeometryType& r_geom, const int& configuration) const
+{
+    KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+}
+
+int BRep::CutStatus(const std::vector<PointType>& r_points) const
+{
+    KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+}
+
+int BRep::CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const
+{
+    return this->CutStatusBySampling(p_elem->GetGeometry(), nsampling, configuration);
+}
+
+int BRep::CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t& nsampling, const int& configuration) const
+{
+    return this->CutStatusBySampling(*p_geom, nsampling, configuration);
+}
+
 int BRep::CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const
 {
     std::vector<PointType> SamplingPoints;

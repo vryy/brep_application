@@ -85,13 +85,13 @@ public:
     ///@{
 
     /// Default constructor.
-    BRep() : mTOL(1.0e-10) {}
+    BRep();
 
     /// Copy constructor.
     BRep(BRep const& rOther) : mTOL(rOther.mTOL) {}
 
     /// Destructor.
-    virtual ~BRep() {}
+    virtual ~BRep();
 
 
     ///@}
@@ -140,46 +140,28 @@ public:
     }
 
     /// Check if an element is cut by the brep
-    int CutStatus(Element::Pointer p_elem, const int& configuration) const
-    {
-        return this->CutStatus(p_elem->GetGeometry(), configuration);
-    }
+    int CutStatus(Element::Pointer p_elem, const int& configuration) const;
 
     /// Check if a geometry is cut by the brep
-    int CutStatus(GeometryType::Pointer p_geom, const int& configuration) const
-    {
-        return this->CutStatus(*p_geom, configuration);
-    }
+    int CutStatus(GeometryType::Pointer p_geom, const int& configuration) const;
 
     /// Check if a geometry is cut by the BRep
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const
-    {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
-    }
+    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const;
 
     /// Check if a set of points is cut by the BRep
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    virtual int CutStatus(const std::vector<PointType>& r_points) const
-    {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
-    }
+    virtual int CutStatus(const std::vector<PointType>& r_points) const;
 
     /// Check if an element is cut by the brep by sampling the elemental geometry
-    int CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const
-    {
-        return this->CutStatusBySampling(p_elem->GetGeometry(), nsampling, configuration);
-    }
+    int CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const;
 
     /// Check if a geometry is cut by the brep by sampling the geometry
-    int CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t& nsampling, const int& configuration) const
-    {
-        return this->CutStatusBySampling(*p_geom, nsampling, configuration);
-    }
+    int CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t& nsampling, const int& configuration) const;
 
     /// Check if a geometry is cut by the BRep by sampling the geometry
     /// 0: the cell is completely inside the domain bounded by BRep
