@@ -414,6 +414,20 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_m
     const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
     Properties::Pointer pProperties)
 {
+    int initial_activation_level = 0;
+    return CreateQuadElements(r_model_part, sampling_points, sample_element_name, type, close_dir, activation_dir, initial_activation_level, pProperties);
+}
+
+
+BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_model_part,
+    const std::vector<std::vector<PointType> >& sampling_points,
+    const std::string& sample_element_name,
+    const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+    const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+    const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+    const int& initial_activation_level,
+    Properties::Pointer pProperties)
+{
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
     std::size_t last_node_id_old = last_node_id;
     std::size_t num_division_1 = sampling_points.size() - 1;
@@ -520,7 +534,7 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_m
             pNewElement->Set(ACTIVE, true);
             pNewElement->SetValue(IS_INACTIVE, false);
             if (activation_dir != 0)
-                pNewElement->SetValue(ACTIVATION_LEVEL_var, activation_level);
+                pNewElement->SetValue(ACTIVATION_LEVEL_var, activation_level + initial_activation_level);
             NewElements.push_back(pNewElement);
 
             if (activation_dir == 2) ++activation_level;

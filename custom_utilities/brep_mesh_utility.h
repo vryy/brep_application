@@ -130,6 +130,17 @@ public:
         Properties::Pointer pProperties);
 
 
+    /// Create the quad elements based on given points list
+    static MeshInfoType CreateQuadElements(ModelPart& r_model_part,
+        const std::vector<std::vector<PointType> >& sampling_points,
+        const std::string& sample_element_name,
+        const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+        const int& initial_activation_level,
+        Properties::Pointer pProperties);
+
+
     /// Create the hex elements based on given points list
     static MeshInfoType CreateHexElements(ModelPart& r_model_part,
         const std::vector<std::vector<std::vector<PointType> > >& sampling_points,
