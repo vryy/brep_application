@@ -245,7 +245,7 @@ public:
         int order = 1;
         int close_dir = 2;
         int activation_dir = 1;
-        BRepMeshUtility::MeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points, sample_element_name, order, close_dir, activation_dir, pProperties);
+        BRepMeshUtility::ElementMeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points, sample_element_name, order, close_dir, activation_dir, pProperties);
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 
@@ -264,7 +264,7 @@ public:
         int order = 1;
         int close_dir = 0;
         int activation_dir = 1;
-        BRepMeshUtility::MeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points, sample_element_name, order, close_dir, activation_dir, pProperties);
+        BRepMeshUtility::ElementMeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points, sample_element_name, order, close_dir, activation_dir, pProperties);
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 

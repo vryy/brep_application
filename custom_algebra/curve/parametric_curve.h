@@ -27,11 +27,7 @@
 
 
 // Project includes
-#include "includes/define.h"
-#include "includes/element.h"
-#include "includes/ublas_interface.h"
-#include "geometries/geometry_data.h"
-#include "custom_algebra/function/function.h"
+#include "custom_algebra/curve/curve.h"
 
 
 namespace Kratos
@@ -59,9 +55,10 @@ namespace Kratos
 ///@{
 
 /// Short class definition.
-/** Abstract class for a parametric curve in 3D
-*/
-class ParametricCurve : public FunctionR1R3
+/** Implementation for a parametric curve in 3D.
+ * A parametric curve is mapping: t \in R^1 -> [x(t), y(t), z(t)]
+ */
+class ParametricCurve : public Curve
 {
 public:
     ///@name Type Definitions
@@ -70,7 +67,9 @@ public:
     /// Pointer definition of ParametricCurve
     KRATOS_CLASS_POINTER_DEFINITION(ParametricCurve);
 
-    typedef FunctionR1R3 BaseType;
+    typedef FunctionR1R3 SuperType;
+
+    typedef Curve BaseType;
 
     typedef BaseType::InputType InputType;
 
@@ -84,7 +83,11 @@ public:
     ParametricCurve(const FunctionR1R1::Pointer p_func_x,
         const FunctionR1R1::Pointer p_func_y, const FunctionR1R1::Pointer p_func_z)
     : BaseType(), mp_func_x(p_func_x), mp_func_y(p_func_y), mp_func_z(p_func_z)
-    {}
+    {
+        DataValueContainer::SetValue(CURVE_LOWER_BOUND, -1.0);
+        DataValueContainer::SetValue(CURVE_LOWER_BOUND, 2.0);
+        DataValueContainer::SetValue(CURVE_NUMBER_OF_SAMPLING, 10);
+    }
 
     /// Copy constructor.
     ParametricCurve(ParametricCurve const& rOther)
@@ -108,7 +111,14 @@ public:
     ///@{
 
     /// inherit from Function
-    virtual BaseType::Pointer CloneFunction() const
+    virtual SuperType::Pointer CloneFunction() const
+    {
+        return SuperType::Pointer(new ParametricCurve(*this));
+    }
+
+
+    /// inherit from Curve
+    virtual Curve::Pointer Clone() const
     {
         return BaseType::Pointer(new ParametricCurve(*this));
     }
@@ -154,9 +164,9 @@ public:
 
 
     /// inherit from Function
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual SuperType::Pointer GetDiffFunction(const int& component) const
     {
-        return BaseType::Pointer(
+        return SuperType::Pointer(
                     new ParametricCurve(
                         mp_func_x->GetDiffFunction(component),
                         mp_func_y->GetDiffFunction(component),
@@ -353,4 +363,4 @@ inline std::ostream& operator << (std::ostream& rOStream, const ParametricCurve&
 
 }  // namespace Kratos.
 
-#endif // KRATOS_EXPLICIT_CURVE_H_INCLUDED  defined
+#endif // KRATOS_PARAMETRIC_CURVE_H_INCLUDED  defined

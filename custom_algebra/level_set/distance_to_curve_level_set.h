@@ -29,6 +29,7 @@
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "custom_algebra/level_set/level_set.h"
+#include "custom_algebra/curve/curve.h"
 #include "custom_utilities/brep_mesh_utility.h"
 
 #define PI 3.1415926535897932384626433832795028841971693
@@ -77,13 +78,13 @@ public:
     ///@{
 
     /// Default constructor.
-    DistanceToCurveLevelSet(const FunctionR1R3::Pointer pAlignCurve, const double& R)
+    DistanceToCurveLevelSet(const Curve::Pointer pAlignCurve, const double& R)
     : BaseType(), mpCurve(pAlignCurve), mR(R)
     {}
 
     /// Copy constructor.
     DistanceToCurveLevelSet(DistanceToCurveLevelSet const& rOther)
-    : BaseType(rOther), mpCurve(rOther.mpCurve->CloneFunction()), mR(rOther.mR)
+    : BaseType(rOther), mpCurve(rOther.mpCurve->Clone()), mR(rOther.mR)
     {}
 
     /// Destructor.
@@ -114,15 +115,26 @@ public:
 
     virtual double GetValue(const PointType& P) const
     {
-        double t;
-        // return DoNewtonRaphson(P, t);
-        return DoBisection(P, t, -1.0, 2.0, 10);
+        return mpCurve->ComputeDistance(P) - mR;
     }
 
 
     virtual Vector GetGradient(const PointType& P) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not yet implemented")
+    }
+
+
+    /// projects a point on the surface of level_set using Bisection
+    /// inherit from LevelSet
+    virtual void ProjectOnSurface(const PointType& P, PointType& Proj)
+    {
+        mpCurve->ProjectOnCurve(P, Proj);
+
+        if (P(0) == Proj(0) && P(1) == Proj(1) && P(2) == Proj(2))
+            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the curve of Brep distance_to_curve  ", "");
+
+        Proj = (P - Proj) * mR / norm_2(P - Proj) + Proj;
     }
 
 
@@ -226,7 +238,30 @@ public:
         int order = 1;
         int close_dir = 2;
         int activation_dir = 1;
-        BRepMeshUtility::MeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points, sample_element_name, order, close_dir, activation_dir, pProperties);
+        BRepMeshUtility::ElementMeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points,
+            sample_element_name, order, close_dir, activation_dir, pProperties);
+        return std::make_pair(std::get<0>(Info), std::get<1>(Info));
+    }
+
+
+    /// Create the conditions based on sampling points on the surface
+    std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> CreateQ4ConditionsClosedLoop(ModelPart& r_model_part,
+        const std::string& sample_condition_name,
+        Properties::Pointer pProperties,
+        const std::size_t& nsampling_axial,
+        const std::size_t& nsampling_radial,
+        const double& tmin,
+        const double& tmax,
+        const bool& reverse) const
+    {
+        // firstly create the sampling points on surface
+        std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI, tmin, tmax);
+        int order = 1;
+        int close_dir = 2;
+        int activation_dir = 1;
+        int initial_activation_level = 0;
+        BRepMeshUtility::ConditionMeshInfoType Info = BRepMeshUtility::CreateQuadConditions(r_model_part, sampling_points,
+            sample_condition_name, order, close_dir, activation_dir, initial_activation_level, reverse, pProperties);
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 
@@ -257,7 +292,7 @@ public:
         int order = 1;
         int close_dir = 0;
         int activation_dir = 1;
-        BRepMeshUtility::MeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points, sample_element_name, order, close_dir, activation_dir, pProperties);
+        BRepMeshUtility::ElementMeshInfoType Info = BRepMeshUtility::CreateQuadElements(r_model_part, sampling_points, sample_element_name, order, close_dir, activation_dir, pProperties);
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 
@@ -346,7 +381,7 @@ private:
     ///@{
 
 
-    const FunctionR1R3::Pointer mpCurve;
+    const Curve::Pointer mpCurve;
     double mR;
 
 
@@ -359,149 +394,6 @@ private:
     ///@name Private Operations
     ///@{
 
-
-    // compute the distance based on Newton Raphson, quick but unstable
-    double DoNewtonRaphson(const PointType& P, double& t) const
-    {
-        const double tol = 1.0e-10;
-        const int max_iters = 300;
-
-        // firstly compute the projection of point P to the curve
-        int iter = 0;
-        PointType Proj, dProj, ddProj;
-        double rhs, drhs;
-
-        do
-        {
-            noalias(Proj) = mpCurve->GetValue(t);
-            noalias(dProj) = mpCurve->GetDerivative(0, t);
-            noalias(ddProj) = mpCurve->GetSecondDerivative(0, 0, t);
-            rhs = inner_prod(dProj, P - Proj);
-            if (fabs(rhs) < tol) break;
-            drhs = inner_prod(ddProj, P - Proj) - inner_prod(dProj, dProj);
-            t -= rhs/drhs;
-            ++iter;
-            if (iter > max_iters) break;
-        }
-        while (fabs(rhs) > tol);
-
-        if (iter > max_iters)
-        {
-            KRATOS_WATCH(P)
-            KRATOS_WATCH(mpCurve->GetValue(0.0))
-            KRATOS_WATCH(mpCurve->GetValue(1.0))
-            KRATOS_WATCH(t)
-            KRATOS_WATCH(rhs)
-            KRATOS_THROW_ERROR(std::logic_error, "The local iteration does not converge", "")
-        }
-        // KRATOS_WATCH(t)
-        // KRATOS_WATCH(P)
-        // KRATOS_WATCH(Proj)
-
-        // compute the distance
-        return norm_2(P - Proj) - mR;
-    }
-
-    // compute the distance based on bisection algorithm, slow but stable
-    double DoBisection(const PointType& P, double& t, const double& tmin, const double& tmax, const int& nsampling) const
-    {
-        PointType Proj;
-        ProjectOnCurveUsingBisection(P, t, tmin, tmax, nsampling, Proj);
-        return norm_2(P - Proj) - mR;
-    }
-
-    /// projects a point on the surface of level_set using Bisection
-    virtual void ProjectOnSurface(const PointType& P, PointType& Proj)
-    {
-        double t;
-        ProjectOnCurveUsingBisection(P, t, -1.0, 2.0, 10, Proj);
-        
-        if (P(0) == Proj(0) && P(1) == Proj(1) && P(2) == Proj(2))
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the curve of Brep distance_to_curve  ", "");
-
-        Proj = (P - Proj) * mR / norm_2(P - Proj) + Proj;
-    }
-
-    /// projects a point on the surface of level_set using Bisection
-    void ProjectOnCurveUsingBisection(const PointType& P, double& t, const double& tmin, const double& tmax, const int& nsampling, PointType& Proj) const
-    {
-        const double tol = 1.0e-10;
-
-        // firstly do the sampling
-        std::vector<double> f(nsampling);
-        PointType dProj;
-        for (std::size_t i = 0; i < nsampling+1; ++i)
-        {
-            t = tmin + i*(tmax-tmin)/nsampling;
-            noalias(Proj) = mpCurve->GetValue(t);
-            noalias(dProj) = mpCurve->GetDerivative(0, t);
-            f[i] = inner_prod(dProj, P - Proj);
-        }
-
-        bool found = false;
-        for (std::size_t i = 0; i < nsampling; ++i)
-        {
-            if (fabs(f[i]) < tol)
-            {
-                found = true;
-                t = tmin + i*(tmax-tmin)/nsampling;
-                noalias(Proj) = mpCurve->GetValue(t);
-                break;
-            }
-
-            if (f[i]*f[i+1] < 0.0)
-            {
-                // found the segment, do the bisection
-                double left = tmin + i*(tmax-tmin)/nsampling;
-                double right = tmin + (i+1)*(tmax-tmin)/nsampling;
-                double mid;
-                double fleft = f[i], fright = f[i+1], fmid;
-                while ((right - left) > tol)
-                {
-                    mid = 0.5*(left + right);
-
-                    noalias(Proj) = mpCurve->GetValue(mid);
-                    noalias(dProj) = mpCurve->GetDerivative(0, mid);
-                    fmid = inner_prod(dProj, P - Proj);
-
-                    if (fabs(fmid) < tol)
-                        break;
-
-                    if (fmid * fleft > 0.0)
-                    {
-                        left = mid;
-                        noalias(Proj) = mpCurve->GetValue(left);
-                        noalias(dProj) = mpCurve->GetDerivative(0, left);
-                        fleft = inner_prod(dProj, P - Proj);
-                    }
-
-                    if (fmid * fright > 0.0)
-                    {
-                        right = mid;
-                        noalias(Proj) = mpCurve->GetValue(right);
-                        noalias(dProj) = mpCurve->GetDerivative(0, right);
-                        fright = inner_prod(dProj, P - Proj);
-                    }
-                }
-
-                found = true;
-                t = mid;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            KRATOS_WATCH(P)
-            KRATOS_WATCH(mpCurve->GetValue(0.0))
-            KRATOS_WATCH(mpCurve->GetValue(1.0))
-            std::cout << "f:";
-            for (std::size_t i = 0; i < f.size(); ++i)
-                std::cout << " " << f[i];
-            std::cout << std::endl;
-            KRATOS_THROW_ERROR(std::logic_error, "Bisection error: there are no valid segment", "")
-        }
-    }
 
     ///@}
     ///@name Private  Access

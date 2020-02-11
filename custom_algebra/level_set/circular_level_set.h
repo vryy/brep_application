@@ -183,7 +183,7 @@ public:
         // firstly create the sampling points on surface
         std::vector<PointType> sampling_points = this->GeneratePoints(start_angle, end_angle, nsampling_radial);
         int order = 1;
-        BRepMeshUtility::MeshInfoType Info = BRepMeshUtility::CreateLineElements(r_model_part, sampling_points, sample_element_name, order, close, pProperties);
+        BRepMeshUtility::ElementMeshInfoType Info = BRepMeshUtility::CreateLineElements(r_model_part, sampling_points, sample_element_name, order, close, pProperties);
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 

@@ -33,6 +33,7 @@
 #include "custom_algebra/level_set/intersection_level_set.h"
 #include "custom_algebra/level_set/difference_level_set.h"
 #include "custom_algebra/level_set/distance_to_curve_level_set.h"
+#include "custom_algebra/curve/curve.h"
 #include "custom_algebra/curve/parametric_curve.h"
 #include "custom_algebra/surface/parametric_surface.h"
 #include "custom_algebra/volume/parametric_volume.h"
@@ -117,6 +118,37 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoopWithRange(
     return Output;
 }
 
+template<class TLevelSel>
+boost::python::list LevelSet_CreateQ4ConditionsClosedLoopWithRange(
+    TLevelSel& rDummy,
+    ModelPart& r_model_part,
+    const std::string& sample_condition_name,
+    Properties::Pointer pProperties,
+    const std::size_t& nsampling_axial,
+    const std::size_t& nsampling_radial,
+    const double& tmin,
+    const double& tmax,
+    const bool& reverse)
+{
+    std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
+        = rDummy.CreateQ4ConditionsClosedLoop(r_model_part, sample_condition_name, pProperties, nsampling_axial, nsampling_radial, tmin, tmax, reverse);
+    boost::python::list Output;
+    Output.append(Results.first);
+    Output.append(Results.second);
+    return Output;
+}
+
+boost::python::list Curve_ProjectOnCurve(Curve& rDummy, const Curve::PointType& rPoint)
+{
+    double t;
+    Curve::PointType Proj;
+    rDummy.ProjectOnCurve(rPoint, Proj, t);
+    boost::python::list Output;
+    Output.append(t);
+    Output.append(Proj);
+    return Output;
+}
+
 void BRepApplication_AddBRepAndLevelSetToPython()
 {
     /**************************************************************/
@@ -143,7 +175,17 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def_readonly("_OUT", &BRep::_OUT)
     ;
 
-    class_<ParametricCurve, ParametricCurve::Pointer, boost::noncopyable, bases<FunctionR1R3> >
+    double(Curve::*pointer_to_ComputeDistance)(const Curve::PointType&) const = &Curve::ComputeDistance;
+    Curve::PointType(Curve::*pointer_to_ComputeProjection)(const Curve::PointType&) const = &Curve::ComputeProjection;
+
+    class_<Curve, Curve::Pointer, boost::noncopyable, bases<FunctionR1R3, DataValueContainer> >
+    ("Curve", init<>())
+    .def("ComputeDistance", pointer_to_ComputeDistance)
+    .def("ComputeProjection", pointer_to_ComputeProjection)
+    .def("ProjectOnCurve", Curve_ProjectOnCurve)
+    ;
+
+    class_<ParametricCurve, ParametricCurve::Pointer, boost::noncopyable, bases<Curve> >
     ("ParametricCurve", init<const FunctionR1R1::Pointer, const FunctionR1R1::Pointer, const FunctionR1R1::Pointer>())
     .def("Export", &ParametricCurve::Export)
     ;
@@ -232,10 +274,11 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ;
 
     class_<DistanceToCurveLevelSet, DistanceToCurveLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "DistanceToCurveLevelSet", init<const FunctionR1R3::Pointer, const double&>() )
+    ( "DistanceToCurveLevelSet", init<const Curve::Pointer, const double&>() )
     .def("CreateQ4Elements", &LevelSet_CreateQ4Elements<DistanceToCurveLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoop<DistanceToCurveLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoopWithRange<DistanceToCurveLevelSet>)
+    .def("CreateQ4ConditionsClosedLoop", &LevelSet_CreateQ4ConditionsClosedLoopWithRange<DistanceToCurveLevelSet>)
     .def(self_ns::str(self))
     ;
 

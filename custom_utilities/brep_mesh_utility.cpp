@@ -309,7 +309,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
 }
 
 
-BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateLineElements(ModelPart& r_model_part,
+BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateLineElements(ModelPart& r_model_part,
         const std::vector<PointType>& sampling_points,
         const std::string& sample_element_name,
         const int& type, // if 1: generate L2 elements; 2: L3 elements;
@@ -406,7 +406,7 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateLineElements(ModelPart& r_m
 }
 
 
-BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_model_part,
+BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_model_part,
     const std::vector<std::vector<PointType> >& sampling_points,
     const std::string& sample_element_name,
     const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
@@ -419,13 +419,57 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_m
 }
 
 
-BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_model_part,
+BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_model_part,
     const std::vector<std::vector<PointType> >& sampling_points,
     const std::string& sample_element_name,
     const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
     const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
     const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
     const int& initial_activation_level,
+    Properties::Pointer pProperties)
+{
+    std::size_t last_element_id = BRepUtility::GetLastElementId(r_model_part);
+    // KRATOS_WATCH(last_element_id)
+    bool reverse = false;
+    BRepMeshUtility::ElementMeshInfoType Info = CreateQuadEntities<Element, ModelPart::ElementsContainerType>(r_model_part, r_model_part.Elements(),
+        sampling_points, sample_element_name, last_element_id, type, close_dir, activation_dir, initial_activation_level, reverse, pProperties);
+    std::cout << std::get<1>(Info).size() << " " << sample_element_name << " elements are created and added to the model_part" << std::endl;
+    return Info;
+}
+
+
+BRepMeshUtility::ConditionMeshInfoType BRepMeshUtility::CreateQuadConditions(ModelPart& r_model_part,
+    const std::vector<std::vector<PointType> >& sampling_points,
+    const std::string& sample_condition_name,
+    const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+    const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+    const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+    const int& initial_activation_level,
+    const bool& reverse,
+    Properties::Pointer pProperties)
+{
+    std::size_t last_condition_id = BRepUtility::GetLastConditionId(r_model_part);
+    // KRATOS_WATCH(last_condition_id)
+    BRepMeshUtility::ConditionMeshInfoType Info = CreateQuadEntities<Condition, ModelPart::ConditionsContainerType>(r_model_part, r_model_part.Conditions(),
+        sampling_points, sample_condition_name, last_condition_id, type, close_dir, activation_dir, initial_activation_level, reverse, pProperties);
+    std::cout << std::get<1>(Info).size() << " " << sample_condition_name << " conditions are created and added to the model_part" << std::endl;
+    return Info;
+}
+
+
+template<class TEntityType, class TEntitiesContainerType>
+std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType,
+    BRepMeshUtility::BoundaryNodesInfoType, BRepMeshUtility::BoundaryLayerInfoType>
+BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
+    TEntitiesContainerType& rEntities,
+    const std::vector<std::vector<PointType> >& sampling_points,
+    const std::string& sample_element_name,
+    std::size_t& last_element_id,
+    const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+    const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+    const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+    const int& initial_activation_level,
+    const bool& reverse,
     Properties::Pointer pProperties)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
@@ -467,11 +511,9 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_m
     }
 
     // secondly create elements
-    std::size_t last_element_id = BRepUtility::GetLastElementId(r_model_part);
-    // KRATOS_WATCH(last_element_id)
-    Element const& rCloneElement = KratosComponents<Element>::Get(sample_element_name);
-    Element::NodesArrayType temp_element_nodes;
-    ModelPart::ElementsContainerType NewElements;
+    TEntityType const& rCloneElement = KratosComponents<TEntityType>::Get(sample_element_name);
+    typename TEntityType::NodesArrayType temp_element_nodes;
+    TEntitiesContainerType NewElements;
     const std::string NodeKey("Node");
     std::vector<std::size_t> node;
     int activation_level;
@@ -513,10 +555,20 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_m
                 }
                 // std::cout << node[0] << " " << node[1] << " " << node[2] << " " << node[3] << std::endl;
 
-                temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[0], NodeKey).base()));
-                temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[1], NodeKey).base()));
-                temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[3], NodeKey).base()));
-                temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[2], NodeKey).base()));
+                if (reverse == false)
+                {
+                    temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[0], NodeKey).base()));
+                    temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[1], NodeKey).base()));
+                    temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[3], NodeKey).base()));
+                    temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[2], NodeKey).base()));
+                }
+                else
+                {
+                    temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[0], NodeKey).base()));
+                    temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[2], NodeKey).base()));
+                    temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[3], NodeKey).base()));
+                    temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[1], NodeKey).base()));
+                }
             }
             else if (type == 2)
             {
@@ -529,7 +581,7 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_m
                 KRATOS_THROW_ERROR(std::logic_error, "type == 3", "is not yet implemented")
             }
 
-            Element::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
+            typename TEntityType::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
             // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
             pNewElement->Set(ACTIVE, true);
             pNewElement->SetValue(IS_INACTIVE, false);
@@ -542,20 +594,18 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_m
         if (activation_dir == 1) ++activation_level;
     }
 
-    for (ModelPart::ElementsContainerType::ptr_iterator it = NewElements.ptr_begin(); it != NewElements.ptr_end(); ++it)
+    for (typename TEntitiesContainerType::ptr_iterator it = NewElements.ptr_begin(); it != NewElements.ptr_end(); ++it)
     {
-        r_model_part.Elements().push_back(*it);
+        rEntities.push_back(*it);
     }
 
-    r_model_part.Elements().Unique();
-
-    std::cout << NewElements.size() << " " << sample_element_name << " elements are created and added to the model_part" << std::endl;
+    rEntities.Unique();
 
     return std::make_tuple(NewNodes, NewElements, boundary_nodes, boundary_layers);
 }
 
 
-BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateHexElements(ModelPart& r_model_part,
+BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPart& r_model_part,
     const std::vector<std::vector<std::vector<PointType> > >& sampling_points,
     const std::string& sample_element_name,
     const int& type, // if 1: generate H8 elements; 2: H20 elements; 3: H27 elements
@@ -894,5 +944,34 @@ BRepMeshUtility::MeshInfoType BRepMeshUtility::CreateHexElements(ModelPart& r_mo
     return std::make_tuple(NewNodes, NewElements, boundary_nodes, boundary_layers);
 }
 
-}  // namespace Kratos.
+// template instantiation
 
+template std::tuple<ModelPart::NodesContainerType, ModelPart::ElementsContainerType,
+    BRepMeshUtility::BoundaryNodesInfoType, BRepMeshUtility::BoundaryLayerInfoType>
+BRepMeshUtility::CreateQuadEntities<Element, ModelPart::ElementsContainerType>(ModelPart& r_model_part,
+    ModelPart::ElementsContainerType& rEntities,
+    const std::vector<std::vector<PointType> >& sampling_points,
+    const std::string& sample_element_name,
+    std::size_t& last_element_id,
+    const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+    const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+    const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+    const int& initial_activation_level,
+    const bool& reverse,
+    Properties::Pointer pProperties);
+
+template std::tuple<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType,
+    BRepMeshUtility::BoundaryNodesInfoType, BRepMeshUtility::BoundaryLayerInfoType>
+BRepMeshUtility::CreateQuadEntities<Condition, ModelPart::ConditionsContainerType>(ModelPart& r_model_part,
+    ModelPart::ConditionsContainerType& rEntities,
+    const std::vector<std::vector<PointType> >& sampling_points,
+    const std::string& sample_element_name,
+    std::size_t& last_element_id,
+    const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+    const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+    const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+    const int& initial_activation_level,
+    const bool& reverse,
+    Properties::Pointer pProperties);
+
+}  // namespace Kratos.
