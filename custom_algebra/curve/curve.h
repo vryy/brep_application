@@ -172,23 +172,24 @@ public:
 
     /// Compute the projection on the the curve
     /// Because the bisection algorithm is used, user must notice some additional parameters may be necessary to give successful return
-    void ProjectOnCurve(const PointType& P, PointType& Proj, double& t) const
+    int ProjectOnCurve(const PointType& P, PointType& Proj, double& t) const
     {
         double tmin = DataValueContainer::GetValue(CURVE_LOWER_BOUND);
         double tmax = DataValueContainer::GetValue(CURVE_UPPER_BOUND);
         double nsampling = DataValueContainer::GetValue(CURVE_NUMBER_OF_SAMPLING);
-        this->ProjectOnCurveUsingBisection(P, Proj, t, tmin, tmax, nsampling);
+        return this->ProjectOnCurveUsingBisection(P, Proj, t, tmin, tmax, nsampling);
     }
 
     /// Compute the projection on the the curve
     /// Because the bisection algorithm is used, user must notice some additional parameters may be necessary to give successful return
-    void ProjectOnCurve(const PointType& P, PointType& Proj) const
+    int ProjectOnCurve(const PointType& P, PointType& Proj) const
     {
         double t;
-        this->ProjectOnCurve(P, Proj, t);
+        return this->ProjectOnCurve(P, Proj, t);
     }
 
     /// Compute the projection on the the curve
+    /// In case the projection does not exist, either point on two side will be returned
     PointType ComputeProjection(const PointType& P) const
     {
         PointType Proj;
@@ -394,7 +395,11 @@ private:
     }
 
     /// Compute the projection on the the curve using Bisection
-    bool ProjectOnCurveUsingBisection(const PointType& P, PointType& Proj, double& t, const double& tmin, const double& tmax, const int& nsampling) const
+    /// On return:
+    ///     + 0: projection point is found inside the parametric domain of the curve
+    ///     + 1: the point does not have projection inside parametric domain and is on the left side
+    ///     + 2: the point does not have projection inside parametric domain and is on the right side
+    int ProjectOnCurveUsingBisection(const PointType& P, PointType& Proj, double& t, const double& tmin, const double& tmax, const int& nsampling) const
     {
         const double tol = DataValueContainer::GetValue(CURVE_SEARCH_TOLERANCE);
 
@@ -409,12 +414,12 @@ private:
             f[i] = inner_prod(dProj, P - Proj);
         }
 
-        bool found = false;
+        int stat = -1;
         for (std::size_t i = 0; i < nsampling; ++i)
         {
             if (fabs(f[i]) < tol)
             {
-                found = true;
+                stat = 0;
                 t = tmin + i*(tmax-tmin)/nsampling;
                 noalias(Proj) = this->GetValue(t);
                 break;
@@ -455,9 +460,25 @@ private:
                     }
                 }
 
-                found = true;
+                stat = 0;
                 t = mid;
                 break;
+            }
+        }
+
+        if (stat != 0)
+        {
+            if (f[0] < -tol)
+            {
+                t = tmin; // set default value to t
+                noalias(Proj) = this->GetValue(t);
+                stat = 1;
+            }
+            if (f[nsampling-1] > tol)
+            {
+                t = tmax; // set default value to t
+                noalias(Proj) = this->GetValue(t);
+                stat = 2;
             }
         }
 
@@ -473,7 +494,7 @@ private:
         //     KRATOS_THROW_ERROR(std::logic_error, "Bisection error: there are no valid segment", "")
         // }
 
-        return found;
+        return 0;
     }
 
     ///@}

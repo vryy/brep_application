@@ -67,15 +67,16 @@ boost::python::list LevelSet_CreateQ4Elements(
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
-    const std::size_t& nsampling_axial,
-    const std::size_t& nsampling_radial,
+    const int& nsampling_axial,
+    const int& nsampling_radial,
     const double& start_radial_angle, // in degree
     const double& end_radial_angle) // in degree
 {
     const double Pi = 3.1415926535897932384626433;
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
-        = rDummy.CreateQ4Elements(r_model_part, sample_element_name, pProperties, nsampling_axial, nsampling_radial,
-                start_radial_angle/180.0*Pi, end_radial_angle/180*Pi);
+        = rDummy.CreateQ4Elements(r_model_part, sample_element_name, pProperties,
+            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial),
+            start_radial_angle/180.0*Pi, end_radial_angle/180*Pi);
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -88,11 +89,12 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoop(
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
-    const std::size_t& nsampling_axial,
-    const std::size_t& nsampling_radial)
+    const int& nsampling_axial,
+    const int& nsampling_radial)
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
-        = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties, nsampling_axial, nsampling_radial);
+        = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties,
+            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial));
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -105,13 +107,14 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoopWithRange(
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
-    const std::size_t& nsampling_axial,
-    const std::size_t& nsampling_radial,
+    const int& nsampling_axial,
+    const int& nsampling_radial,
     const double& tmin,
     const double& tmax)
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
-        = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties, nsampling_axial, nsampling_radial, tmin, tmax);
+        = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties,
+            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax);
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -124,14 +127,15 @@ boost::python::list LevelSet_CreateQ4ConditionsClosedLoopWithRange(
     ModelPart& r_model_part,
     const std::string& sample_condition_name,
     Properties::Pointer pProperties,
-    const std::size_t& nsampling_axial,
-    const std::size_t& nsampling_radial,
+    const int& nsampling_axial,
+    const int& nsampling_radial,
     const double& tmin,
     const double& tmax,
     const bool& reverse)
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
-        = rDummy.CreateQ4ConditionsClosedLoop(r_model_part, sample_condition_name, pProperties, nsampling_axial, nsampling_radial, tmin, tmax, reverse);
+        = rDummy.CreateQ4ConditionsClosedLoop(r_model_part, sample_condition_name, pProperties,
+            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax, reverse);
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -142,10 +146,11 @@ boost::python::list Curve_ProjectOnCurve(Curve& rDummy, const Curve::PointType& 
 {
     double t;
     Curve::PointType Proj;
-    rDummy.ProjectOnCurve(rPoint, Proj, t);
+    int stat = rDummy.ProjectOnCurve(rPoint, Proj, t);
     boost::python::list Output;
     Output.append(t);
     Output.append(Proj);
+    Output.append(stat);
     return Output;
 }
 
@@ -229,6 +234,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "CylinderLevelSet", init<const double&, const double&, const double&, const double&, const double&, const double&, const double&>() )
     .def("CreateQ4Elements", &LevelSet_CreateQ4Elements<CylinderLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoop<CylinderLevelSet>)
+    .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoopWithRange<CylinderLevelSet>)
     .def(self_ns::str(self))
     ;
 
