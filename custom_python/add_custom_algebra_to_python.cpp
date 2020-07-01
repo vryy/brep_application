@@ -31,6 +31,7 @@
 #endif
 #include "custom_algebra/function/load_function.h"
 #include "custom_algebra/function/load_function_plate_with_the_hole.h"
+#include "custom_algebra/function/hydrostatic_pressure_function_on_surface.h"
 
 
 namespace Kratos
@@ -1759,22 +1760,6 @@ void BRepApplication_AddFunctionsToPython()
     ("MonomialFunctionR3R1X6Y6Z6", init<>())
     ;
 
-    class_<LoadFunctionR3Rn, LoadFunctionR3Rn::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
-    ("LoadFunctionR3Rn", init<>())
-    .def("AddComponent", &LoadFunctionR3Rn::AddComponent)
-    .def(self_ns::str(self))
-    ;
-
-    class_<LoadFunctionR3RnPlateWithTheHole<0>, LoadFunctionR3RnPlateWithTheHole<0>::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
-    ("LoadFunctionR3RnPlateWithTheHoleX", init<const double, const double>())
-    .def(self_ns::str(self))
-    ;
-
-    class_<LoadFunctionR3RnPlateWithTheHole<1>, LoadFunctionR3RnPlateWithTheHole<1>::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
-    ("LoadFunctionR3RnPlateWithTheHoleY", init<const double, const double>())
-    .def(self_ns::str(self))
-    ;
-
     #ifdef BREP_APPLICATION_USE_MASHPRESSO
     class_<MathPressoFunctionR3R1, MathPressoFunctionR3R1::Pointer, boost::noncopyable, bases<FunctionR3R1> >
     ("MathPressoFunctionR3R1", init<const std::string&>())
@@ -1803,6 +1788,32 @@ void BRepApplication_AddFunctionsToPython()
     typedef ScaleFunction<FunctionR3R3> ScaleFunctionR3R3;
     class_<ScaleFunctionR3R3, ScaleFunctionR3R3::Pointer, boost::noncopyable, bases<FunctionR3R3> >
     ("ScaleFunctionR3R3", init<const double, const FunctionR3R3::Pointer>())
+    .def(self_ns::str(self))
+    ;
+
+    class_<HydrostaticPressureFunctionOnSurface, HydrostaticPressureFunctionOnSurface::Pointer, boost::noncopyable, bases<FunctionR3R3> >
+    ("HydrostaticPressureFunctionOnSurface", init<const double&, const double&, const array_1d<double, 3>&>())
+    // .def(init<const double&, const double&, const Vector&>())
+    .def(self_ns::str(self))
+    ;
+
+    /**************************************************************/
+    /************* EXPORT INTERFACE FOR FUNCTIONR3Rn **************/
+    /**************************************************************/
+
+    class_<LoadFunctionR3Rn, LoadFunctionR3Rn::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
+    ("LoadFunctionR3Rn", init<>())
+    .def("AddComponent", &LoadFunctionR3Rn::AddComponent)
+    .def(self_ns::str(self))
+    ;
+
+    class_<LoadFunctionR3RnPlateWithTheHole<0>, LoadFunctionR3RnPlateWithTheHole<0>::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
+    ("LoadFunctionR3RnPlateWithTheHoleX", init<const double, const double>())
+    .def(self_ns::str(self))
+    ;
+
+    class_<LoadFunctionR3RnPlateWithTheHole<1>, LoadFunctionR3RnPlateWithTheHole<1>::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
+    ("LoadFunctionR3RnPlateWithTheHoleY", init<const double, const double>())
     .def(self_ns::str(self))
     ;
 
