@@ -151,35 +151,6 @@ public:
         return (solidClassifier.State() == TopAbs_State::TopAbs_ON);
     }
 
-    /// Check if a geometry is cut by the level set
-    /// 0: the cell is completely inside the domain bounded by level set
-    /// 1: completely outside
-    /// -1: the cell is cut by level set
-    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const
-    {
-        if (configuration == 0)
-        {
-            std::vector<PointType> points(r_geom.size());
-            for (std::size_t i = 0; i < r_geom.size(); ++i)
-                noalias(points[i]) = r_geom[i].GetInitialPosition();
-            return CutStatusOfPoints(points);
-        }
-        else if (configuration == 1)
-        {
-            return CutStatusOfPoints(r_geom);
-            // REMARK: this will use the current position of node, e.g. in dynamics
-        }
-    }
-
-    /// Check if a set of points is cut by the level set
-    /// 0: the cell is completely inside the domain bounded by level set
-    /// 1: completely outside
-    /// -1: the cell is cut by level set
-    virtual int CutStatus(const std::vector<PointType>& r_points) const
-    {
-        return CutStatusOfPoints(r_points);
-    }
-
     /// Compute the intersection of the OCCBRep with a line connect by 2 points.
     virtual PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const
     {

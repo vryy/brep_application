@@ -75,15 +75,21 @@ public:
 
     typedef typename NodeType::CoordinatesArrayType CoordinatesArrayType;
 
+    typedef ModelPart::NodesContainerType NodesContainerType;
+
+    typedef ModelPart::ElementsContainerType ElementsContainerType;
+
+    typedef ModelPart::ConditionsContainerType ConditionsContainerType;
+
     typedef std::map<std::string, std::set<std::size_t> > BoundaryNodesInfoType;
 
     typedef std::map<std::string, std::vector<std::vector<std::size_t> > > BoundaryLayerInfoType;
 
-    typedef std::tuple<ModelPart::NodesContainerType, ModelPart::ElementsContainerType,
-        BoundaryNodesInfoType, BoundaryLayerInfoType> ElementMeshInfoType;
+    typedef std::tuple<NodesContainerType, ElementsContainerType, BoundaryNodesInfoType, BoundaryLayerInfoType> ElementMeshInfoType;
 
-    typedef std::tuple<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType,
-        BoundaryNodesInfoType, BoundaryLayerInfoType> ConditionMeshInfoType;
+    typedef std::tuple<NodesContainerType, ConditionsContainerType> ConditionMeshInfoSimpleType;
+
+    typedef std::tuple<NodesContainerType, ConditionsContainerType, BoundaryNodesInfoType, BoundaryLayerInfoType> ConditionMeshInfoType;
 
     ///@}
     ///@name Life Cycle
@@ -105,14 +111,20 @@ public:
     ///@name Operations
     ///@{
 
-    /// Generate the sampling points on a geometry in the reference configuration
-    static void GenerateSamplingPoints0(std::vector<PointType>& SamplingPoints,
-            GeometryType& r_geom, const std::size_t& nsampling);
-
-    /// Generate the sampling points on a geometry in the current configuration
+    /// Generate the sampling points on a geometry in the reference/current configuration
+    template<int TFrame>
     static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
             GeometryType& r_geom, const std::size_t& nsampling);
 
+    /// Generate the sampling points on a circle surface
+    static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
+            const PointType& rCenter, const PointType& rNormal,
+            const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial);
+
+    /// Generate the sampling points on a circle surface
+    static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
+            const PointType& rCenter, const PointType& rTangent1, const PointType& rTangent2,
+            const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial);
 
     /// Create the line elements based on given points list
     static ElementMeshInfoType CreateLineElements(ModelPart& r_model_part,
@@ -120,6 +132,16 @@ public:
         const std::string& sample_element_name,
         const int& type, // if 1: generate L2 elements; 2: L3 elements;
         const bool& close, // if false: open loop; true: close loop
+        Properties::Pointer pProperties);
+
+
+    /// Create the quad elements based on given points list
+    static ConditionMeshInfoSimpleType CreateTriangleConditions(ModelPart& r_model_part,
+        const std::string& sample_condition_name,
+        const int& type, // if 1: generate T3 elements; 2: T6 elements;
+        const PointType& rCenter, const PointType& rNormal,
+        const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
+        const int& activation_level,
         Properties::Pointer pProperties);
 
 
@@ -149,22 +171,6 @@ public:
         const std::vector<std::vector<PointType> >& sampling_points,
         const std::string& sample_condition_name,
         const int& type, // if 1: generate Q4 conditions; 2: Q8 conditions; 3: Q9 conditions
-        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
-        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
-        const int& initial_activation_level,
-        const bool& reverse,
-        Properties::Pointer pProperties);
-
-
-    /// Create the quad elements based on given points list
-    template<class TEntityType, class TEntitiesContainerType>
-    static std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType, BoundaryNodesInfoType, BoundaryLayerInfoType> CreateQuadEntities(
-        ModelPart& r_model_part,
-        TEntitiesContainerType& rEntities,
-        const std::vector<std::vector<PointType> >& sampling_points,
-        const std::string& sample_element_name,
-        std::size_t& last_element_id,
-        const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
         const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
         const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
         const int& initial_activation_level,
@@ -278,6 +284,34 @@ private:
     ///@name Private Operations
     ///@{
 
+    /// Create the mesh of triangle elements based on given points list
+    template<class TEntityType, class TEntitiesContainerType>
+    static std::tuple<NodesContainerType, TEntitiesContainerType> CreateTriangleEntities(
+        ModelPart& r_model_part,
+        TEntitiesContainerType& rEntities,
+        const std::vector<PointType>& sampling_points,
+        const std::string& sample_element_name,
+        std::size_t& last_node_id,
+        std::size_t& last_element_id,
+        const int& type, // if 1: generate T3 elements; 2: T6 elements;
+        const int& activation_level,
+        Properties::Pointer pProperties);
+
+    /// Create the patch of quad elements based on given points list
+    template<class TEntityType, class TEntitiesContainerType>
+    static std::tuple<NodesContainerType, TEntitiesContainerType, BoundaryNodesInfoType, BoundaryLayerInfoType> CreateQuadEntities(
+        ModelPart& r_model_part,
+        TEntitiesContainerType& rEntities,
+        const std::vector<std::vector<PointType> >& sampling_points,
+        const std::string& sample_element_name,
+        std::size_t& last_node_id,
+        std::size_t& last_element_id,
+        const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+        const int& initial_activation_level,
+        const bool& reverse,
+        Properties::Pointer pProperties);
 
     ///@}
     ///@name Private  Access

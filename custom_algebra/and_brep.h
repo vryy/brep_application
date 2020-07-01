@@ -56,7 +56,7 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// BRep representing by AND operation of two level sets
+/// BRep representing by AND operation of two breps
 class AndBRep : public BRep
 {
 public:

@@ -216,6 +216,50 @@ public:
     ///@name Inquiry
     ///@{
 
+    template<class TPointsContainerType>
+    int CutStatusOfPoints(const TPointsContainerType& r_points) const
+    {
+        std::vector<std::size_t> in_list, out_list;
+        bool check;
+        for(std::size_t v = 0; v < r_points.size(); ++v)
+        {
+            check = this->IsInside(r_points[v]);
+            if(check)
+                in_list.push_back(v);
+            else
+                out_list.push_back(v);
+        }
+
+        int stat;
+        if(in_list.size() == 0 && out_list.size() == 0)
+        {
+            for(std::size_t v = 0; v < r_points.size(); ++v)
+                KRATOS_WATCH(r_points[v])
+            KRATOS_WATCH(in_list.size())
+            KRATOS_WATCH(out_list.size())
+            KRATOS_WATCH(this->GetTolerance())
+            KRATOS_THROW_ERROR(std::logic_error, "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.", "")
+        }
+        else
+        {
+            if(in_list.size() == 0)
+            {
+                stat = BRep::_OUT;
+                return stat;
+            }
+
+            if(out_list.size() == 0)
+            {
+                stat = BRep::_IN;
+                return stat;
+            }
+
+            stat = BRep::_CUT;
+            return stat;
+        }
+
+        return -99; // can't come here. Just to silence the compiler.
+    }
 
     ///@}
     ///@name Input and output

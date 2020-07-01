@@ -38,12 +38,23 @@ int BRep::CutStatus(GeometryType::Pointer p_geom, const int& configuration) cons
 
 int BRep::CutStatus(GeometryType& r_geom, const int& configuration) const
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    if (configuration == 0)
+    {
+        std::vector<PointType> points(r_geom.size());
+        for (std::size_t i = 0; i < r_geom.size(); ++i)
+            noalias(points[i]) = r_geom[i].GetInitialPosition();
+        return CutStatusOfPoints(points);
+    }
+    else if (configuration == 1)
+    {
+        return CutStatusOfPoints(r_geom);
+        // REMARK: this will use the current position of node, e.g. in dynamics
+    }
 }
 
 int BRep::CutStatus(const std::vector<PointType>& r_points) const
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    return CutStatusOfPoints(r_points);
 }
 
 int BRep::CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const
@@ -60,9 +71,9 @@ int BRep::CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling
 {
     std::vector<PointType> SamplingPoints;
     if (configuration == 0)
-        BRepMeshUtility::GenerateSamplingPoints0(SamplingPoints, r_geom, nsampling);
+        BRepMeshUtility::GenerateSamplingPoints<0>(SamplingPoints, r_geom, nsampling);
     else if (configuration == 1)
-        BRepMeshUtility::GenerateSamplingPoints(SamplingPoints, r_geom, nsampling);
+        BRepMeshUtility::GenerateSamplingPoints<1>(SamplingPoints, r_geom, nsampling);
     else
         KRATOS_THROW_ERROR(std::logic_error, "Unknown configuration", configuration)
     return this->CutStatus(SamplingPoints);
