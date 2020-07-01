@@ -22,8 +22,9 @@ def normalize(a):
     return a
 
 ### Create a list of Frenet frame along a curve. The Frenet frame is stored as a transformation matrix.
-### zvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
-def GenerateLocalFrenetFrame(curve, num_sampling_points, zvec = [1.0, 0.0, 0.0]):
+### tvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
+### tvec shall be in the same reference plane as first tangent in a suitable direction to make B pointing upwards.
+def GenerateLocalFrenetFrame(curve, num_sampling_points, tvec = [1.0, 0.0, 0.0]):
     trans_list = []
     xi_list = []
     B = Array3()
@@ -35,12 +36,13 @@ def GenerateLocalFrenetFrame(curve, num_sampling_points, zvec = [1.0, 0.0, 0.0])
         T = normalize(T)
 
         if i == 0:
-            cross(B, zvec, T)
+            cross(B, tvec, T)
             B = normalize(B)
         else:
             B = B - dot(B, T)*T
             B = normalize(B)
 
+        # print("tvec:" + str(tvec))
         # print("P: " + str(P))
         # print("T: " + str(T))
         # print("B: " + str(B))
