@@ -16,6 +16,8 @@
 #include "custom_algebra/function/function.h"
 #include "custom_algebra/brep.h"
 #include "custom_algebra/and_brep.h"
+#include "custom_algebra/not_brep.h"
+#include "custom_algebra/natm_arc_brep.h"
 #ifdef BREP_APPLICATION_USE_OPENCASCADE
 #include "custom_algebra/occ_brep.h"
 #endif
@@ -50,6 +52,24 @@ namespace Python
 {
 
 using namespace boost::python;
+
+bool BRep_IsInside2(BRep& rDummy, const double& x, const double& y)
+{
+    BRep::PointType P;
+    P[0] = x;
+    P[1] = y;
+    P[2] = 0.0;
+    return rDummy.IsInside(P);
+}
+
+bool BRep_IsInside3(BRep& rDummy, const double& x, const double& y, const double& z)
+{
+    BRep::PointType P;
+    P[0] = x;
+    P[1] = y;
+    P[2] = z;
+    return rDummy.IsInside(P);
+}
 
 LevelSet::Pointer InverseLevelSet_GetLevelSet(InverseLevelSet& rDummy)
 {
@@ -169,6 +189,8 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "BRep", init<>() )
     .def("SetTolerance", &BRep::SetTolerance)
     .def("GetTolerance", &BRep::GetTolerance)
+    .def("IsInside", &BRep_IsInside2)
+    .def("IsInside", &BRep_IsInside3)
     .def("IsInside", &BRep::IsInside)
     .def("CutStatus", pointer_to_CutStatusElement)
     .def("CutStatus", pointer_to_CutStatusGeometry)
@@ -297,6 +319,11 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def(self_ns::str(self))
     ;
 
+    class_<NotBRep, NotBRep::Pointer, bases<BRep>, boost::noncopyable>
+    ( "NotBRep", init<BRep::Pointer>() )
+    .def(self_ns::str(self))
+    ;
+
     #ifdef BREP_APPLICATION_USE_OPENCASCADE
     class_<OCCBRep, OCCBRep::Pointer, bases<BRep>, boost::noncopyable>
     ( "OCCBRep", init<>() )
@@ -304,6 +331,14 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def(self_ns::str(self))
     ;
     #endif
+
+    class_<NATMArcBRep, NATMArcBRep::Pointer, bases<BRep>, boost::noncopyable>
+    ( "NATMArcBRep", init<>() )
+    .def("SetReferenceCenter", &NATMArcBRep::SetReferenceCenter)
+    .def("SetReferencePoint", &NATMArcBRep::SetReferencePoint)
+    .def("AddArc", &NATMArcBRep::AddArc)
+    .def(self_ns::str(self))
+    ;
 
 }
 }  // namespace Python.
