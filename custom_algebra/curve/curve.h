@@ -343,10 +343,10 @@ private:
     double ComputeDistanceByBisection(const PointType& P, double& t, const double& tmin, const double& tmax, const int& nsampling) const
     {
         PointType Proj;
-        bool found = ProjectOnCurveUsingBisection(P, Proj, t, tmin, tmax, nsampling);
+        int stat = ProjectOnCurveUsingBisection(P, Proj, t, tmin, tmax, nsampling);
 
         // if the bisection can't find the point in [tmin, tmax] region. The projection point will be computed before tmin or after tmax using the tangent information on that point.
-        if (!found)
+        if (stat != 0)
         {
             PointType First = this->GetValue(tmin);
             PointType dFirst = this->GetDerivative(0, tmin);
@@ -365,7 +365,14 @@ private:
             }
             else if ((test1 > 0.0) &&  (test2 < 0.0)) // the point is in between
             {
-                KRATOS_THROW_ERROR(std::logic_error, "There is error in computing the bisection. Check above.", "")
+                KRATOS_WATCH(P)
+                KRATOS_WATCH(stat)
+                KRATOS_WATCH(tmin)
+                KRATOS_WATCH(tmax)
+                KRATOS_WATCH(nsampling)
+                KRATOS_WATCH(test1)
+                KRATOS_WATCH(test2)
+                KRATOS_THROW_ERROR(std::logic_error, "There is error in computing the bisection. ProjectOnCurveUsingBisection shall detect it at the beginning of this function.", "")
             }
             else if ((test1 > 0.0) &&  (test2 > 0.0)) // the point is after tmax
             {
