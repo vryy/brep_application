@@ -101,6 +101,12 @@ public:
     ///@{
 
 
+    static typename BaseType::Pointer Create()
+    {
+        return typename BaseType::Pointer(new ZeroFunction());
+    }
+
+
     virtual typename BaseType::Pointer CloneFunction() const
     {
         return typename BaseType::Pointer(new ZeroFunction(*this));

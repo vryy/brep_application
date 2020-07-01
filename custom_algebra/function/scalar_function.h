@@ -102,6 +102,12 @@ public:
     ///@{
 
 
+    static typename BaseType::Pointer Create(const double& S)
+    {
+        return typename BaseType::Pointer(new ScalarFunction(S));
+    }
+
+
     virtual typename BaseType::Pointer CloneFunction() const
     {
         return typename BaseType::Pointer(new ScalarFunction(*this));
