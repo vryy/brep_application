@@ -32,8 +32,6 @@
 #include "custom_algebra/curve/curve.h"
 #include "custom_utilities/brep_mesh_utility.h"
 
-#define PI 3.1415926535897932384626433832795028841971693
-
 namespace Kratos
 {
 ///@addtogroup BRepApplication
@@ -139,7 +137,7 @@ public:
 
 
     /// Generate the sampling points on the level set surface
-    std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
+    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
         const double& start_angle, const double& end_angle, const double& tmin, const double& tmax) const
     {
         // KRATOS_WATCH(nsampling_axial)
@@ -147,16 +145,16 @@ public:
         // KRATOS_WATCH(tmin)
         // KRATOS_WATCH(tmax)
 
-        std::vector<std::vector<PointType> > results;
         double small_angle = (end_angle - start_angle) / nsampling_radial;
 
         double t, d;
         PointType P, T, N, B, V, Up, Aux;
         Up[0] = 0.0; Up[1] = 0.0; Up[2] = 1.0;
+        results.resize(nsampling_axial);
         for (std::size_t i = 0; i < nsampling_axial; ++i)
         {
-            // KRATOS_WATCH(t)
             t = tmin + i*(tmax-tmin)/(nsampling_axial-1);
+            // KRATOS_WATCH(t)
 
             noalias(P) = mpCurve->GetValue(t);
             // KRATOS_WATCH(P)
@@ -193,34 +191,31 @@ public:
             // KRATOS_WATCH(N)
             /****************/
 
-            std::vector<PointType> radial_points(nsampling_radial);
+            results[i].resize(nsampling_radial);
             for (std::size_t j = 0; j < nsampling_radial; ++j)
             {
                 d = start_angle + j*small_angle;
                 noalias(V) = std::cos(d)*N + std::sin(d)*B;
 
-                noalias(radial_points[j]) = P + mR*V;
+                noalias(results[i][j]) = P + mR*V;
             }
-
-            results.push_back(radial_points);
         }
-
-        return results;
     }
 
 
     /// Generate the sampling points on the level set surface
-    std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
+    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
         const double& start_angle, const double& end_angle) const
     {
-        return GeneratePoints(nsampling_axial, nsampling_radial, start_angle, end_angle, 0.0, 1.0);
+        this->GeneratePoints(results, nsampling_axial, nsampling_radial, start_angle, end_angle, 0.0, 1.0);
     }
 
 
     /// Generate the sampling points on the level set surface
-    std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial) const
+    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial) const
     {
-        return GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI);
+        const double Pi = 3.1415926535897932384626433832795028841971693;
+        this->GeneratePoints(results, nsampling_axial, nsampling_radial, 0.0, 2*Pi);
     }
 
 
@@ -233,8 +228,11 @@ public:
         const double& tmin,
         const double& tmax) const
     {
+        const double Pi = 3.1415926535897932384626433832795028841971693;
+
         // firstly create the sampling points on surface
-        std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI, tmin, tmax);
+        std::vector<std::vector<PointType> > sampling_points;
+        this->GeneratePoints(sampling_points, nsampling_axial, nsampling_radial, 0.0, 2*Pi, tmin, tmax);
         int order = 1;
         int close_dir = 2;
         int activation_dir = 1;
@@ -254,8 +252,11 @@ public:
         const double& tmax,
         const bool& reverse) const
     {
+        const double Pi = 3.1415926535897932384626433832795028841971693;
+
         // firstly create the sampling points on surface
-        std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI, tmin, tmax);
+        std::vector<std::vector<PointType> > sampling_points;
+        this->GeneratePoints(sampling_points, nsampling_axial, nsampling_radial, 0.0, 2*Pi, tmin, tmax);
         int order = 1;
         int close_dir = 2;
         int activation_dir = 1;
@@ -287,8 +288,8 @@ public:
         const double& end_radial_angle) const
     {
         // firstly create the sampling points on surface
-        std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial,
-                start_radial_angle, end_radial_angle);
+        std::vector<std::vector<PointType> > sampling_points;
+        this->GeneratePoints(sampling_points, nsampling_axial, nsampling_radial, start_radial_angle, end_radial_angle);
         int order = 1;
         int close_dir = 0;
         int activation_dir = 1;

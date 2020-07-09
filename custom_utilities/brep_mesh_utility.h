@@ -178,14 +178,13 @@ public:
         Properties::Pointer pProperties);
 
 
-    /// Create the hex elements based on given points list
+    /// Create a block of hex elements based on given points list
     static ElementMeshInfoType CreateHexElements(ModelPart& r_model_part,
         const std::vector<std::vector<std::vector<PointType> > >& sampling_points,
         const std::string& sample_element_name,
         const int& type, // if 1: generate H8 elements; 2: H20 elements; 3: H27 elements
-        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir; 3: close on 3rd dir
-        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir; r: activation on 3rd dir
         Properties::Pointer pProperties);
+
 
     ///@}
     ///@name Access

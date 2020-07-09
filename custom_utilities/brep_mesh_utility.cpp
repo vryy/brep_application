@@ -206,6 +206,8 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
     PointType T1 = rTangent1 / norm_2(rTangent1);
     PointType T2 = rTangent2 / norm_2(rTangent2);
 
+    SamplingPoints.push_back(rCenter);
+
     for (std::size_t i = 0; i < nsampling_axial; ++i)
     {
         double r = (i+1)*radius / nsampling_axial;
@@ -540,8 +542,6 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPar
     const std::vector<std::vector<std::vector<PointType> > >& sampling_points,
     const std::string& sample_element_name,
     const int& type, // if 1: generate H8 elements; 2: H20 elements; 3: H27 elements
-    const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir; 3: close on 3rd dir
-    const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir; r: activation on 3rd dir
     Properties::Pointer pProperties)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
