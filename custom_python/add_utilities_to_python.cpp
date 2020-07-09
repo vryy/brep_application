@@ -18,6 +18,7 @@
 #include "custom_utilities/brep_utility.h"
 #include "custom_utilities/brep_mesh_utility.h"
 #include "custom_utilities/delaunay.h"
+#include "custom_utilities/tube_mesher.h"
 
 namespace Kratos
 {
@@ -70,6 +71,128 @@ boost::python::list BRepMeshUtility_CreateTriangleConditions(BRepMeshUtility& rD
     return Output;
 }
 
+boost::python::list TubeMesher_GetPoints(TubeMesher& dummy)
+{
+    boost::python::list point_list;
+    for (std::size_t i = 0; i < dummy.GetPoints().size(); ++i)
+        point_list.append(dummy.GetPoints()[i]);
+    return point_list;
+}
+
+boost::python::list TubeMesher_GetElements(TubeMesher& dummy)
+{
+    boost::python::list element_list;
+    for (std::size_t i = 0; i < dummy.GetElements().size(); ++i)
+    {
+        boost::python::list tmp1;
+        for (std::size_t j = 0; j < dummy.GetElements()[i].size(); ++j)
+        {
+            boost::python::list tmp2;
+            for (std::size_t k = 0; k < dummy.GetElements()[i][j].size(); ++k)
+            {
+                boost::python::list tmp3;
+                for (std::size_t l = 0; l < dummy.GetElements()[i][j][k].size(); ++l)
+                {
+                    boost::python::list tmp4;
+                    for (std::size_t m = 0; m < dummy.GetElements()[i][j][k][l].size(); ++m)
+                        tmp4.append(dummy.GetElements()[i][j][k][l][m]);
+                    tmp3.append(tmp4);
+                }
+                tmp2.append(tmp3);
+            }
+            tmp1.append(tmp2);
+        }
+        element_list.append(tmp1);
+    }
+    return element_list;
+}
+
+boost::python::list TubeMesher_GetConditions(TubeMesher& dummy)
+{
+    boost::python::list condition_list;
+    for (std::size_t i = 0; i < dummy.GetConditions().size(); ++i)
+    {
+        boost::python::list tmp1;
+        for (std::size_t j = 0; j < dummy.GetConditions()[i].size(); ++j)
+        {
+            boost::python::list tmp2;
+            for (std::size_t k = 0; k < dummy.GetConditions()[i][j].size(); ++k)
+            {
+                boost::python::list tmp3;
+                for (std::size_t l = 0; l < dummy.GetConditions()[i][j][k].size(); ++l)
+                    tmp3.append(dummy.GetConditions()[i][j][k][l]);
+                tmp2.append(tmp3);
+            }
+            tmp1.append(tmp2);
+        }
+        condition_list.append(tmp1);
+    }
+    return condition_list;
+}
+
+boost::python::list TubeMesher_GetSlices1(TubeMesher& dummy, const std::size_t& slice,
+        const std::size_t& layer, const std::size_t& sub_layer)
+{
+    std::vector<std::vector<std::size_t> > conditions;
+    dummy.GetSlices(conditions, slice, layer, sub_layer);
+
+    boost::python::list condition_list;
+    for (std::size_t i = 0; i < conditions.size(); ++i)
+    {
+        boost::python::list tmp1;
+        for (std::size_t j = 0; j < conditions[i].size(); ++j)
+            tmp1.append(conditions[i][j]);
+        condition_list.append(tmp1);
+    }
+    return condition_list;
+}
+
+boost::python::list TubeMesher_GetSlices2(TubeMesher& dummy, const std::size_t& slice,
+        const std::size_t& layer)
+{
+    std::vector<std::vector<std::vector<std::size_t> > > conditions;
+    dummy.GetSlices(conditions, slice, layer);
+
+    boost::python::list condition_list;
+    for (std::size_t i = 0; i < conditions.size(); ++i)
+    {
+        boost::python::list tmp1;
+        for (std::size_t j = 0; j < conditions[i].size(); ++j)
+        {
+            boost::python::list tmp2;
+            for (std::size_t k = 0; k < conditions[i][j].size(); ++k)
+                tmp2.append(conditions[i][j][k]);
+            tmp1.append(tmp2);
+        }
+        condition_list.append(tmp1);
+    }
+    return condition_list;
+}
+
+class TubeMesherWrapper
+{
+public:
+
+    static TubeMesher::Pointer initWrapper(const Curve::Pointer pCurve, boost::python::list r_list,
+        boost::python::list nsamping_layers,
+        const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
+        const double& rotate_angle, const double& start_angle, const double& end_angle,
+        const double& tmin, const double& tmax,
+        const int& type, const std::size_t& last_node_id)
+    {
+        std::vector<double> r_vec;
+        for (int i = 0; i < boost::python::len(r_list); ++i)
+            r_vec.push_back(boost::python::extract<double>(r_list[i]));
+
+        std::vector<std::size_t> nsamping_layers_vec;
+        for (int i = 0; i < boost::python::len(nsamping_layers); ++i)
+            nsamping_layers_vec.push_back(static_cast<std::size_t>(boost::python::extract<int>(nsamping_layers[i])));
+
+        return TubeMesher::Pointer(new TubeMesher(pCurve, r_vec, nsamping_layers_vec, nsampling_axial, nsampling_radial,
+            rotate_angle, start_angle, end_angle, tmin, tmax, type, last_node_id));
+    }
+};
+
 void BRepApplication_AddUtilitiesToPython()
 {
 
@@ -95,6 +218,16 @@ void BRepApplication_AddUtilitiesToPython()
     class_<BRepMeshUtility, BRepMeshUtility::Pointer, boost::noncopyable>
     ("BRepMeshUtility", init<>())
     .def("CreateTriangleConditions", &BRepMeshUtility_CreateTriangleConditions)
+    ;
+
+    class_<TubeMesher, TubeMesher::Pointer, boost::noncopyable>
+    ("TubeMesher", no_init)
+    .def("__init__", make_constructor(&TubeMesherWrapper::initWrapper))
+    .def("GetPoints", &TubeMesher_GetPoints)
+    .def("GetElements", &TubeMesher_GetElements)
+    .def("GetConditions", &TubeMesher_GetConditions)
+    .def("GetSlices", &TubeMesher_GetSlices1)
+    .def("GetSlices", &TubeMesher_GetSlices2)
     ;
 
     void(Delaunay::*pointer_to_addPoint)(const double&, const double&) = &Delaunay::addPoint;
