@@ -220,6 +220,74 @@ public:
         else
             KRATOS_THROW_ERROR(std::logic_error, "Unknown type", type)
 
+        // for H20 element the lonely points have to be removed
+        if (type == 2)
+        {
+            std::set<std::size_t> all_nodes;
+
+            // collect all connected nodes
+            for (std::size_t i = 0; i < melement_connectivities.size(); ++i)
+            {
+                for (std::size_t j = 0; j < melement_connectivities[i].size(); ++j)
+                {
+                    for (std::size_t k = 0; k < melement_connectivities[i][j].size(); ++k)
+                    {
+                        for (std::size_t l = 0; l < melement_connectivities[i][j][k].size(); ++l)
+                        {
+                            for (std::size_t m = 0; m < melement_connectivities[i][j][k][l].size(); ++m)
+                            {
+                                all_nodes.insert(melement_connectivities[i][j][k][l][m]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // assign new id and put to new point container
+            std::map<std::size_t, std::size_t> node_id_old_to_new;
+            std::size_t new_id = 0;
+            std::vector<PointType> new_points(all_nodes.size());
+            for (auto it = all_nodes.begin(); it != all_nodes.end(); ++it)
+            {
+                new_points[new_id] = mpoints[*it-1];
+                node_id_old_to_new[*it] = ++new_id;
+            }
+            mpoints = new_points;
+
+            // reassign id for elements
+            for (std::size_t i = 0; i < melement_connectivities.size(); ++i)
+            {
+                for (std::size_t j = 0; j < melement_connectivities[i].size(); ++j)
+                {
+                    for (std::size_t k = 0; k < melement_connectivities[i][j].size(); ++k)
+                    {
+                        for (std::size_t l = 0; l < melement_connectivities[i][j][k].size(); ++l)
+                        {
+                            for (std::size_t m = 0; m < melement_connectivities[i][j][k][l].size(); ++m)
+                            {
+                                melement_connectivities[i][j][k][l][m] = node_id_old_to_new[melement_connectivities[i][j][k][l][m]];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // reassign id for conditions
+            for (std::size_t i = 0; i < mcondition_connectivities.size(); ++i)
+            {
+                for (std::size_t j = 0; j < mcondition_connectivities[i].size(); ++j)
+                {
+                    for (std::size_t k = 0; k < mcondition_connectivities[i][j].size(); ++k)
+                    {
+                        for (std::size_t l = 0; l < mcondition_connectivities[i][j][k].size(); ++l)
+                        {
+                            mcondition_connectivities[i][j][k][l] = node_id_old_to_new[mcondition_connectivities[i][j][k][l]];
+                        }
+                    }
+                }
+            }
+        }
+
         std::cout << "TubeMesher is initialized" << std::endl;
     }
 
