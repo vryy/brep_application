@@ -29,7 +29,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
 {
     Matrix DeltaPosition;
 
-    if (TFrame == 1)
+    if (TFrame == 0)
     {
         DeltaPosition.resize(r_geom.size(), 3, false);
         for ( unsigned int node = 0; node < r_geom.size(); ++node )
@@ -89,9 +89,9 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
             for(std::size_t j = 0; j < nsampling+1; ++j)
             {
                 loc[1] = eta_min + j*deta;
-                if (TFrame == 1)
+                if (TFrame == 0)
                     r_geom.GlobalCoordinates(P, loc, DeltaPosition);
-                else if (TFrame == 0)
+                else if (TFrame == 1)
                     r_geom.GlobalCoordinates(P, loc);
                 SamplingPoints.push_back(P);
             }
@@ -121,9 +121,9 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
                     loc[2] = zeta_min + k*dzeta;
                     if ( (loc[0] + loc[1] + loc[2]) < 1.0 + 1.0e-10 )
                     {
-                        if (TFrame == 1)
+                        if (TFrame == 0)
                             r_geom.GlobalCoordinates(P, loc, DeltaPosition);
-                        else if (TFrame == 0)
+                        else if (TFrame == 1)
                             r_geom.GlobalCoordinates(P, loc);
                         SamplingPoints.push_back(P);
                     }
@@ -165,9 +165,9 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
                 for(std::size_t k = 0; k < nsampling+1; ++k)
                 {
                     loc[2] = zeta_min + k*dzeta;
-                    if (TFrame == 1)
+                    if (TFrame == 0)
                         r_geom.GlobalCoordinates(P, loc, DeltaPosition);
-                    else if (TFrame == 0)
+                    else if (TFrame == 1)
                         r_geom.GlobalCoordinates(P, loc);
                     SamplingPoints.push_back(P);
                 }
