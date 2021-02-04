@@ -44,7 +44,6 @@ alignment_curve.SetValue(CURVE_UPPER_BOUND, 1.0)
 alignment_curve.SetValue(CURVE_NUMBER_OF_SAMPLING, 20)
 print("curve is created")
 
-mesher = BRepMeshUtility()
 r_list = [1.0, 2.0, 3.0, 4.0]
 nsampling_layers = [1, 2, 3]
 nsampling_axial = 5
@@ -60,14 +59,14 @@ mesher = TubeMesher(alignment_curve, r_list, nsampling_layers, nsampling_axial, 
 points = mesher.GetPoints()
 elements = mesher.GetElements()
 conditions = mesher.GetConditions()
-# slice000 = mesher.GetSlices(0, 0, 0) # slice, layer, sub-layer
+# slice000 = mesher.GetSlice(0, 0, 0) # slice, layer, sub-layer
 # print("slice000:", slice000)
-slice00 = mesher.GetSlices(0, 0) # slice, layer
-slice01 = mesher.GetSlices(0, 1) # slice, layer
-slice02 = mesher.GetSlices(0, 2) # slice, layer
-slice10 = mesher.GetSlices(1, 0) # slice, layer
-slice11 = mesher.GetSlices(1, 1) # slice, layer
-slice12 = mesher.GetSlices(1, 2) # slice, layer
+slice00 = mesher.GetSlice(0, 0) # slice, layer
+slice01 = mesher.GetSlice(0, 1) # slice, layer
+slice02 = mesher.GetSlice(0, 2) # slice, layer
+slice10 = mesher.GetSlice(1, 0) # slice, layer
+slice11 = mesher.GetSlice(1, 1) # slice, layer
+slice12 = mesher.GetSlice(1, 2) # slice, layer
 del mesher
 # print("points:")
 # for p in results[0]:
