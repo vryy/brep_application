@@ -260,9 +260,10 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         // rOStream << "mTransMat";
-        rOStream << "(B: " << column(mTransMat, 0);
-        rOStream << ", N: " << column(mTransMat, 1);
-        rOStream << ", T: " << column(mTransMat, 2) << ")";
+        rOStream << "(B: " << subrange(column(mTransMat, 0), 0, 3);
+        rOStream << ", N: " << subrange(column(mTransMat, 1), 0, 3);
+        rOStream << ", T: " << subrange(column(mTransMat, 2), 0, 3);
+        rOStream << ", P: " << subrange(column(mTransMat, 3), 0, 3) << ")";
     }
 
 protected:
