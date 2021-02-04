@@ -157,6 +157,9 @@ public:
     /// -1: the cell is cut by BRep
     virtual int CutStatus(const std::vector<PointType>& r_points) const;
 
+    /// return the string of the cut status
+    static std::string CutStatusStr(const int& stat);
+
     /// Check if an element is cut by the brep by sampling the elemental geometry
     int CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const;
 
@@ -182,11 +185,34 @@ public:
     }
 
     /// Get/compute the normal vector derivatives w.r.t the global point
-    /// The derivatives are organized as;
+    /// The derivatives are organized as:
     ///     [d N[0] / d P[0], d N[0] / d P[1], d N[0] / d P[2]]
     ///     [d N[1] / d P[0], d N[1] / d P[1], d N[1] / d P[2]]
     ///     [d N[2] / d P[0], d N[2] / d P[1], d N[2] / d P[2]]
     virtual void GetNormalDerivatives(const PointType& P, Matrix& Derivatives) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
+
+    /// Get/compute the tangential vectors at a point on the BRep
+    virtual void GetTangent(const PointType& P, std::vector<PointType>& rTangentialVectors) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
+
+    /// Get/compute the tangential vectors derivatives w.r.t the global point
+    /// The derivatives are organized as:
+    /// [
+    ///     [d T1[0] / d P[0], d T1[0] / d P[1], d T1[0] / d P[2]]
+    ///     [d T1[1] / d P[0], d T1[1] / d P[1], d T1[1] / d P[2]]
+    ///     [d T1[2] / d P[0], d T1[2] / d P[1], d T1[2] / d P[2]]
+    /// ]
+    /// [
+    ///     [d T2[0] / d P[0], d T2[0] / d P[1], d T2[0] / d P[2]]
+    ///     [d T2[1] / d P[0], d T2[1] / d P[1], d T2[1] / d P[2]]
+    ///     [d T2[2] / d P[0], d T2[2] / d P[1], d T2[2] / d P[2]]
+    /// ]
+    virtual void GetTangentDerivatives(const PointType& P, std::vector<Matrix>& Derivatives) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }

@@ -79,5 +79,17 @@ int BRep::CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling
     return this->CutStatus(SamplingPoints);
 }
 
+std::string BRep::CutStatusStr(const int& stat)
+{
+    if (stat == _CUT)
+        return "CUT";
+    else if (stat == _IN)
+        return "IN";
+    else if (stat == _OUT)
+        return "OUT";
+    else
+        return "Undefined";
+}
+
 }  // namespace Kratos.
 
