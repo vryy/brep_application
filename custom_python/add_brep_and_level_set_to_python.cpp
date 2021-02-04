@@ -16,6 +16,7 @@
 #include "custom_algebra/function/function.h"
 #include "custom_algebra/brep.h"
 #include "custom_algebra/and_brep.h"
+#include "custom_algebra/or_brep.h"
 #include "custom_algebra/not_brep.h"
 #include "custom_algebra/natm_arc_brep.h"
 #ifdef BREP_APPLICATION_USE_OPENCASCADE
@@ -69,6 +70,16 @@ bool BRep_IsInside3(BRep& rDummy, const double& x, const double& y, const double
     P[1] = y;
     P[2] = z;
     return rDummy.IsInside(P);
+}
+
+int BRep_CutStatusPoints(BRep& rDummy, boost::python::list& list_points)
+{
+    std::vector<BRep::PointType> points;
+
+    for (std::size_t i = 0; i < boost::python::len(list_points); ++i)
+        points.push_back(boost::python::extract<BRep::PointType>(list_points[i]));
+
+    return rDummy.CutStatus(points);
 }
 
 LevelSet::Pointer InverseLevelSet_GetLevelSet(InverseLevelSet& rDummy)
@@ -194,6 +205,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def("IsInside", &BRep::IsInside)
     .def("CutStatus", pointer_to_CutStatusElement)
     .def("CutStatus", pointer_to_CutStatusGeometry)
+    .def("CutStatus", &BRep_CutStatusPoints)
     .def("CutStatusBySampling", pointer_to_CutStatusBySamplingElement)
     .def("CutStatusBySampling", pointer_to_CutStatusBySamplingGeometry)
     .def("Clone", &BRep::CloneBRep)
@@ -316,6 +328,11 @@ void BRepApplication_AddBRepAndLevelSetToPython()
 
     class_<AndBRep, AndBRep::Pointer, bases<BRep>, boost::noncopyable>
     ( "AndBRep", init<BRep::Pointer, BRep::Pointer>() )
+    .def(self_ns::str(self))
+    ;
+
+    class_<OrBRep, OrBRep::Pointer, bases<BRep>, boost::noncopyable>
+    ( "OrBRep", init<BRep::Pointer, BRep::Pointer>() )
     .def(self_ns::str(self))
     ;
 
