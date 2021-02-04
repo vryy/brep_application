@@ -321,14 +321,18 @@ public:
     const std::vector<std::vector<std::vector<std::vector<std::size_t> > > >&
     GetConditions() const {return mcondition_connectivities;}
 
-    /// On output: msegments x mnodes
-    void GetSlices(std::vector<std::vector<std::size_t> >& conditions, const std::size_t& slice,
+    /// Get the conditions on a slice, slice is in [0, mrings]. If slice is 0, the initial slice is returned
+    /// On output: msegments x surface_nodes(mnodes)
+    void GetSlice(std::vector<std::vector<std::size_t> >& conditions, const std::size_t& slice,
         const std::size_t& layer, const std::size_t& sub_layer) const
     {
         // KRATOS_WATCH(mlayers)
         // KRATOS_WATCH(msub_layers[layer])
         // KRATOS_WATCH(msegments)
         // KRATOS_WATCH(mnodes)
+
+        if (slice > mrings)
+            KRATOS_THROW_ERROR(std::logic_error, "The slice does not exist", slice)
 
         if (layer >= mlayers)
             KRATOS_THROW_ERROR(std::logic_error, "The layer does not exist", layer)
@@ -422,10 +426,14 @@ public:
         }
     }
 
-    /// On output: msub_layers[layer] x msegments x mnodes
-    void GetSlices(std::vector<std::vector<std::vector<std::size_t> > >& conditions, const std::size_t& slice,
+    /// Get the conditions on a slice, slice is in [0, mrings]. If slice is 0, the initial slice is returned
+    /// On output: msub_layers[layer] x msegments x surface_nodes(mnodes)
+    void GetSlice(std::vector<std::vector<std::vector<std::size_t> > >& conditions, const std::size_t& slice,
         const std::size_t& layer) const
     {
+        if (slice > mrings)
+            KRATOS_THROW_ERROR(std::logic_error, "The slice does not exist", slice)
+
         if (layer >= mlayers)
             KRATOS_THROW_ERROR(std::logic_error, "The layer does not exist", layer)
 
@@ -433,8 +441,52 @@ public:
 
         for (std::size_t i = 0; i < msub_layers[layer]; ++i)
         {
-            this->GetSlices(conditions[i], slice, layer, i);
+            this->GetSlice(conditions[i], slice, layer, i);
         }
+    }
+
+    /// Get the element in specific location
+    void GetElement(std::vector<std::size_t>& element, const std::size_t& layer, const std::size_t& sub_layer,
+        const std::size_t& ring, const std::size_t& segment) const
+    {
+        element = melement_connectivities[layer][sub_layer][ring][segment];
+    }
+
+    /// Get the elements in a ring
+    /// On output: msegments x mnodes
+    void GetRing(std::vector<std::vector<std::size_t> >& elements, const std::size_t& ring,
+        const std::size_t& layer, const std::size_t& sub_layer) const
+    {
+        if (ring >= mrings)
+            KRATOS_THROW_ERROR(std::logic_error, "The ring does not exist", ring)
+
+        if (layer >= mlayers)
+            KRATOS_THROW_ERROR(std::logic_error, "The layer does not exist", layer)
+
+        if (sub_layer >= msub_layers[layer])
+            KRATOS_THROW_ERROR(std::logic_error, "The sub-layer does not exist", sub_layer)
+
+        elements.resize(msegments);
+
+        for (std::size_t i = 0; i < msegments; ++i)
+            this->GetElement(elements[i], layer, sub_layer, ring, i);
+    }
+
+    /// Get the elements in a ring
+    /// On output: msub_layers[layer] x msegments x mnodes
+    void GetRing(std::vector<std::vector<std::vector<std::size_t> > >& elements, const std::size_t& ring,
+        const std::size_t& layer) const
+    {
+        if (ring >= mrings)
+            KRATOS_THROW_ERROR(std::logic_error, "The ring does not exist", ring)
+
+        if (layer >= mlayers)
+            KRATOS_THROW_ERROR(std::logic_error, "The layer does not exist", layer)
+
+        elements.resize(msub_layers[layer]);
+
+        for (std::size_t i = 0; i < msub_layers[layer]; ++i)
+            this->GetRing(elements[i], ring, layer, i);
     }
 
     ///@}
