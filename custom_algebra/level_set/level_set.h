@@ -77,13 +77,13 @@ public:
 
     typedef FunctionR3R1 BaseType;
 
-    typedef typename Element::GeometryType GeometryType;
+    typedef BRep::GeometryType GeometryType;
 
-    typedef typename GeometryType::PointType NodeType;
+    typedef BRep::PointType NodeType;
 
-    typedef typename NodeType::PointType PointType;
+    typedef BRep::PointType PointType;
 
-    typedef typename NodeType::CoordinatesArrayType CoordinatesArrayType;
+    typedef BRep::CoordinatesArrayType CoordinatesArrayType;
 
     ///@}
     ///@name Life Cycle

@@ -68,6 +68,8 @@ public:
 
     typedef LevelSet BaseType;
 
+    typedef BaseType::PointType PointType;
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -120,6 +122,23 @@ public:
         grad(0) = mA;
         grad(1) = mB;
         return grad;
+    }
+
+    /// inherit from BRep
+    virtual void GetTangent(const PointType& P, std::vector<PointType>& rTangentialVectors) const
+    {
+        rTangentialVectors.resize(1);
+
+        rTangentialVectors[0](0) = -mB;
+        rTangentialVectors[0](1) = -mA;
+        rTangentialVectors[0](2) = 0.0;
+    }
+
+    /// inherit from BRep
+    virtual void GetTangentDerivatives(const PointType& P, std::vector<Matrix>& Derivatives) const
+    {
+        Derivatives.resize(1);
+        Derivatives[0] = ZeroMatrix(3, 3);
     }
 
 

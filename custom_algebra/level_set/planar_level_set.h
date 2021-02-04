@@ -68,6 +68,8 @@ public:
 
     typedef LevelSet BaseType;
 
+    typedef BaseType::PointType PointType;
+
     ///@}
     ///@name Life Cycle
     ///@{
