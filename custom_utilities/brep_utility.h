@@ -179,6 +179,90 @@ public:
         return lastPropId;
     }
 
+
+    template<int TDim, typename TConnectivityType>
+    static void SwapConnectivity(const TConnectivityType& input, TConnectivityType& output)
+    {
+        if (output.size() != input.size())
+            output.resize(input.size());
+
+        if (TDim == 2) // swapping for surface element/condition
+        {
+            if (input.size() == 3) // tri3
+            {
+                output[0] = input[0];
+                output[1] = input[2];
+                output[2] = input[1];
+            }
+            else if (input.size() == 6) // tri6
+            {
+                output[0] = input[0];
+                output[1] = input[2];
+                output[2] = input[1];
+                output[3] = input[5];
+                output[4] = input[4];
+                output[5] = input[3];
+            }
+            else if (input.size() == 4) // quad4
+            {
+                output[0] = input[0];
+                output[1] = input[3];
+                output[2] = input[2];
+                output[3] = input[1];
+            }
+            else if (input.size() == 8) // quad8
+            {
+                output[0] = input[0];
+                output[1] = input[3];
+                output[2] = input[2];
+                output[3] = input[1];
+                output[4] = input[7];
+                output[5] = input[6];
+                output[6] = input[5];
+                output[7] = input[4];
+            }
+            else if (input.size() == 9) // quad9
+            {
+                output[0] = input[0];
+                output[1] = input[3];
+                output[2] = input[2];
+                output[3] = input[1];
+                output[4] = input[7];
+                output[5] = input[6];
+                output[6] = input[5];
+                output[7] = input[4];
+                output[8] = input[8];
+            }
+            else
+                KRATOS_THROW_ERROR(std::logic_error, "The input size is invalid: ", input.size())
+        }
+        else if (TDim == 3) // swapping for volume element/condition
+        {
+            if (input.size() == 4) // tetrahedra
+            {
+                output[0] = input[0];
+                output[1] = input[2];
+                output[2] = input[1];
+                output[3] = input[3];
+            }
+            else
+                KRATOS_THROW_ERROR(std::logic_error, "The input size is invalid: ", input.size())
+        }
+    }
+
+    /// Compute the center of a geometry in the reference configuration
+    static PointType ComputeCenter(const GeometryType& rGeometry)
+    {
+        PointType C;
+        noalias(C) = ZeroVector(3);
+
+        for (std::size_t i = 0; i < rGeometry.size(); ++i)
+            noalias(C) += rGeometry[i].GetInitialPosition();
+
+        C /= rGeometry.size();
+        return C;
+    }
+
     ///@}
     ///@name Access
     ///@{

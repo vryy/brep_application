@@ -48,6 +48,34 @@ std::size_t BRepUtility_GetLastPropertiesId(BRepUtility& rDummy, ModelPart& r_mo
     return rDummy.GetLastPropertiesId(r_model_part);
 }
 
+template<int TDim, typename TConnectivityType>
+boost::python::list BRepUtility_Swap(BRepUtility& rDummy, boost::python::list list_entities)
+{
+    TConnectivityType input, output;
+
+    input.resize(boost::python::len(list_entities));
+    for (std::size_t i = 0; i < boost::python::len(list_entities); ++i)
+        input[i] = boost::python::extract<typename TConnectivityType::value_type>(list_entities[i]);
+
+    rDummy.SwapConnectivity<TDim, TConnectivityType>(input, output);
+
+    boost::python::list list_output;
+    for (std::size_t i = 0; i < boost::python::len(list_entities); ++i)
+        list_output.append(output[i]);
+
+    return list_output;
+}
+
+Element::GeometryType::PointType::PointType BRepUtility_ComputerCenterElement(BRepUtility& rDummy, Element::Pointer pElement)
+{
+    return rDummy.ComputeCenter(pElement->GetGeometry());
+}
+
+Condition::GeometryType::PointType::PointType BRepUtility_ComputerCenterCondition(BRepUtility& rDummy, Condition::Pointer pCondition)
+{
+    return rDummy.ComputeCenter(pCondition->GetGeometry());
+}
+
 boost::python::list BRepMeshUtility_CreateTriangleConditions(BRepMeshUtility& rDummy,
     ModelPart& r_model_part,
     const std::string& sample_condition_name,
@@ -130,11 +158,11 @@ boost::python::list TubeMesher_GetConditions(TubeMesher& dummy)
     return condition_list;
 }
 
-boost::python::list TubeMesher_GetSlices1(TubeMesher& dummy, const std::size_t& slice,
+boost::python::list TubeMesher_GetSlice1(TubeMesher& dummy, const std::size_t& slice,
         const std::size_t& layer, const std::size_t& sub_layer)
 {
     std::vector<std::vector<std::size_t> > conditions;
-    dummy.GetSlices(conditions, slice, layer, sub_layer);
+    dummy.GetSlice(conditions, slice, layer, sub_layer);
 
     boost::python::list condition_list;
     for (std::size_t i = 0; i < conditions.size(); ++i)
@@ -147,11 +175,11 @@ boost::python::list TubeMesher_GetSlices1(TubeMesher& dummy, const std::size_t& 
     return condition_list;
 }
 
-boost::python::list TubeMesher_GetSlices2(TubeMesher& dummy, const std::size_t& slice,
+boost::python::list TubeMesher_GetSlice2(TubeMesher& dummy, const std::size_t& slice,
         const std::size_t& layer)
 {
     std::vector<std::vector<std::vector<std::size_t> > > conditions;
-    dummy.GetSlices(conditions, slice, layer);
+    dummy.GetSlice(conditions, slice, layer);
 
     boost::python::list condition_list;
     for (std::size_t i = 0; i < conditions.size(); ++i)
@@ -167,6 +195,28 @@ boost::python::list TubeMesher_GetSlices2(TubeMesher& dummy, const std::size_t& 
         condition_list.append(tmp1);
     }
     return condition_list;
+}
+
+boost::python::list TubeMesher_GetRing(TubeMesher& dummy, const std::size_t& ring,
+        const std::size_t& layer)
+{
+    std::vector<std::vector<std::vector<std::size_t> > > elements;
+    dummy.GetRing(elements, ring, layer);
+
+    boost::python::list element_list;
+    for (std::size_t i = 0; i < elements.size(); ++i)
+    {
+        boost::python::list tmp1;
+        for (std::size_t j = 0; j < elements[i].size(); ++j)
+        {
+            boost::python::list tmp2;
+            for (std::size_t k = 0; k < elements[i][j].size(); ++k)
+                tmp2.append(elements[i][j][k]);
+            tmp1.append(tmp2);
+        }
+        element_list.append(tmp1);
+    }
+    return element_list;
 }
 
 class TubeMesherWrapper
@@ -213,6 +263,10 @@ void BRepApplication_AddUtilitiesToPython()
     .def("GetLastElementId", &BRepUtility_GetLastElementId)
     .def("GetLastConditionId", &BRepUtility_GetLastConditionId)
     .def("GetLastPropertiesId", &BRepUtility_GetLastPropertiesId)
+    .def("SwapConnectivityOfSurface", &BRepUtility_Swap<2, std::vector<std::size_t> >)
+    .def("SwapConnectivityOfVolume", &BRepUtility_Swap<3, std::vector<std::size_t> >)
+    .def("ComputeCenter", &BRepUtility_ComputerCenterElement)
+    .def("ComputeCenter", &BRepUtility_ComputerCenterCondition)
     ;
 
     class_<BRepMeshUtility, BRepMeshUtility::Pointer, boost::noncopyable>
@@ -226,8 +280,13 @@ void BRepApplication_AddUtilitiesToPython()
     .def("GetPoints", &TubeMesher_GetPoints)
     .def("GetElements", &TubeMesher_GetElements)
     .def("GetConditions", &TubeMesher_GetConditions)
-    .def("GetSlices", &TubeMesher_GetSlices1)
-    .def("GetSlices", &TubeMesher_GetSlices2)
+    .def("GetSlice", &TubeMesher_GetSlice1)
+    .def("GetSlice", &TubeMesher_GetSlice2)
+    .def("GetRing", &TubeMesher_GetRing)
+    .def("NumberOfLayers", &TubeMesher::NumberOfLayers)
+    .def("NumberOfSubLayers", &TubeMesher::NumberOfSubLayers)
+    .def("NumberOfRings", &TubeMesher::NumberOfRings)
+    .def("NumberOfSegments", &TubeMesher::NumberOfSegments)
     ;
 
     void(Delaunay::*pointer_to_addPoint)(const double&, const double&) = &Delaunay::addPoint;

@@ -27,15 +27,6 @@ template<int TFrame>
 void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
             GeometryType& r_geom, const std::size_t& nsampling)
 {
-    Matrix DeltaPosition;
-
-    if (TFrame == 0)
-    {
-        DeltaPosition.resize(r_geom.size(), 3, false);
-        for ( unsigned int node = 0; node < r_geom.size(); ++node )
-            noalias( row( DeltaPosition, node ) ) = r_geom[node].Coordinates() - r_geom[node].GetInitialPosition();
-    }
-
     if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Triangle )
     {
         double xi_min = 0.0, xi_max = 1.0;
@@ -55,7 +46,10 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
                 loc[1] = eta_min + j*deta;
                 if ( (loc[0] + loc[1]) < 1.0 + 1.0e-10 )
                 {
-                    r_geom.GlobalCoordinates(P, loc, DeltaPosition);
+                    if (TFrame == 0)
+                        GlobalCoordinates0(r_geom, P, loc);
+                    else if (TFrame == 1)
+                        r_geom.GlobalCoordinates(P, loc);
                     SamplingPoints.push_back(P);
                 }
             }
@@ -90,7 +84,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
             {
                 loc[1] = eta_min + j*deta;
                 if (TFrame == 0)
-                    r_geom.GlobalCoordinates(P, loc, DeltaPosition);
+                    GlobalCoordinates0(r_geom, P, loc);
                 else if (TFrame == 1)
                     r_geom.GlobalCoordinates(P, loc);
                 SamplingPoints.push_back(P);
@@ -122,7 +116,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
                     if ( (loc[0] + loc[1] + loc[2]) < 1.0 + 1.0e-10 )
                     {
                         if (TFrame == 0)
-                            r_geom.GlobalCoordinates(P, loc, DeltaPosition);
+                            GlobalCoordinates0(r_geom, P, loc);
                         else if (TFrame == 1)
                             r_geom.GlobalCoordinates(P, loc);
                         SamplingPoints.push_back(P);
@@ -166,7 +160,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
                 {
                     loc[2] = zeta_min + k*dzeta;
                     if (TFrame == 0)
-                        r_geom.GlobalCoordinates(P, loc, DeltaPosition);
+                        GlobalCoordinates0(r_geom, P, loc);
                     else if (TFrame == 1)
                         r_geom.GlobalCoordinates(P, loc);
                     SamplingPoints.push_back(P);
