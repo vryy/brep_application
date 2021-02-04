@@ -4,12 +4,15 @@ message("**** configuring KratosBRepApplication ****")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/custom_cmake_modules")
 
+#include cotire (CMake module to hep generating precompiled header to speed-up the build process)
+# include(cotire)
+
 ######### add include directory here
 include_directories( ${CMAKE_SOURCE_DIR}/kratos )
 include_directories( ${CMAKE_SOURCE_DIR}/applications )
 #######################################################################
 
-FIND_PACKAGE(MathPresso REQUIRED)
+FIND_PACKAGE(MathPresso QUIET)
 IF(${MATHPRESSO_FOUND} MATCHES TRUE)
     MESSAGE("mathpresso is found at " ${MATHPRESSO_DIR})
     ADD_DEFINITIONS(-DBREP_APPLICATION_USE_MASHPRESSO)
@@ -17,7 +20,7 @@ ELSE()
     MESSAGE("mathpresso is not found")
 ENDIF()
 
-FIND_PACKAGE(OpenCasCade REQUIRED)
+FIND_PACKAGE(OpenCasCade QUIET)
 IF(${OCC_FOUND} MATCHES TRUE)
     MESSAGE("OpenCasCade libraries:" ${OCC_LIBRARIES})
     include_directories(${OCC_INCLUDE_DIR})
@@ -25,6 +28,15 @@ IF(${OCC_FOUND} MATCHES TRUE)
 ELSE()
     MESSAGE("OpenCasCade is not found")
 ENDIF()
+
+#FIND_PACKAGE(CityGML QUIET)
+#IF(${CITYGML_FOUND} MATCHES TRUE)
+#    MESSAGE("CityGML libraries:" ${CITYGML_LIBRARIES})
+#    include_directories(${CITYGML_INCLUDE_DIR})
+#    ADD_DEFINITIONS(-DBREP_APPLICATION_USE_CITYGML)
+#ELSE()
+#    MESSAGE("CityGML is not found")
+#ENDIF()
 
 ######### add compilation units here
 set( KRATOS_BREP_APPLICATION_SOURCES
@@ -63,6 +75,7 @@ IF(${OCC_FOUND} MATCHES TRUE)
     target_link_libraries(KratosBRepApplication ${OCC_LIBRARIES})
 ENDIF()
 set_target_properties(KratosBRepApplication PROPERTIES PREFIX "")
+# cotire(KratosBRepApplication)
 install(TARGETS KratosBRepApplication DESTINATION libs )
 #######################################################################
 
