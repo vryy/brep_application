@@ -107,25 +107,25 @@ public:
     ///@{
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new InverseLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return mp_level_set->WorkingSpaceDimension();
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         return -mp_level_set->GetValue(P);
     }
 
 
-    virtual Vector GetGradient(const PointType& P) const
+    Vector GetGradient(const PointType& P) const final
     {
         return -mp_level_set->GetGradient(P);
     }
@@ -157,21 +157,15 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         std::stringstream ss;
         ss << "Inverse Level Set of (" << mp_level_set->Info() << ")";
         return ss.str();
     }
 
-    /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << Info();
-    }
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 

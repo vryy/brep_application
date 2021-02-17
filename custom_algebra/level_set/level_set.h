@@ -109,14 +109,14 @@ public:
     ///@{
 
     /// inherit from BRep
-    virtual BRep::Pointer CloneBRep() const
+    BRep::Pointer CloneBRep() const override
     {
         return BRep::Pointer(this->CloneLevelSet());
     }
 
 
     /// inherit from Function
-    virtual FunctionR3R1::Pointer CloneFunction() const
+    FunctionR3R1::Pointer CloneFunction() const override
     {
         return FunctionR3R1::Pointer(this->CloneLevelSet());
     }
@@ -130,19 +130,20 @@ public:
 
 
     /// inherit from BRep
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
 
 
     /// inherit from BRep
-    virtual std::size_t LocalSpaceDimension() const
+    std::size_t LocalSpaceDimension() const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
 
 
+    /// Get level set value at a point
     double GetValue(const double& X, const double& Y, const double& Z) const
     {
         PointType P;
@@ -152,6 +153,13 @@ public:
 
 
     /// inherit from Function
+    double GetValue(const array_1d<double, 3>& P) const final
+    {
+        PointType PP(P);
+        return this->GetValue(PP);
+    }
+
+    /// Get level set value at a point
     virtual double GetValue(const PointType& P) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
@@ -174,6 +182,14 @@ public:
 
 
     /// inherit from Function
+    Vector GetGradient(const array_1d<double, 3>& P) const final
+    {
+        PointType PP(P);
+        return this->GetGradient(PP);
+    }
+
+
+    /// Get the gradient at point
     virtual Vector GetGradient(const PointType& P) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
@@ -194,14 +210,14 @@ public:
 
 
     /// inherit from BRep
-    virtual bool IsInside(const PointType& P) const
+    bool IsInside(const PointType& P) const override
     {
         return (this->GetValue(P) < 0.0);
     }
 
 
     /// inherit from BRep
-    virtual bool IsOnBoundary(const PointType& P, const double& tol) const
+    bool IsOnBoundary(const PointType& P, const double& tol) const override
     {
         return (fabs(this->GetValue(P)) < tol);
     }
@@ -209,7 +225,7 @@ public:
 
     /// inherit from BRep
     /// Check if a geometry is cut by the level set
-    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const
+    int CutStatus(GeometryType& r_geom, const int& configuration) const override
     {
         if (configuration == 0)
         {
@@ -228,7 +244,7 @@ public:
 
     /// inherit from BRep
     /// Check if a set of points is cut by the level set
-    virtual int CutStatus(const std::vector<PointType>& r_points) const
+    int CutStatus(const std::vector<PointType>& r_points) const override
     {
         return CutStatusOfPoints(r_points, this->GetTolerance());
     }
@@ -237,7 +253,7 @@ public:
     /// inherit from BRep
     /// Compute the intersection of the level set with a line connect by 2 points.
     /// Note that, the checking of the intersection of the level set with the line is not performed. Hence one should ensure that before calling this function.
-    virtual PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const
+    PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const override
     {
         double f1 = this->GetValue(P1);
         double f2 = this->GetValue(P2);
@@ -282,7 +298,7 @@ public:
 
 
     /// inherit from BRep
-    virtual void GetNormal(const PointType& P, PointType& rNormal) const
+    void GetNormal(const PointType& P, PointType& rNormal) const override
     {
         Vector G = this->GetGradient(P);
         noalias(rNormal) = ZeroVector(3);
@@ -292,14 +308,14 @@ public:
 
 
     /// inherit from BRep
-    virtual void GetNormalDerivatives(const PointType& P, Matrix& Derivatives) const
+    void GetNormalDerivatives(const PointType& P, Matrix& Derivatives) const override
     {
         Derivatives = this->GetGradientDerivatives(P);
     }
 
 
     /// projects a point on the surface of level_set
-    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
+    void ProjectOnSurface(const PointType& P, PointType& Proj) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
@@ -309,7 +325,7 @@ public:
     ///     [d Proj[0] / d P[0], d Proj[0] / d P[1], d Proj[0] / d P[2]]
     ///     [d Proj[1] / d P[0], d Proj[1] / d P[1], d Proj[1] / d P[2]]
     ///     [d Proj[2] / d P[0], d Proj[2] / d P[1], d Proj[2] / d P[2]]
-    virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
+    void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
@@ -329,19 +345,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Level Set";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 

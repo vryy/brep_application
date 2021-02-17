@@ -110,19 +110,19 @@ public:
     ///@{
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new CylinderLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return 3;
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
         double pX = mcX + t*mdX;
@@ -135,7 +135,7 @@ public:
     }
 
 
-    virtual Vector GetGradient(const PointType& P) const
+    Vector GetGradient(const PointType& P) const final
     {
 //        double pX = (P(0) - mcX) * mdX;
 //        double pY = (P(1) - mcY) * mdY;
@@ -157,7 +157,7 @@ public:
     }
 
 
-    virtual Matrix GetGradientDerivatives(const PointType& P) const
+    Matrix GetGradientDerivatives(const PointType& P) const final
     {
         Matrix Jac(3, 3);
 
@@ -285,7 +285,7 @@ public:
     }
 
     /// projects a point on the surface of level_set
-    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
+    void ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
         double pX = mcX + t*mdX;
@@ -305,7 +305,7 @@ public:
     ///     [d Proj[0] / d P[0], d Proj[0] / d P[1], d Proj[0] / d P[2]]
     ///     [d Proj[1] / d P[0], d Proj[1] / d P[1], d Proj[1] / d P[2]]
     ///     [d Proj[2] / d P[0], d Proj[2] / d P[1], d Proj[2] / d P[2]]
-    virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
+    void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const final
     {
         if (Derivatives.size1() != 3 || Derivatives.size2() != 3)
             Derivatives.resize(3, 3, false);
@@ -361,16 +361,13 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Cylinder Level Set";
     }
 
-    /// Print information about this object.
-//    virtual void PrintInfo(std::ostream& rOStream) const;
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << "cX: " << mcX << ", cY: " << mcY << ", cZ: " << mcZ
                  << "dX: " << mdX << ", dY: " << mdY << ", dZ: " << mdZ

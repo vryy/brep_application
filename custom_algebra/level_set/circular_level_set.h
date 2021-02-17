@@ -99,25 +99,25 @@ public:
     ///@{
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new CircularLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return 2;
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         return pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2) - pow(mR, 2);
     }
 
 
-    virtual Vector GetGradient(const PointType& P) const
+    Vector GetGradient(const PointType& P) const final
     {
         Vector grad(3);
         grad(0) = 2.0 * (P(0) - mcX);
@@ -127,7 +127,7 @@ public:
     }
 
 
-    virtual Matrix GetGradientDerivatives(const PointType& P) const
+    Matrix GetGradientDerivatives(const PointType& P) const final
     {
         Matrix Jac(3, 3);
         noalias(Jac) = ZeroMatrix(3, 3);
@@ -188,7 +188,7 @@ public:
     }
 
     /// projects a point on the surface of level_set
-    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
+    void ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
         double vector_length = sqrt(pow(P(0)-mcX, 2) + pow(P(1)-mcY, 2));
         if (vector_length == 0)
@@ -200,7 +200,7 @@ public:
     }
 
     /// compute the derivatives of the projection point w.r.t to the original point.
-    virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
+    void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const final
     {
         if (Derivatives.size1() != 3 || Derivatives.size2() != 3)
             Derivatives.resize(3, 3, false);
@@ -237,19 +237,13 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Circular Level Set";
     }
 
-    /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << this->Info();
-    }
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << "cX: " << mcX << ", cY: " << mcY << ", R: " << mR;
     }

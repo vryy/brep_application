@@ -98,25 +98,25 @@ public:
     ///@{
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new DoughnutLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return 3;
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         return pow(mR - sqrt(pow(P(0), 2) + pow(P(1), 2)), 2) + pow(P(2), 2) - pow(mr, 2);
     }
 
 
-    virtual Vector GetGradient(const PointType& P) const
+    Vector GetGradient(const PointType& P) const final
     {
         Vector grad(3);
         double aux = pow(mR - sqrt(pow(P(0), 2) + pow(P(1), 2)), 2);
@@ -142,16 +142,13 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Doughnut Level Set";
     }
 
-    /// Print information about this object.
-//    virtual void PrintInfo(std::ostream& rOStream) const;
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << ", R: " << mR << ", r: " << mr;
     }

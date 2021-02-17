@@ -98,25 +98,25 @@ public:
     ///@{
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new LinearLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return 2;
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         return mA*P(0) + mB*P(1) + mC;
     }
 
 
-    virtual Vector GetGradient(const PointType& P) const
+    Vector GetGradient(const PointType& P) const final
     {
         Vector grad(2);
         grad(0) = mA;
@@ -125,7 +125,7 @@ public:
     }
 
     /// inherit from BRep
-    virtual void GetTangent(const PointType& P, std::vector<PointType>& rTangentialVectors) const
+    void GetTangent(const PointType& P, std::vector<PointType>& rTangentialVectors) const final
     {
         rTangentialVectors.resize(1);
 
@@ -135,7 +135,7 @@ public:
     }
 
     /// inherit from BRep
-    virtual void GetTangentDerivatives(const PointType& P, std::vector<Matrix>& Derivatives) const
+    void GetTangentDerivatives(const PointType& P, std::vector<Matrix>& Derivatives) const final
     {
         Derivatives.resize(1);
         Derivatives[0] = ZeroMatrix(3, 3);
@@ -157,16 +157,13 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Linear Level Set";
     }
 
-    /// Print information about this object.
-//    virtual void PrintInfo(std::ostream& rOStream) const;
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << "A: " << mA << ", B: " << mB << ", C: " << mC;
     }

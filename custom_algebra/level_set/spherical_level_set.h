@@ -96,25 +96,25 @@ public:
     ///@{
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new SphericalLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return 3;
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         return pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2) + pow(P(2) - mcZ, 2) - pow(mR, 2);
     }
 
 
-    virtual Vector GetGradient(const PointType& P) const
+    Vector GetGradient(const PointType& P) const final
     {
         Vector grad(3);
         grad(0) = 2.0 * (P(0) - mcX);
@@ -124,7 +124,7 @@ public:
     }
 
     /// projects a point on the surface of level_set
-    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
+    void ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
         double vector_length = sqrt(pow(P(0)-mcX, 2) + pow(P(1)-mcY, 2) + pow(P(2)-mcZ, 2));
         if (vector_length == 0)
@@ -150,16 +150,13 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Spherical Level Set";
     }
 
-    /// Print information about this object.
-//    virtual void PrintInfo(std::ostream& rOStream) const;
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << "cX: " << mcX << ", cY: " << mcY << ", cZ: " << mcZ << ", R: " << mR;
     }

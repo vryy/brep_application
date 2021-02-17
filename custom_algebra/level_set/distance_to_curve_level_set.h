@@ -99,25 +99,25 @@ public:
     ///@{
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new DistanceToCurveLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return 3;
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         return mpCurve->ComputeDistance(P) - mR;
     }
 
 
-    virtual Vector GetGradient(const PointType& P) const
+    Vector GetGradient(const PointType& P) const final
     {
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not yet implemented")
     }
@@ -125,7 +125,7 @@ public:
 
     /// projects a point on the surface of level_set using Bisection
     /// inherit from LevelSet
-    virtual void ProjectOnSurface(const PointType& P, PointType& Proj)
+    void ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
         mpCurve->ProjectOnCurve(P, Proj);
 
@@ -313,16 +313,13 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Distance to Curve Level Set";
     }
 
-    /// Print information about this object.
-//    virtual void PrintInfo(std::ostream& rOStream) const;
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << "curve: " << *mpCurve;
     }

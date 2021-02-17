@@ -108,25 +108,25 @@ public:
     ///@{
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new ProductLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return mp_level_set_1->WorkingSpaceDimension();
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         return mp_level_set_1->GetValue(P) * mp_level_set_2->GetValue(P);
     }
 
 
-    virtual Vector GetGradient(const PointType& P) const
+    Vector GetGradient(const PointType& P) const final
     {
         double phi_1 = mp_level_set_1->GetValue(P);
         double phi_2 = mp_level_set_2->GetValue(P);
@@ -160,19 +160,13 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Product Level Set";
     }
 
-    /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << Info();
-    }
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << "LS1: " << *mp_level_set_1 << ", LS2: " << *mp_level_set_2;
     }
