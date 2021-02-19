@@ -8,7 +8,7 @@
 //
 
 // External includes
-
+#include <boost/python.hpp>
 
 // Project includes
 #include "custom_python/add_utilities_to_python.h"

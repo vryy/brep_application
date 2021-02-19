@@ -8,7 +8,7 @@
 //
 
 // External includes
-
+#include <boost/python.hpp>
 
 // Project includes
 #include "custom_python/add_occ_to_python.h"

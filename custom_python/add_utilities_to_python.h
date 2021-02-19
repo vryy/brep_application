@@ -13,15 +13,12 @@
 
 
 // System includes
-#include <boost/python.hpp>
 
 
 // External includes
-#include "boost/smart_ptr.hpp"
 
 
 // Project includes
-#include "includes/define.h"
 
 
 namespace Kratos
@@ -29,11 +26,11 @@ namespace Kratos
 
 namespace Python
 {
-using namespace boost::python;
 
 void  BRepApplication_AddUtilitiesToPython();
 
 }  // namespace Python.
+
 }  // namespace Kratos.
 
 #endif // KRATOS_BREP_APPLICATION_ADD_UTILITIES_TO_PYTHON_H_INCLUDED  defined
