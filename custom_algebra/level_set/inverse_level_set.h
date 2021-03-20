@@ -167,6 +167,7 @@ public:
     /// Print object's data.
     void PrintData(std::ostream& rOStream) const final
     {
+        mp_level_set->PrintData(rOStream);
     }
 
 

@@ -111,6 +111,18 @@ public:
     }
 
 
+    const Curve& AlignmentCurve() const
+    {
+        return *mpCurve;
+    }
+
+
+    double Radius() const
+    {
+        return mR;
+    }
+
+
     double GetValue(const PointType& P) const final
     {
         return mpCurve->ComputeDistance(P) - mR;
@@ -125,7 +137,7 @@ public:
 
     /// projects a point on the surface of level_set using Bisection
     /// inherit from LevelSet
-    void ProjectOnSurface(const PointType& P, PointType& Proj) const final
+    int ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
         mpCurve->ProjectOnCurve(P, Proj);
 
@@ -133,6 +145,8 @@ public:
             KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the curve of Brep distance_to_curve  ", "");
 
         Proj = (P - Proj) * mR / norm_2(P - Proj) + Proj;
+
+        return 0;
     }
 
 

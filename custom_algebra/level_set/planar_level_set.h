@@ -79,6 +79,17 @@ public:
     : BaseType(), mA(A), mB(B), mC(C), mD(D)
     {}
 
+    /// Contructor with origin and normal vector
+    PlanarLevelSet(const PointType& Origin, const PointType& Normal)
+    : BaseType()
+    {
+        double norm = norm_2(Normal);
+        mA = Normal[0] / norm;
+        mB = Normal[1] / norm;
+        mC = Normal[2] / norm;
+        mD = -(mA*Origin[0] + mB*Origin[1] + mC*Origin[2]);
+    }
+
     /// Copy constructor.
     PlanarLevelSet(PlanarLevelSet const& rOther)
     : BaseType(rOther), mA(rOther.mA), mB(rOther.mB), mC(rOther.mC), mD(rOther.mD)
@@ -110,6 +121,14 @@ public:
     }
 
 
+    void NormalVector(array_1d<double, 3>& V) const
+    {
+        V[0] = mA;
+        V[1] = mB;
+        V[2] = mC;
+    }
+
+
     double GetValue(const PointType& P) const final
     {
         return mA*P(0) + mB*P(1) + mC*P(2) + mD;
@@ -134,12 +153,13 @@ public:
     }
 
 
-    void ProjectOnSurface(const PointType& P, PointType& Proj) const final
+    int ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
         double t = -(mA*P[0] + mB*P[1] + mC*P[2] + mD) / (pow(mA, 2) + pow(mB, 2) + pow(mC, 2));
         Proj[0] = P[0] + mA*t;
         Proj[1] = P[1] + mB*t;
         Proj[2] = P[2] + mC*t;
+        return 0;
     }
 
 
@@ -169,6 +189,24 @@ public:
     }
 
 
+    /// inherit from BRep
+    /// Compute the intersection of the level set with a line connect by 2 points.
+    /// Note that, the checking of the intersection of the level set with the line is not performed. Hence one should ensure that before calling this function.
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& Tol) const final
+    {
+        double f1 = this->GetValue(P1);
+        double f2 = this->GetValue(P2);
+        if(f1*f2 > 0.0)
+        {
+            // KRATOS_THROW_ERROR(std::logic_error, "Bisect does not work with two ends at the same side", "")
+            return -1;
+        }
+
+        noalias(P) = (f2*P1-f1*P2)/(f2-f1);
+        return 0;
+    }
+
+
     ///@}
     ///@name Access
     ///@{
@@ -192,7 +230,7 @@ public:
     /// Print object's data.
     void PrintData(std::ostream& rOStream) const final
     {
-        rOStream << "A: " << mA << ", B: " << mB << ", C: " << mC << ", D: " << mD;
+        rOStream << mA << "*x + " << mB << "*y + " << mC << "*z + " << mD;
     }
 
 

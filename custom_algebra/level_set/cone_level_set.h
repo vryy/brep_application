@@ -160,7 +160,7 @@ public:
     // }
 
     /// projects a point on the surface of level_set (this does not project perpendicularly instead it projects in the radial direction)
-    void ProjectOnSurface(const PointType& P, PointType& Proj) const final
+    int ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
         double pX = mcX + t*mdX;
@@ -173,6 +173,8 @@ public:
         Proj(0) = (P(0) - pX) * (t * std::tan(mphi*PI/180)) / vector_length + pX;
         Proj(1) = (P(1) - pY) * (t * std::tan(mphi*PI/180)) / vector_length + pY;
         Proj(2) = (P(2) - pZ) * (t * std::tan(mphi*PI/180)) / vector_length + pZ;
+
+        return 0;
     }
 
 

@@ -79,7 +79,7 @@ public:
 
     typedef BRep::GeometryType GeometryType;
 
-    typedef BRep::PointType NodeType;
+    typedef BRep::NodeType NodeType;
 
     typedef BRep::PointType PointType;
 
@@ -128,6 +128,9 @@ public:
         return LevelSet::Pointer(new LevelSet());
     }
 
+    ///@}
+    ///@name Access
+    ///@{
 
     /// inherit from BRep
     std::size_t WorkingSpaceDimension() const override
@@ -158,6 +161,7 @@ public:
         PointType PP(P);
         return this->GetValue(PP);
     }
+
 
     /// Get level set value at a point
     virtual double GetValue(const PointType& P) const
@@ -217,9 +221,9 @@ public:
 
 
     /// inherit from BRep
-    bool IsOnBoundary(const PointType& P, const double& tol) const override
+    bool IsOnBoundary(const PointType& P) const override
     {
-        return (fabs(this->GetValue(P)) < tol);
+        return (fabs(this->GetValue(P)) < this->Tolerance());
     }
 
 
@@ -232,11 +236,11 @@ public:
             std::vector<PointType> points(r_geom.size());
             for (std::size_t i = 0; i < r_geom.size(); ++i)
                 noalias(points[i]) = r_geom[i].GetInitialPosition();
-            return CutStatusOfPoints(points, this->GetTolerance());
+            return this->CutStatusOfPoints(points, this->GetTolerance());
         }
         else if (configuration == 1)
         {
-            return CutStatusOfPoints(r_geom, this->GetTolerance());
+            return this->CutStatusOfPoints(r_geom, this->GetTolerance());
             // REMARK: this will use the current position of node, e.g. in dynamics
         }
     }
@@ -246,32 +250,45 @@ public:
     /// Check if a set of points is cut by the level set
     int CutStatus(const std::vector<PointType>& r_points) const override
     {
-        return CutStatusOfPoints(r_points, this->GetTolerance());
+        return this->CutStatusOfPoints(r_points, this->GetTolerance());
+    }
+
+
+    /// inherit from BRep
+    /// Check if a geometry is cut by the BRep by sampling the geometry
+    /// 0: the cell is completely inside the domain bounded by BRep
+    /// 1: completely outside
+    /// -1: the cell is cut by BRep
+    int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const override
+    {
+        return BRep::CutStatusBySampling(r_geom, nsampling, configuration);
     }
 
 
     /// inherit from BRep
     /// Compute the intersection of the level set with a line connect by 2 points.
     /// Note that, the checking of the intersection of the level set with the line is not performed. Hence one should ensure that before calling this function.
-    PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const override
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& Tol) const override
     {
         double f1 = this->GetValue(P1);
         double f2 = this->GetValue(P2);
         if(f1*f2 > 0.0)
-            KRATOS_THROW_ERROR(std::logic_error, "Bisect does not work with two end at the same side", "")
+        {
+            // KRATOS_THROW_ERROR(std::logic_error, "Bisect does not work with two ends at the same side", "")
+            return -1;
+        }
 
         double left = 0.0;
         double right = 1.0;
 
         bool converged = false;
-        PointType P;
         while(!converged)
         {
             double mid = (left+right)/2;
-            P = P1 + mid*(P2-P1);
+            noalias(P) = (1.0-mid)*P1 + mid*P2;
             double fm = this->GetValue(P);
 
-            if(fabs(fm) < tol)
+            if(fabs(fm) < Tol)
             {
                 converged = true;
             }
@@ -288,12 +305,63 @@ public:
                     f1 = fm;
                 }
 
-                if(right-left < tol)
+                // if(right-left < Tol)
+                if(fabs(f2-f1) < Tol)
                     converged = true;
             }
         }
 
-        return P;
+        return 0;
+    }
+
+
+    /// inherit from BRep
+    /// Compute the intersection of the level set with a line connect by 2 points.
+    /// Note that, the checking of the intersection of the level set with the line is not performed. Hence one should ensure that before calling this function.
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const PointType& P3, const double& Tol) const override
+    {
+        double f1 = this->GetValue(P1);
+        double f2 = this->GetValue(P2);
+        if(f1*f2 > 0.0)
+        {
+            // KRATOS_THROW_ERROR(std::logic_error, "Bisect does not work with two ends at the same side", "")
+            return -1;
+        }
+
+        double left = -1.0;
+        double right = 1.0;
+
+        bool converged = false;
+        while(!converged)
+        {
+            double mid = (left+right)/2;
+            noalias(P) = P1*L3_N1(mid) + P2*L3_N2(mid) + P3*L3_N3(mid);
+            double fm = this->GetValue(P);
+
+            if(fabs(fm) < Tol)
+            {
+                converged = true;
+            }
+            else
+            {
+                if(fm*f1 < 0.0)
+                {
+                    right = mid;
+                    f2 = fm;
+                }
+                else
+                {
+                    left = mid;
+                    f1 = fm;
+                }
+
+                // if(right-left < Tol)
+                if(fabs(f2-f1) < Tol)
+                    converged = true;
+            }
+        }
+
+        return 0;
     }
 
 
@@ -315,10 +383,11 @@ public:
 
 
     /// projects a point on the surface of level_set
-    void ProjectOnSurface(const PointType& P, PointType& Proj) const override
+    int ProjectOnSurface(const PointType& P, PointType& Proj) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
+
 
     /// compute the derivatives of the projection point w.r.t to the original point.
     /// The derivatives are organized as;
@@ -329,11 +398,6 @@ public:
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
-
-    ///@}
-    ///@name Access
-    ///@{
-
 
     ///@}
     ///@name Inquiry
@@ -454,6 +518,12 @@ private:
         }
         else
         {
+            if(on_list.size() > 0)
+            {
+                stat = BRep::_CUT;
+                return stat;
+            }
+
             if(in_list.size() == 0)
             {
                 stat = BRep::_OUT;
@@ -472,6 +542,12 @@ private:
 
         return -99; // can't come here. Just to silence the compiler.
     }
+
+
+    /// Shape function of 3-node line
+    static inline double L3_N1(const double& xi) {return 0.5*(xi-1.0)*xi;}
+    static inline double L3_N2(const double& xi) {return 0.5*(xi+1.0)*xi;}
+    static inline double L3_N3(const double& xi) {return 1.0-xi*xi;}
 
 
     ///@}
