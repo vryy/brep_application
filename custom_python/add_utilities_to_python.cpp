@@ -17,6 +17,7 @@
 #endif
 #include "custom_utilities/brep_utility.h"
 #include "custom_utilities/brep_mesh_utility.h"
+#include "custom_utilities/brep_intersection_utility.h"
 #include "custom_utilities/delaunay.h"
 #include "custom_utilities/tube_mesher.h"
 
@@ -76,7 +77,7 @@ Condition::GeometryType::PointType::PointType BRepUtility_ComputerCenterConditio
     return rDummy.ComputeCenter(pCondition->GetGeometry());
 }
 
-boost::python::list BRepMeshUtility_CreateTriangleConditions(BRepMeshUtility& rDummy,
+boost::python::list BRepMeshUtility_CreateTriangleConditions1(BRepMeshUtility& rDummy,
     ModelPart& r_model_part,
     const std::string& sample_condition_name,
     const int& type, // if 1: generate T3 elements; 2: T6 elements;
@@ -97,6 +98,62 @@ boost::python::list BRepMeshUtility_CreateTriangleConditions(BRepMeshUtility& rD
     Output.append(std::get<0>(Results));
     Output.append(std::get<1>(Results));
     return Output;
+}
+
+boost::python::list BRepMeshUtility_CreateTriangleConditions2(BRepMeshUtility& rDummy,
+    ModelPart& r_model_part,
+    const Section& rSection,
+    const std::string& sample_condition_name,
+    Properties::Pointer pProperties)
+{
+    BRepMeshUtility::ConditionMeshInfoSimpleType Results = rDummy.CreateTriangleConditions(r_model_part,
+        rSection, sample_condition_name, pProperties);
+
+    boost::python::list Output;
+    Output.append(std::get<0>(Results));
+    Output.append(std::get<1>(Results));
+    return Output;
+}
+
+ModelPart::ConditionsContainerType BRepMeshUtility_CreateConditionsOnSurface(BRepMeshUtility& rDummy,
+    ModelPart& r_model_part,
+    const ModelPart::ConditionsContainerType& rConditions, const BRep& r_brep,
+    const std::string& sample_condition_name, Properties::Pointer pProperties,
+    const bool& add_to_model_part)
+{
+    std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
+    std::size_t last_cond_id = BRepUtility::GetLastConditionId(r_model_part);
+
+    Condition const& rCloneCondition = KratosComponents<Condition>::Get(sample_condition_name);
+
+    return BRepMeshUtility::CreateConditionsOnSurface(r_model_part, rConditions, r_brep,
+        last_node_id, last_cond_id, rCloneCondition, pProperties, add_to_model_part);
+}
+
+boost::python::list BRepMeshUtility_CreateElementsByProjectingOnSurface(BRepMeshUtility& rDummy,
+    ModelPart& r_model_part,
+    const ModelPart::ConditionsContainerType& rConditions, const BRep& r_brep,
+    const std::string& sample_condition_name,
+    const std::string& sample_element_name,
+    Properties::Pointer pProperties,
+    const bool& create_condition,
+    const bool& add_to_model_part)
+{
+    std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
+    std::size_t last_condition_id = BRepUtility::GetLastConditionId(r_model_part);
+    std::size_t last_element_id = BRepUtility::GetLastElementId(r_model_part);
+
+    Condition const& rCloneCondition = KratosComponents<Condition>::Get(sample_condition_name);
+    Element const& rCloneElement = KratosComponents<Element>::Get(sample_element_name);
+
+    auto Output = BRepMeshUtility::CreateElementsByProjectingOnSurface(r_model_part, rConditions, r_brep,
+        last_node_id, last_condition_id, last_element_id, rCloneCondition, rCloneElement, pProperties,
+        create_condition, add_to_model_part);
+
+    boost::python::list list_output;
+    list_output.append(Output.first);
+    list_output.append(Output.second);
+    return list_output;
 }
 
 boost::python::list TubeMesher_GetPoints(TubeMesher& dummy)
@@ -243,6 +300,19 @@ public:
     }
 };
 
+boost::python::list BRepIntersectionUtility_Intersect(BRepIntersectionUtility& rDummy,
+        BRep::Pointer pBRep1, BRep::Pointer pBRep2, const std::size_t& nsampling)
+{
+    std::vector<BRep::PointType> Points;
+    rDummy.Intersect(Points, *pBRep1, *pBRep2, nsampling);
+
+    boost::python::list Output;
+    for (std::size_t i = 0; i < Points.size(); ++i)
+        Output.append(Points[i]);
+
+    return Output;
+}
+
 void BRepApplication_AddUtilitiesToPython()
 {
 
@@ -271,7 +341,10 @@ void BRepApplication_AddUtilitiesToPython()
 
     class_<BRepMeshUtility, BRepMeshUtility::Pointer, boost::noncopyable>
     ("BRepMeshUtility", init<>())
-    .def("CreateTriangleConditions", &BRepMeshUtility_CreateTriangleConditions)
+    .def("CreateTriangleConditions", &BRepMeshUtility_CreateTriangleConditions1)
+    .def("CreateTriangleConditions", &BRepMeshUtility_CreateTriangleConditions2)
+    .def("CreateConditionsOnSurface", &BRepMeshUtility_CreateConditionsOnSurface)
+    .def("CreateElementsByProjectingOnSurface", &BRepMeshUtility_CreateElementsByProjectingOnSurface)
     ;
 
     class_<TubeMesher, TubeMesher::Pointer, boost::noncopyable>
@@ -294,6 +367,11 @@ void BRepApplication_AddUtilitiesToPython()
     ("Delaunay", init<const double&, const double&, const double&, const double&>())
     .def("AddPoint", pointer_to_addPoint)
     .def("Print", &Delaunay::Print)
+    ;
+
+    class_<BRepIntersectionUtility, BRepIntersectionUtility::Pointer, boost::noncopyable>
+    ("BRepIntersectionUtility", init<>())
+    .def("Intersect", &BRepIntersectionUtility_Intersect)
     ;
 
 }

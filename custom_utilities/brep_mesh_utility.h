@@ -29,6 +29,8 @@
 #include "includes/define.h"
 #include "includes/element.h"
 #include "includes/model_part.h"
+#include "custom_algebra/brep.h"
+#include "custom_algebra/section/section.h"
 
 
 namespace Kratos
@@ -111,10 +113,14 @@ public:
     ///@name Operations
     ///@{
 
+    /// Generate the sampling local points on a geometry in the reference/current configuration
+    static void GenerateSamplingLocalPoints(std::vector<CoordinatesArrayType>& SamplingLocalPoints,
+            const GeometryType& r_geom, const std::size_t& nsampling);
+
     /// Generate the sampling points on a geometry in the reference/current configuration
     template<int TFrame>
     static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
-            GeometryType& r_geom, const std::size_t& nsampling);
+            const GeometryType& r_geom, const std::size_t& nsampling);
 
     /// Generate the sampling points on a circle surface
     static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
@@ -135,13 +141,19 @@ public:
         Properties::Pointer pProperties);
 
 
-    /// Create the quad elements based on given points list
+    /// Create the triangle elements on the cylinder
     static ConditionMeshInfoSimpleType CreateTriangleConditions(ModelPart& r_model_part,
         const std::string& sample_condition_name,
         const int& type, // if 1: generate T3 elements; 2: T6 elements;
         const PointType& rCenter, const PointType& rNormal,
         const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
         const int& activation_level,
+        Properties::Pointer pProperties);
+
+
+    /// Create the conditions out from the section
+    static ConditionMeshInfoSimpleType CreateTriangleConditions(ModelPart& r_model_part,
+        const Section& rSection, const std::string& sample_condition_name,
         Properties::Pointer pProperties);
 
 
@@ -187,7 +199,7 @@ public:
 
 
     /// Helper function to compute the global coordinates in the reference frame
-    static CoordinatesArrayType& GlobalCoordinates0( GeometryType& rGeometry, CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
+    static CoordinatesArrayType& GlobalCoordinates0( const GeometryType& rGeometry, CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
     {
         if (rResult.size() != 3)
             rResult.resize(3, false);
@@ -201,6 +213,57 @@ public:
 
         return rResult;
     }
+
+
+    /// Helper function to compute the global coordinates in the current frame
+    static CoordinatesArrayType& GlobalCoordinates( const GeometryType& rGeometry, CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
+    {
+        if (rResult.size() != 3)
+            rResult.resize(3, false);
+        noalias( rResult ) = ZeroVector( 3 );
+
+        Vector N( rGeometry.size() );
+        rGeometry.ShapeFunctionsValues( N, LocalCoordinates );
+
+        for ( std::size_t i = 0 ; i < rGeometry.size() ; ++i )
+            noalias( rResult ) += N[i] * rGeometry[i];
+
+        return rResult;
+    }
+
+    // /// Providing a list of nodes, project those nodes on the surface and create new nodes
+    // static void CreateNodesOnSurface(ModelPart& r_model_part, const std::vector<std::size_t>& nodes, const BRep& r_brep,
+    //         std::size_t& last_node_id)
+    // {
+    //     PointType Proj;
+
+    //     for (std::size_t i = 0; i < nodes.size(); ++i)
+    //     {
+    //         NodeType& rNode = r_model_part.GetNode(nodes[i]);
+
+    //         r_brep.ProjectOnSurface(rNode, Proj);
+
+    //         r_model_part.CreateNewNode(++last_node_id, Proj[0], Proj[1], Proj[2]);
+    //     }
+    // }
+
+    /// Providing a list of conditions, project those conditions on the surface and create new conditions
+    static ConditionsContainerType CreateConditionsOnSurface(ModelPart& r_model_part,
+        const ConditionsContainerType& rConditions, const BRep& r_brep,
+        std::size_t& last_node_id, std::size_t& last_cond_id,
+        const Condition& rCloneCondition, Properties::Pointer pProperties,
+        const bool& add_to_model_part);
+
+    /// Providing a list of conditions, project those conditions on the surface and create new conditions
+    static std::pair<ConditionsContainerType, ElementsContainerType>
+    CreateElementsByProjectingOnSurface(ModelPart& r_model_part,
+        const ConditionsContainerType& rSourceConditions,
+        const BRep& r_brep,
+        std::size_t& last_node_id, std::size_t& last_condition_id, std::size_t& last_element_id,
+        const Condition& rCloneCondition, const Element& rCloneElement,
+        Properties::Pointer pProperties,
+        const bool& create_condition,
+        const bool& add_to_model_part);
 
     ///@}
     ///@name Access
@@ -220,7 +283,7 @@ public:
     /// Turn back information as a string.
     virtual std::string Info() const
     {
-        return "BRep Utility";
+        return "BRep Mesh Utility";
     }
 
     /// Print information about this object.
@@ -300,15 +363,29 @@ private:
     ///@{
 
     /// Create the mesh of triangle elements based on given points list
+    /// Internally, a Delaunay triangulation is used to generate the triangle mesh
     template<class TEntityType, class TEntitiesContainerType>
     static std::tuple<NodesContainerType, TEntitiesContainerType> CreateTriangleEntities(
         ModelPart& r_model_part,
         TEntitiesContainerType& rEntities,
         const std::vector<PointType>& sampling_points,
-        const std::string& sample_element_name,
+        const TEntityType& rCloneElement,
         std::size_t& last_node_id,
         std::size_t& last_element_id,
         const int& type, // if 1: generate T3 elements; 2: T6 elements;
+        const int& activation_level,
+        Properties::Pointer pProperties);
+
+    /// Create the mesh of triangle elements based on a triangulation
+    template<class TEntityType, class TEntitiesContainerType>
+    static std::tuple<NodesContainerType, TEntitiesContainerType> CreateTriangleEntities(
+        ModelPart& r_model_part,
+        TEntitiesContainerType& rEntities,
+        const std::vector<PointType>& points,
+        const std::vector<std::vector<std::size_t> >& connectivities,
+        const TEntityType& rCloneElement,
+        std::size_t& last_node_id,
+        std::size_t& last_element_id,
         const int& activation_level,
         Properties::Pointer pProperties);
 
@@ -327,6 +404,29 @@ private:
         const int& initial_activation_level,
         const bool& reverse,
         Properties::Pointer pProperties);
+
+    /// Providing a list of surface entities, project those entities on the BRep surface and create new surface entities
+    template<class TEntityType, class TEntitiesContainerType>
+    static void CreateEntitiesOnSurface(TEntitiesContainerType& rOutputEntities,
+        ModelPart& r_model_part,
+        const TEntitiesContainerType& rSourceEntities,
+        const BRep& r_brep,
+        std::size_t& last_node_id, std::size_t& last_cond_id,
+        const TEntityType& rCloneCondition, Properties::Pointer pProperties);
+
+    /// Providing a list of surface entities, project those entities on the surface and create new hexahedra entities
+    /// It is assumed that the surface entities must have the same number of nodes
+    /// If the create_condition flag is set to true, the surface conditions will also be created
+    template<class TSurfaceEntityType, class TSurfaceEntitiesContainerType,
+            class TEntityType, class TEntitiesContainerType>
+    static void CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEntitiesContainerType& rOutputSurfaceEntities,
+        TEntitiesContainerType& rOutputEntities,
+        ModelPart& r_model_part,
+        const TSurfaceEntitiesContainerType& rSurfaceEntities,
+        const BRep& r_brep,
+        std::size_t& last_node_id, std::size_t& last_cond_id, std::size_t& last_elem_id,
+        const TSurfaceEntityType& rCloneSurfaceEntity, const TEntityType& rCloneEntity,
+        const bool& create_condition, Properties::Pointer pProperties);
 
     ///@}
     ///@name Private  Access

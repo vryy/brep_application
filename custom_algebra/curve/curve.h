@@ -33,6 +33,7 @@
 #include "geometries/geometry_data.h"
 #include "containers/data_value_container.h"
 #include "custom_algebra/function/function.h"
+#include "custom_algebra/level_set/level_set.h"
 #include "brep_application/brep_application.h"
 
 
@@ -75,9 +76,9 @@ public:
 
     typedef FunctionR1R3 BaseType;
 
-    typedef BaseType::InputType InputType;
+    typedef BaseType::InputType InputType; // double
 
-    typedef BaseType::OutputType OutputType;
+    typedef BaseType::OutputType OutputType; // array_1d<double, 3>
 
     ///@}
     ///@name Life Cycle
@@ -108,7 +109,7 @@ public:
     ///@{
 
     /// inherit from Function
-    virtual BaseType::Pointer CloneFunction() const
+    BaseType::Pointer CloneFunction() const override
     {
         return BaseType::Pointer(new Curve(*this));
     }
@@ -122,28 +123,28 @@ public:
 
 
     /// inherit from Function
-    virtual OutputType GetValue(const InputType& t) const
+    OutputType GetValue(const InputType& t) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
     }
 
 
     /// inherit from Function
-    virtual OutputType GetDerivative(const int& component, const InputType& t) const
+    OutputType GetDerivative(const int& component, const InputType& t) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
     }
 
 
     /// inherit from Function
-    virtual OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const
+    OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
     }
 
 
     /// inherit from Function
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    BaseType::Pointer GetDiffFunction(const int& component) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
     }
@@ -197,6 +198,34 @@ public:
         return Proj;
     }
 
+    /// Compute the intersection of the curve with the level set
+    int ComputeIntersection(const LevelSet& rLevelSet, PointType& P, PointType& dP) const
+    {
+        double tmin = DataValueContainer::GetValue(CURVE_LOWER_BOUND);
+        double tmax = DataValueContainer::GetValue(CURVE_UPPER_BOUND);
+        double nsampling = DataValueContainer::GetValue(CURVE_NUMBER_OF_SAMPLING);
+        double t;
+        int error_code = this->ComputeIntersectionByBisection(rLevelSet, P, t, tmin, tmax, nsampling);
+        noalias(dP) = this->GetDerivative(0, t);
+        return error_code;
+    }
+
+    /// Compute the intersection of the curve with the level set
+    /// In case the point is not found, it will be set to locate in infinity
+    PointType ComputeIntersection(const LevelSet& rLevelSet) const
+    {
+        double tmin = DataValueContainer::GetValue(CURVE_LOWER_BOUND);
+        double tmax = DataValueContainer::GetValue(CURVE_UPPER_BOUND);
+        double nsampling = DataValueContainer::GetValue(CURVE_NUMBER_OF_SAMPLING);
+        PointType IntPoint;
+        double t;
+        int error_code = this->ComputeIntersectionByBisection(rLevelSet, IntPoint, t, tmin, tmax, nsampling);
+        if (error_code != 0)
+            std::cout << "WARNING: Error computing the intersection with level set " << rLevelSet.Info()
+                      << ", error code = " << error_code << std::endl;
+        return IntPoint;
+    }
+
     /******************** END OF SPECIFIC CURVE OPERATIONS **********************/
 
     ///@}
@@ -214,19 +243,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Curve";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -294,7 +323,7 @@ private:
     ///@name Private Operations
     ///@{
 
-    /// Compute the distance based on Newton Raphson, quick but unstable
+    /// Compute the distance from a point to the curve based on Newton Raphson, quick but not always give a solution :(
     /// On output, the distance and local coordinates of the projection point are returned
     double ComputeDistanceByNewtonRaphson(const PointType& P, double& t) const
     {
@@ -337,7 +366,8 @@ private:
         return norm_2(P - Proj);
     }
 
-    /// Compute the distance based on bisection algorithm, slow but stable
+    /// Compute the distance from a point to the curve based on bisection algorithm, slow but stable :)
+    /// The sampling parameter is for computing the projection, the more it is more stable but take more time
     /// On return, the distance and local coordinates of the projection point are returned
     /// This subroutine require a bound to search for the local projection point. A sampling is required so that at least one segment exists by which the projection function <dP, P'-P> has reversed sign
     double ComputeDistanceByBisection(const PointType& P, double& t, const double& tmin, const double& tmax, const int& nsampling) const
@@ -401,11 +431,12 @@ private:
         return norm_2(P - Proj);
     }
 
-    /// Compute the projection on the the curve using Bisection
+    /// Compute the projection from a point to the curve using Bisection
+    /// The sampling parameter is to provide a hint to predict the good span, where the sign on ending of the span are not same
     /// On return:
     ///     + 0: projection point is found inside the parametric domain of the curve
-    ///     + 1: the point does not have projection inside parametric domain and is on the left side
-    ///     + 2: the point does not have projection inside parametric domain and is on the right side
+    ///     + 1: the projection cannot be detected in the given parametric domain and is reset to the left tip
+    ///     + 2: the projection cannot be detected in the given parametric domain and is reset to the right tip
     int ProjectOnCurveUsingBisection(const PointType& P, PointType& Proj, double& t, const double& tmin, const double& tmax, const int& nsampling) const
     {
         const double tol = DataValueContainer::GetValue(CURVE_SEARCH_TOLERANCE);
@@ -421,6 +452,7 @@ private:
             f[i] = inner_prod(dProj, P - Proj);
         }
 
+        // secondly find the good span
         int stat = -1;
         for (std::size_t i = 0; i < nsampling; ++i)
         {
@@ -502,6 +534,107 @@ private:
         // }
 
         return 0;
+    }
+
+    /// Compute the intersection of the curve with a level set using Bisection algorithm
+    /// The sampling parameter is to provide a hint to predict the good span, where the sign on ending of the span are not same
+    /// On return:
+    ///     + 0: the intersection point is found inside the parametric domain of the curve
+    ///     + 1: the intersection point cannot be detected in the given parametric domain and is reset to the left tip
+    ///     + 2: the intersection point cannot be detected in the given parametric domain and is reset to the right tip
+    int ComputeIntersectionByBisection(const LevelSet& rLevelSet, PointType& IntPoint, double& t, const double& tmin, const double& tmax, const std::size_t& nsampling) const
+    {
+        const double tol = DataValueContainer::GetValue(CURVE_SEARCH_TOLERANCE);
+
+        // firstly do the sampling
+        std::vector<double> f(nsampling);
+        for (std::size_t i = 0; i < nsampling+1; ++i)
+        {
+            t = tmin + i*(tmax-tmin)/nsampling;
+            noalias(IntPoint) = this->GetValue(t);
+            f[i] = rLevelSet.GetValue(IntPoint);
+        }
+
+        // secondly find the good span
+        int stat = -1;
+        for (std::size_t i = 0; i < nsampling; ++i)
+        {
+            if (fabs(f[i]) < tol)
+            {
+                stat = 0;
+                t = tmin + i*(tmax-tmin)/nsampling;
+                noalias(IntPoint) = this->GetValue(t);
+                break;
+            }
+
+            if (f[i]*f[i+1] < 0.0)
+            {
+                // found the segment, do the bisection
+                double left = tmin + i*(tmax-tmin)/nsampling;
+                double right = tmin + (i+1)*(tmax-tmin)/nsampling;
+                double mid;
+                double fleft = f[i], fright = f[i+1], fmid;
+                while ((right - left) > tol)
+                {
+                    mid = 0.5*(left + right);
+
+                    noalias(IntPoint) = this->GetValue(mid);
+                    fmid = rLevelSet.GetValue(IntPoint);
+
+                    if (fabs(fmid) < tol)
+                        break;
+
+                    if (fmid * fleft > 0.0)
+                    {
+                        left = mid;
+                        noalias(IntPoint) = this->GetValue(left);
+                        fleft = rLevelSet.GetValue(IntPoint);
+                    }
+
+                    if (fmid * fright > 0.0)
+                    {
+                        right = mid;
+                        noalias(IntPoint) = this->GetValue(right);
+                        fright = rLevelSet.GetValue(IntPoint);
+                    }
+                }
+
+                stat = 0;
+                t = mid;
+                break;
+            }
+        }
+
+        if (stat != 0)
+        {
+            if (f[0] < -tol)
+            {
+                t = tmin; // set default value to t
+                noalias(IntPoint) = this->GetValue(t);
+                stat = 1;
+            }
+            if (f[nsampling-1] > tol)
+            {
+                t = tmax; // set default value to t
+                noalias(IntPoint) = this->GetValue(t);
+                stat = 2;
+            }
+        }
+
+        // if (!found)
+        // {
+        //     KRATOS_WATCH(P)
+        //     KRATOS_WATCH(this->GetValue(0.0))
+        //     KRATOS_WATCH(this->GetValue(1.0))
+        //     std::cout << "f:";
+        //     for (std::size_t i = 0; i < f.size(); ++i)
+        //         std::cout << " " << f[i];
+        //     std::cout << std::endl;
+        //     KRATOS_THROW_ERROR(std::logic_error, "Bisection error: there are no valid segment", "")
+        // }
+
+        return 0;
+
     }
 
     ///@}

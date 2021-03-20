@@ -11,6 +11,9 @@
 //  Date:            3 Feb 2018
 //
 
+// System include
+#include <unordered_set>
+#include <unordered_map>
 
 
 // Project includes
@@ -23,21 +26,19 @@
 namespace Kratos
 {
 
-template<int TFrame>
-void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
-            GeometryType& r_geom, const std::size_t& nsampling)
+void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayType>& SamplingLocalPoints,
+            const GeometryType& r_geom, const std::size_t& nsampling)
 {
     if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Triangle )
     {
-        double xi_min = 0.0, xi_max = 1.0;
-        double eta_min = 0.0, eta_max = 1.0;
+        constexpr double xi_min = 0.0, xi_max = 1.0;
+        constexpr double eta_min = 0.0, eta_max = 1.0;
 
         double dxi = (xi_max - xi_min) / nsampling;
         double deta = (eta_max - eta_min) / nsampling;
 
-        SamplingPoints.clear();
+        SamplingLocalPoints.clear();
         CoordinatesArrayType loc;
-        PointType P;
         for(std::size_t i = 0; i < nsampling+1; ++i)
         {
             loc[0] = xi_min + i*dxi;
@@ -46,11 +47,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
                 loc[1] = eta_min + j*deta;
                 if ( (loc[0] + loc[1]) < 1.0 + 1.0e-10 )
                 {
-                    if (TFrame == 0)
-                        GlobalCoordinates0(r_geom, P, loc);
-                    else if (TFrame == 1)
-                        r_geom.GlobalCoordinates(P, loc);
-                    SamplingPoints.push_back(P);
+                    SamplingLocalPoints.push_back(loc);
                 }
             }
         }
@@ -74,36 +71,30 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
         double dxi = (xi_max - xi_min) / nsampling;
         double deta = (eta_max - eta_min) / nsampling;
 
-        SamplingPoints.reserve((nsampling+1) * (nsampling+1));
+        SamplingLocalPoints.reserve((nsampling+1) * (nsampling+1));
         CoordinatesArrayType loc;
-        PointType P;
         for(std::size_t i = 0; i < nsampling+1; ++i)
         {
             loc[0] = xi_min + i*dxi;
             for(std::size_t j = 0; j < nsampling+1; ++j)
             {
                 loc[1] = eta_min + j*deta;
-                if (TFrame == 0)
-                    GlobalCoordinates0(r_geom, P, loc);
-                else if (TFrame == 1)
-                    r_geom.GlobalCoordinates(P, loc);
-                SamplingPoints.push_back(P);
+                SamplingLocalPoints.push_back(loc);
             }
         }
     }
     else if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Tetrahedra )
     {
-        double xi_min = 0.0, xi_max = 1.0;
-        double eta_min = 0.0, eta_max = 1.0;
-        double zeta_min = 0.0, zeta_max = 1.0;
+        constexpr double xi_min = 0.0, xi_max = 1.0;
+        constexpr double eta_min = 0.0, eta_max = 1.0;
+        constexpr double zeta_min = 0.0, zeta_max = 1.0;
 
         double dxi = (xi_max - xi_min) / nsampling;
         double deta = (eta_max - eta_min) / nsampling;
         double dzeta = (zeta_max - zeta_min) / nsampling;
 
-        SamplingPoints.clear();
+        SamplingLocalPoints.clear();
         CoordinatesArrayType loc;
-        PointType P;
         for(std::size_t i = 0; i < nsampling+1; ++i)
         {
             loc[0] = xi_min + i*dxi;
@@ -115,11 +106,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
                     loc[2] = zeta_min + k*dzeta;
                     if ( (loc[0] + loc[1] + loc[2]) < 1.0 + 1.0e-10 )
                     {
-                        if (TFrame == 0)
-                            GlobalCoordinates0(r_geom, P, loc);
-                        else if (TFrame == 1)
-                            r_geom.GlobalCoordinates(P, loc);
-                        SamplingPoints.push_back(P);
+                        SamplingLocalPoints.push_back(loc);
                     }
                 }
             }
@@ -147,9 +134,8 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
         double deta = (eta_max - eta_min) / nsampling;
         double dzeta = (zeta_max - zeta_min) / nsampling;
 
-        SamplingPoints.reserve((nsampling+1) * (nsampling+1) * (nsampling+1));
+        SamplingLocalPoints.reserve((nsampling+1) * (nsampling+1) * (nsampling+1));
         CoordinatesArrayType loc;
-        PointType P;
         for(std::size_t i = 0; i < nsampling+1; ++i)
         {
             loc[0] = xi_min + i*dxi;
@@ -159,11 +145,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
                 for(std::size_t k = 0; k < nsampling+1; ++k)
                 {
                     loc[2] = zeta_min + k*dzeta;
-                    if (TFrame == 0)
-                        GlobalCoordinates0(r_geom, P, loc);
-                    else if (TFrame == 1)
-                        r_geom.GlobalCoordinates(P, loc);
-                    SamplingPoints.push_back(P);
+                    SamplingLocalPoints.push_back(loc);
                 }
             }
         }
@@ -173,6 +155,26 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
         std::stringstream ss;
         ss << "Geometry " << r_geom.GetGeometryType() << " is not supported";
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+    }
+}
+
+template<int TFrame>
+void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
+            const GeometryType& r_geom, const std::size_t& nsampling)
+{
+    std::vector<CoordinatesArrayType> SamplingLocalPoints;
+
+    GenerateSamplingLocalPoints(SamplingLocalPoints, r_geom, nsampling);
+
+    SamplingPoints.resize(SamplingLocalPoints.size());
+    PointType P;
+    for(std::size_t i = 0; i < SamplingLocalPoints.size(); ++i)
+    {
+        if (TFrame == 0)
+            GlobalCoordinates0(r_geom, P, SamplingLocalPoints[i]);
+        else if (TFrame == 1)
+            GlobalCoordinates(r_geom, P, SamplingLocalPoints[i]);
+        SamplingPoints[i] = P;
     }
 }
 
@@ -326,8 +328,29 @@ BRepMeshUtility::ConditionMeshInfoSimpleType BRepMeshUtility::CreateTriangleCond
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
     std::size_t last_cond_id = BRepUtility::GetLastConditionId(r_model_part);
 
-    return CreateTriangleEntities<Condition, ModelPart::ConditionsContainerType>(r_model_part, r_model_part.Conditions(), SamplingPoints,
-        sample_condition_name, last_node_id, last_cond_id, type, activation_level, pProperties);
+    const Condition& rCloneCondition = KratosComponents<Condition>::Get(sample_condition_name);
+
+    return CreateTriangleEntities<Condition, ModelPart::ConditionsContainerType>(r_model_part, r_model_part.Conditions(),
+        SamplingPoints, rCloneCondition, last_node_id, last_cond_id, type, activation_level, pProperties);
+}
+
+
+BRepMeshUtility::ConditionMeshInfoSimpleType BRepMeshUtility::CreateTriangleConditions(ModelPart& r_model_part,
+    const Section& rSection, const std::string& sample_condition_name,
+    Properties::Pointer pProperties)
+{
+    std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
+    std::size_t last_cond_id = BRepUtility::GetLastConditionId(r_model_part);
+
+    std::vector<PointType> points;
+    std::vector<std::vector<std::size_t> > connectivities;
+    rSection.Triangulation(points, connectivities);
+
+    const Condition& rCloneCondition = KratosComponents<Condition>::Get(sample_condition_name);
+    int activation_level = 0;
+
+    return CreateTriangleEntities<Condition, ModelPart::ConditionsContainerType>(r_model_part, r_model_part.Conditions(),
+        points, connectivities, rCloneCondition, last_node_id, last_cond_id, activation_level, pProperties);
 }
 
 
@@ -874,7 +897,7 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     ModelPart& r_model_part,
     TEntitiesContainerType& rEntities,
     const std::vector<PointType>& sampling_points,
-    const std::string& sample_element_name,
+    const TEntityType& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
     const int& type, // if 1: generate T3 elements; 2: T6 elements;
@@ -956,7 +979,6 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     }
 
     // secondly create elements
-    TEntityType const& rCloneElement = KratosComponents<TEntityType>::Get(sample_element_name);
     typename TEntityType::NodesArrayType temp_element_nodes;
     TEntitiesContainerType NewElements;
     const std::string NodeKey("Node");
@@ -995,9 +1017,415 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     return std::make_tuple(NewNodes, NewElements);
 }
 
-// template instantiation
+template<class TEntityType, class TEntitiesContainerType>
+std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtility::CreateTriangleEntities(
+    ModelPart& r_model_part,
+    TEntitiesContainerType& rEntities,
+    const std::vector<PointType>& points,
+    const std::vector<std::vector<std::size_t> >& connectivities,
+    const TEntityType& rCloneElement,
+    std::size_t& last_node_id,
+    std::size_t& last_element_id,
+    const int& activation_level,
+    Properties::Pointer pProperties)
+{
+    Variable<int>& ACTIVATION_LEVEL_var = static_cast<Variable<int>&>(KratosComponents<VariableData>::Get("ACTIVATION_LEVEL"));
 
-template std::tuple<ModelPart::NodesContainerType, ModelPart::ElementsContainerType, BRepMeshUtility::BoundaryNodesInfoType, BRepMeshUtility::BoundaryLayerInfoType>
+    // firstly create nodes and add to model_part
+    const std::size_t old_last_node_id = last_node_id;
+    ModelPart::NodesContainerType NewNodes;
+    for (std::size_t i = 0; i < points.size(); ++i)
+    {
+        NodeType::Pointer pNewNode = r_model_part.CreateNewNode(++last_node_id,
+                points[i][0], points[i][1], points[i][2]);
+        // std::cout << "node " << pNewNode->Id() << " is created at " << pNewNode->X0() << " " << pNewNode->Y0() << " " << pNewNode->Z0() << std::endl;
+        NewNodes.push_back(pNewNode);
+    }
+
+    // secondly create elements
+    typename TEntityType::NodesArrayType temp_element_nodes;
+    TEntitiesContainerType NewElements;
+    const std::string NodeKey("Node");
+
+    for (std::size_t i = 0; i < connectivities.size(); ++i)
+    {
+        temp_element_nodes.clear();
+
+        for (std::size_t j = 0; j < connectivities[i].size(); ++j)
+        {
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), connectivities[i][j] + 1 + old_last_node_id, NodeKey).base()));
+        }
+
+        typename TEntityType::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
+        // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
+        pNewElement->Set(ACTIVE, true);
+        pNewElement->SetValue(IS_INACTIVE, false);
+        pNewElement->SetValue(ACTIVATION_LEVEL_var, activation_level);
+        NewElements.push_back(pNewElement);
+    }
+
+    for (typename TEntitiesContainerType::ptr_iterator it = NewElements.ptr_begin(); it != NewElements.ptr_end(); ++it)
+    {
+        rEntities.push_back(*it);
+    }
+
+    rEntities.Unique();
+
+    return std::make_tuple(NewNodes, NewElements);
+}
+
+ModelPart::ConditionsContainerType BRepMeshUtility::CreateConditionsOnSurface(ModelPart& r_model_part,
+    const ModelPart::ConditionsContainerType& rSourceConditions,
+    const BRep& r_brep,
+    std::size_t& last_node_id, std::size_t& last_cond_id,
+    const Condition& rCloneCondition, Properties::Pointer pProperties,
+    const bool& add_to_model_part)
+{
+    ModelPart::ConditionsContainerType NewConditions;
+    CreateEntitiesOnSurface<Condition, ModelPart::ConditionsContainerType>(NewConditions,
+        r_model_part, rSourceConditions, r_brep, last_node_id, last_cond_id,
+        rCloneCondition, pProperties);
+
+    if (add_to_model_part)
+    {
+        for (ModelPart::ConditionsContainerType::ptr_iterator it = NewConditions.ptr_begin(); it != NewConditions.ptr_end(); ++it)
+        {
+            r_model_part.Conditions().push_back(*it);
+        }
+
+        r_model_part.Conditions().Unique();
+
+        std::cout << NewConditions.size() << " " << rCloneCondition.Info() << " conditions are created and added to the model_part" << std::endl;
+    }
+    else
+    {
+        std::cout << NewConditions.size() << " " << rCloneCondition.Info() << " conditions are created" << std::endl;
+    }
+
+    return NewConditions;
+}
+
+std::pair<ModelPart::ConditionsContainerType, ModelPart::ElementsContainerType>
+BRepMeshUtility::CreateElementsByProjectingOnSurface(ModelPart& r_model_part,
+    const ModelPart::ConditionsContainerType& rSourceConditions,
+    const BRep& r_brep,
+    std::size_t& last_node_id, std::size_t& last_condition_id, std::size_t& last_element_id,
+    const Condition& rCloneCondition, const Element& rCloneElement,
+    Properties::Pointer pProperties,
+    const bool& create_condition,
+    const bool& add_to_model_part)
+{
+    ModelPart::ElementsContainerType NewElements;
+    ModelPart::ConditionsContainerType NewConditions;
+    CreateVolumetricEntitiesByProjectingOnSurface<Condition, ModelPart::ConditionsContainerType,
+        Element, ModelPart::ElementsContainerType>(NewConditions, NewElements,
+            r_model_part,
+            rSourceConditions, r_brep,
+            last_node_id, last_condition_id, last_element_id,
+            rCloneCondition, rCloneElement,
+            create_condition, pProperties);
+
+    if (add_to_model_part)
+    {
+        for (ModelPart::ElementsContainerType::ptr_iterator it = NewElements.ptr_begin(); it != NewElements.ptr_end(); ++it)
+        {
+            r_model_part.Elements().push_back(*it);
+        }
+
+        r_model_part.Elements().Unique();
+
+        std::cout << NewElements.size() << " " << rCloneElement.Info() << " elements are created and added to the model_part" << std::endl;
+
+        if (create_condition)
+        {
+            for (ModelPart::ConditionsContainerType::ptr_iterator it = NewConditions.ptr_begin(); it != NewConditions.ptr_end(); ++it)
+            {
+                r_model_part.Conditions().push_back(*it);
+            }
+
+            r_model_part.Conditions().Unique();
+
+            std::cout << NewConditions.size() << " " << rCloneCondition.Info() << " conditions are created and added to the model_part" << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << NewConditions.size() << " " << rCloneCondition.Info() << " conditions are created" << std::endl;
+        std::cout << NewElements.size() << " " << rCloneElement.Info() << " elements are created" << std::endl;
+    }
+
+    return std::make_pair(NewConditions, NewElements);
+}
+
+template<class TEntityType, class TEntitiesContainerType>
+void BRepMeshUtility::CreateEntitiesOnSurface(TEntitiesContainerType& NewConditions,
+    ModelPart& r_model_part,
+    const TEntitiesContainerType& rSourceEntities,
+    const BRep& r_brep,
+    std::size_t& last_node_id, std::size_t& last_cond_id,
+    const TEntityType& rCloneEntity, Properties::Pointer pProperties)
+{
+    // collecting the nodes
+    std::unordered_set<std::size_t> list_nodes;
+    for (typename TEntitiesContainerType::const_iterator it = rSourceEntities.begin(); it != rSourceEntities.end(); ++it)
+    {
+        for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
+        {
+            list_nodes.insert(it->GetGeometry()[i].Id());
+        }
+    }
+
+    // project and create the nodes
+    std::unordered_map<std::size_t, std::size_t> map_nodes;
+    PointType Proj;
+    for (auto it = list_nodes.begin(); it != list_nodes.end(); ++it)
+    {
+        NodeType& rNode = r_model_part.GetNode(*it);
+
+        r_brep.ProjectOnSurface(rNode, Proj);
+
+        r_model_part.CreateNewNode(++last_node_id, Proj[0], Proj[1], Proj[2]);
+
+        map_nodes[rNode.Id()] = last_node_id;
+    }
+
+    // create the conditions
+    typename TEntityType::NodesArrayType temp_condition_nodes;
+    const std::string NodeKey("Node");
+    std::size_t other_node_id;
+    for (typename TEntitiesContainerType::const_iterator it = rSourceEntities.begin(); it != rSourceEntities.end(); ++it)
+    {
+        temp_condition_nodes.clear();
+
+        for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
+        {
+            other_node_id = map_nodes[it->GetGeometry()[i].Id()];
+            temp_condition_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), other_node_id, NodeKey).base()));
+        }
+
+        typename TEntityType::Pointer pNewCondition = rCloneEntity.Create(++last_cond_id, temp_condition_nodes, pProperties);
+        // std::cout << "condition " << pNewCondition->Id() << " is created" << std::endl;
+        pNewCondition->Set(ACTIVE, true);
+        pNewCondition->SetValue(IS_INACTIVE, false);
+        NewConditions.push_back(pNewCondition);
+    }
+}
+
+template<class TSurfaceEntityType, class TSurfaceEntitiesContainerType,
+        class TEntityType, class TEntitiesContainerType>
+void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEntitiesContainerType& NewConditions,
+    TEntitiesContainerType& NewElements,
+    ModelPart& r_model_part,
+    const TSurfaceEntitiesContainerType& rSurfaceEntities,
+    const BRep& r_brep,
+    std::size_t& last_node_id, std::size_t& last_condition_id, std::size_t& last_element_id,
+    const TSurfaceEntityType& rCloneSurfaceEntity, const TEntityType& rCloneEntity,
+    const bool& create_condition, Properties::Pointer pProperties)
+{
+    // collecting the nodes
+    std::unordered_set<std::size_t> list_nodes;
+    for (typename TSurfaceEntitiesContainerType::const_iterator it = rSurfaceEntities.begin(); it != rSurfaceEntities.end(); ++it)
+    {
+        for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
+        {
+            list_nodes.insert(it->GetGeometry()[i].Id());
+        }
+    }
+
+    // project and create the nodes
+    std::unordered_map<std::size_t, std::size_t> map_nodes;
+    PointType Proj;
+    for (auto it = list_nodes.begin(); it != list_nodes.end(); ++it)
+    {
+        NodeType& rNode = r_model_part.GetNode(*it);
+
+        r_brep.ProjectOnSurface(rNode, Proj);
+
+        r_model_part.CreateNewNode(++last_node_id, Proj[0], Proj[1], Proj[2]);
+
+        map_nodes[rNode.Id()] = last_node_id;
+    }
+
+    const std::string NodeKey("Node");
+
+    if (create_condition)
+    {
+        // create the conditions
+        typename TSurfaceEntityType::NodesArrayType temp_condition_nodes;
+        for (typename TSurfaceEntitiesContainerType::const_iterator it = rSurfaceEntities.begin(); it != rSurfaceEntities.end(); ++it)
+        {
+            temp_condition_nodes.clear();
+
+            for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
+            {
+                temp_condition_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[i].Id()], NodeKey).base()));
+            }
+
+            typename TSurfaceEntityType::Pointer pNewCondition = rCloneSurfaceEntity.Create(++last_condition_id, temp_condition_nodes, pProperties);
+            // std::cout << "condition " << pNewCondition->Id() << " is created" << std::endl;
+            pNewCondition->Set(ACTIVE, true);
+            pNewCondition->SetValue(IS_INACTIVE, false);
+            NewConditions.push_back(pNewCondition);
+        }
+    }
+
+    // create the elements
+    GeometryData::KratosGeometryType geom_type = rSurfaceEntities.begin()->GetGeometry().GetGeometryType();
+    typename TEntityType::NodesArrayType temp_element_nodes;
+    if (geom_type == GeometryData::Kratos_Quadrilateral3D4)
+    {
+        // create elements
+        for (typename TSurfaceEntitiesContainerType::const_iterator it = rSurfaceEntities.begin(); it != rSurfaceEntities.end(); ++it)
+        {
+            temp_element_nodes.clear();
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[0].Id(), NodeKey).base())); // 1
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[1].Id(), NodeKey).base())); // 2
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[2].Id(), NodeKey).base())); // 3
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[3].Id(), NodeKey).base())); // 4
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[0].Id()], NodeKey).base())); // 5
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[1].Id()], NodeKey).base())); // 6
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[2].Id()], NodeKey).base())); // 7
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[3].Id()], NodeKey).base())); // 8
+
+            typename TEntityType::Pointer pNewElement = rCloneEntity.Create(++last_element_id, temp_element_nodes, pProperties);
+            // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
+            pNewElement->Set(ACTIVE, true);
+            pNewElement->SetValue(IS_INACTIVE, false);
+            NewElements.push_back(pNewElement);
+        }
+    }
+    else if (geom_type == GeometryData::Kratos_Quadrilateral3D8)
+    {
+        // collect the corner nodes
+        std::unordered_set<std::size_t> list_corner_nodes;
+        for (typename TSurfaceEntitiesContainerType::const_iterator it = rSurfaceEntities.begin(); it != rSurfaceEntities.end(); ++it)
+        {
+            for (int i = 0; i < 4; ++i)
+                list_nodes.insert(it->GetGeometry()[i].Id());
+        }
+
+        // create additional nodes
+        std::unordered_map<std::size_t, std::size_t> map_middle_nodes;
+        for (auto it = list_corner_nodes.begin(); it != list_corner_nodes.end(); ++it)
+        {
+            NodeType& rNode = r_model_part.GetNode(*it);
+
+            NodeType& rOtherNode = r_model_part.GetNode(map_nodes[*it]);
+
+            r_model_part.CreateNewNode(++last_node_id, 0.5*(rNode.X0() + rOtherNode.X0()),
+                0.5*(rNode.Y0() + rOtherNode.Y0()), 0.5*(rNode.Z0() + rOtherNode.Z0()));
+
+            map_middle_nodes[rNode.Id()] = last_node_id;
+        }
+
+        // create elements
+        for (typename TSurfaceEntitiesContainerType::const_iterator it = rSurfaceEntities.begin(); it != rSurfaceEntities.end(); ++it)
+        {
+            temp_element_nodes.clear();
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[0].Id(), NodeKey).base())); // 1
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[1].Id(), NodeKey).base())); // 2
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[2].Id(), NodeKey).base())); // 3
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[3].Id(), NodeKey).base())); // 4
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[0].Id()], NodeKey).base())); // 5
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[1].Id()], NodeKey).base())); // 6
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[2].Id()], NodeKey).base())); // 7
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[3].Id()], NodeKey).base())); // 8
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[4].Id(), NodeKey).base())); // 9
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[5].Id(), NodeKey).base())); // 10
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[6].Id(), NodeKey).base())); // 11
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[7].Id(), NodeKey).base())); // 12
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[0].Id()], NodeKey).base())); // 13
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[1].Id()], NodeKey).base())); // 14
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[2].Id()], NodeKey).base())); // 15
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[3].Id()], NodeKey).base())); // 16
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[4].Id()], NodeKey).base())); // 17
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[5].Id()], NodeKey).base())); // 18
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[6].Id()], NodeKey).base())); // 19
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[7].Id()], NodeKey).base())); // 20
+
+            typename TEntityType::Pointer pNewElement = rCloneEntity.Create(++last_element_id, temp_element_nodes, pProperties);
+            // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
+            pNewElement->Set(ACTIVE, true);
+            pNewElement->SetValue(IS_INACTIVE, false);
+            NewElements.push_back(pNewElement);
+        }
+    }
+    else if (geom_type == GeometryData::Kratos_Quadrilateral3D9)
+    {
+        // create additional nodes
+        std::unordered_map<std::size_t, std::size_t> map_middle_nodes;
+        for (auto it = list_nodes.begin(); it != list_nodes.end(); ++it)
+        {
+            NodeType& rNode = r_model_part.GetNode(*it);
+
+            NodeType& rOtherNode = r_model_part.GetNode(map_nodes[*it]);
+
+            r_model_part.CreateNewNode(++last_node_id, 0.5*(rNode.X0() + rOtherNode.X0()),
+                0.5*(rNode.Y0() + rOtherNode.Y0()), 0.5*(rNode.Z0() + rOtherNode.Z0()));
+
+            map_middle_nodes[rNode.Id()] = last_node_id;
+        }
+
+        // create elements
+        for (typename TSurfaceEntitiesContainerType::const_iterator it = rSurfaceEntities.begin(); it != rSurfaceEntities.end(); ++it)
+        {
+            temp_element_nodes.clear();
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[0].Id(), NodeKey).base())); // 1
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[1].Id(), NodeKey).base())); // 2
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[2].Id(), NodeKey).base())); // 3
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[3].Id(), NodeKey).base())); // 4
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[0].Id()], NodeKey).base())); // 5
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[1].Id()], NodeKey).base())); // 6
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[2].Id()], NodeKey).base())); // 7
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[3].Id()], NodeKey).base())); // 8
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[4].Id(), NodeKey).base())); // 9
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[5].Id(), NodeKey).base())); // 10
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[6].Id(), NodeKey).base())); // 11
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[7].Id(), NodeKey).base())); // 12
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[0].Id()], NodeKey).base())); // 13
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[1].Id()], NodeKey).base())); // 14
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[2].Id()], NodeKey).base())); // 15
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[3].Id()], NodeKey).base())); // 16
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[4].Id()], NodeKey).base())); // 17
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[5].Id()], NodeKey).base())); // 18
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[6].Id()], NodeKey).base())); // 19
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[7].Id()], NodeKey).base())); // 20
+
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), it->GetGeometry()[8].Id(), NodeKey).base())); // 21
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[4].Id()], NodeKey).base())); // 22
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[5].Id()], NodeKey).base())); // 23
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[6].Id()], NodeKey).base())); // 24
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[7].Id()], NodeKey).base())); // 25
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_nodes[it->GetGeometry()[8].Id()], NodeKey).base())); // 26
+            temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), map_middle_nodes[it->GetGeometry()[8].Id()], NodeKey).base())); // 27
+
+            typename TEntityType::Pointer pNewElement = rCloneEntity.Create(++last_element_id, temp_element_nodes, pProperties);
+            // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
+            pNewElement->Set(ACTIVE, true);
+            pNewElement->SetValue(IS_INACTIVE, false);
+            NewElements.push_back(pNewElement);
+        }
+    }
+    else
+        KRATOS_THROW_ERROR(std::logic_error, "Invalid surface geometry type", geom_type)
+}
+
+//////// template instantiation
+
+template
+std::tuple<ModelPart::NodesContainerType, ModelPart::ElementsContainerType, BRepMeshUtility::BoundaryNodesInfoType, BRepMeshUtility::BoundaryLayerInfoType>
 BRepMeshUtility::CreateQuadEntities<Element, ModelPart::ElementsContainerType>(ModelPart& r_model_part,
     ModelPart::ElementsContainerType& rEntities,
     const std::vector<std::vector<PointType> >& sampling_points,
@@ -1011,7 +1439,8 @@ BRepMeshUtility::CreateQuadEntities<Element, ModelPart::ElementsContainerType>(M
     const bool& reverse,
     Properties::Pointer pProperties);
 
-template std::tuple<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType, BRepMeshUtility::BoundaryNodesInfoType, BRepMeshUtility::BoundaryLayerInfoType>
+template
+std::tuple<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType, BRepMeshUtility::BoundaryNodesInfoType, BRepMeshUtility::BoundaryLayerInfoType>
 BRepMeshUtility::CreateQuadEntities<Condition, ModelPart::ConditionsContainerType>(ModelPart& r_model_part,
     ModelPart::ConditionsContainerType& rEntities,
     const std::vector<std::vector<PointType> >& sampling_points,
@@ -1026,11 +1455,12 @@ BRepMeshUtility::CreateQuadEntities<Condition, ModelPart::ConditionsContainerTyp
     Properties::Pointer pProperties);
 
 template
-std::tuple<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> BRepMeshUtility::CreateTriangleEntities<Element, ModelPart::ElementsContainerType>(
+std::tuple<ModelPart::NodesContainerType, ModelPart::ElementsContainerType>
+BRepMeshUtility::CreateTriangleEntities<Element, ModelPart::ElementsContainerType>(
     ModelPart& r_model_part,
     ModelPart::ElementsContainerType& rEntities,
     const std::vector<PointType>& sampling_points,
-    const std::string& sample_element_name,
+    const Element& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
     const int& type, // if 1: generate T3 elements; 2: T6 elements;
@@ -1038,21 +1468,56 @@ std::tuple<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> BRep
     Properties::Pointer pProperties);
 
 template
-std::tuple<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> BRepMeshUtility::CreateTriangleEntities<Condition, ModelPart::ConditionsContainerType>(
+std::tuple<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType>
+BRepMeshUtility::CreateTriangleEntities<Condition, ModelPart::ConditionsContainerType>(
     ModelPart& r_model_part,
     ModelPart::ConditionsContainerType& rEntities,
     const std::vector<PointType>& sampling_points,
-    const std::string& sample_element_name,
+    const Condition& rCloneCondition,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
     const int& type, // if 1: generate T3 elements; 2: T6 elements;
     const int& activation_level,
     Properties::Pointer pProperties);
 
+template
+std::tuple<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType>
+BRepMeshUtility::CreateTriangleEntities(
+    ModelPart& r_model_part,
+    ModelPart::ConditionsContainerType& rEntities,
+    const std::vector<PointType>& points,
+    const std::vector<std::vector<std::size_t> >& connectivities,
+    const Condition& rCloneElement,
+    std::size_t& last_node_id,
+    std::size_t& last_element_id,
+    const int& activation_level,
+    Properties::Pointer pProperties);
+
+template
+void
+BRepMeshUtility::CreateEntitiesOnSurface<Condition, ModelPart::ConditionsContainerType>(ModelPart::ConditionsContainerType& rOutputEntities,
+    ModelPart& r_model_part,
+    const ModelPart::ConditionsContainerType& rSourceEntities,
+    const BRep& r_brep,
+    std::size_t& last_node_id, std::size_t& last_cond_id,
+    const Condition& rCloneCondition, Properties::Pointer pProperties);
+
+template
+void
+BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface<Condition, ModelPart::ConditionsContainerType,
+        Element, ModelPart::ElementsContainerType>(ModelPart::ConditionsContainerType& rOutputSurfaceEntities,
+    ModelPart::ElementsContainerType& rOutputEntities,
+    ModelPart& r_model_part,
+    const ModelPart::ConditionsContainerType& rSurfaceEntities,
+    const BRep& r_brep,
+    std::size_t& last_node_id, std::size_t& last_cond_id, std::size_t& last_elem_id,
+    const Condition& rCloneSurfaceEntity, const Element& rCloneEntity,
+    const bool& create_condition, Properties::Pointer pProperties);
+
 template void BRepMeshUtility::GenerateSamplingPoints<0>(std::vector<PointType>& SamplingPoints,
-            GeometryType& r_geom, const std::size_t& nsampling);
+            const GeometryType& r_geom, const std::size_t& nsampling);
 
 template void BRepMeshUtility::GenerateSamplingPoints<1>(std::vector<PointType>& SamplingPoints,
-            GeometryType& r_geom, const std::size_t& nsampling);
+            const GeometryType& r_geom, const std::size_t& nsampling);
 
 }  // namespace Kratos.
