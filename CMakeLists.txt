@@ -38,6 +38,18 @@ ENDIF()
 #    MESSAGE("CityGML is not found")
 #ENDIF()
 
+FIND_PACKAGE(CGAL QUIET)
+if(CGAL_FOUND)
+    # SET(CGAL_DIR ${CGAL_ROOT}/lib/CGAL)
+    add_definitions(-DBREP_APPLICATION_USE_CGAL)
+    add_definitions(-DBREP_APPLICATION_USE_GMP)
+    INCLUDE_DIRECTORIES(${CGAL_INCLUDE_DIR})
+    message(STATUS "CGAL is found at " ${CGAL_ROOT} " and enabled for BRepApplication")
+else()
+    message(STATUS "CGAL is not found and linked with BRepApplication")
+endif()
+
+
 ######### add compilation units here
 set( KRATOS_BREP_APPLICATION_SOURCES
     # main application compilation unit
@@ -74,6 +86,10 @@ ENDIF()
 IF(${OCC_FOUND} MATCHES TRUE)
     target_link_libraries(KratosBRepApplication ${OCC_LIBRARIES})
 ENDIF()
+if(${CGAL_FOUND})
+    target_link_libraries(KratosBRepApplication ${CGAL_LIBRARIES})
+    target_link_libraries(KratosBRepApplication ${GMP_LIBRARIES})
+endif()
 set_target_properties(KratosBRepApplication PROPERTIES PREFIX "")
 # cotire(KratosBRepApplication)
 install(TARGETS KratosBRepApplication DESTINATION libs )

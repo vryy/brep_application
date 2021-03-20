@@ -24,10 +24,6 @@
 
 
 // External includes
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/foreach.hpp>
-#include <boost/progress.hpp>
 
 
 // Project includes
@@ -261,6 +257,91 @@ public:
 
         C /= rGeometry.size();
         return C;
+    }
+
+    /// Get the edges of a finite element
+    /// Refer to GiD manual for numbering on edges
+    static std::vector<std::vector<std::size_t> > GetEdges(const GeometryData::KratosGeometryType& Type)
+    {
+        std::vector<std::vector<std::size_t> > edges;
+
+        if (Type == GeometryData::Kratos_Triangle2D3 || Type == GeometryData::Kratos_Triangle3D3)
+        {
+            edges.push_back(std::vector<std::size_t>{0, 1});
+            edges.push_back(std::vector<std::size_t>{1, 2});
+            edges.push_back(std::vector<std::size_t>{2, 0});
+        }
+        else if (Type == GeometryData::Kratos_Quadrilateral2D4 || Type == GeometryData::Kratos_Quadrilateral3D4)
+        {
+            edges.push_back(std::vector<std::size_t>{0, 1});
+            edges.push_back(std::vector<std::size_t>{1, 2});
+            edges.push_back(std::vector<std::size_t>{2, 3});
+            edges.push_back(std::vector<std::size_t>{3, 0});
+        }
+        else if (Type == GeometryData::Kratos_Triangle2D6 || Type == GeometryData::Kratos_Triangle3D6)
+        {
+            edges.push_back(std::vector<std::size_t>{0, 1, 3});
+            edges.push_back(std::vector<std::size_t>{1, 2, 4});
+            edges.push_back(std::vector<std::size_t>{2, 0, 5});
+        }
+        else if (Type == GeometryData::Kratos_Quadrilateral2D8 || Type == GeometryData::Kratos_Quadrilateral3D8
+              || Type == GeometryData::Kratos_Quadrilateral2D9 || Type == GeometryData::Kratos_Quadrilateral3D9)
+        {
+            edges.push_back(std::vector<std::size_t>{0, 1, 4});
+            edges.push_back(std::vector<std::size_t>{1, 2, 5});
+            edges.push_back(std::vector<std::size_t>{2, 3, 6});
+            edges.push_back(std::vector<std::size_t>{3, 0, 7});
+        }
+        else if (Type == GeometryData::Kratos_Tetrahedra3D4)
+        {
+            edges.push_back(std::vector<std::size_t>{0, 1});
+            edges.push_back(std::vector<std::size_t>{1, 2});
+            edges.push_back(std::vector<std::size_t>{2, 0});
+            edges.push_back(std::vector<std::size_t>{0, 3});
+            edges.push_back(std::vector<std::size_t>{1, 3});
+            edges.push_back(std::vector<std::size_t>{2, 3});
+        }
+        else if (Type == GeometryData::Kratos_Tetrahedra3D10)
+        {
+            edges.push_back(std::vector<std::size_t>{0, 1, 4});
+            edges.push_back(std::vector<std::size_t>{1, 2, 5});
+            edges.push_back(std::vector<std::size_t>{2, 0, 6});
+            edges.push_back(std::vector<std::size_t>{0, 3, 7});
+            edges.push_back(std::vector<std::size_t>{1, 3, 8});
+            edges.push_back(std::vector<std::size_t>{2, 3, 9});
+        }
+        else if (Type == GeometryData::Kratos_Hexahedra3D8)
+        {
+            edges.push_back(std::vector<std::size_t>{0, 1});
+            edges.push_back(std::vector<std::size_t>{1, 2});
+            edges.push_back(std::vector<std::size_t>{2, 3});
+            edges.push_back(std::vector<std::size_t>{3, 0});
+            edges.push_back(std::vector<std::size_t>{4, 5});
+            edges.push_back(std::vector<std::size_t>{5, 6});
+            edges.push_back(std::vector<std::size_t>{6, 7});
+            edges.push_back(std::vector<std::size_t>{7, 4});
+            edges.push_back(std::vector<std::size_t>{0, 4});
+            edges.push_back(std::vector<std::size_t>{1, 5});
+            edges.push_back(std::vector<std::size_t>{2, 6});
+            edges.push_back(std::vector<std::size_t>{3, 7});
+        }
+        else if (Type == GeometryData::Kratos_Hexahedra3D20 || Type == GeometryData::Kratos_Hexahedra3D27)
+        {
+            edges.push_back(std::vector<std::size_t>{0, 1, 8});
+            edges.push_back(std::vector<std::size_t>{1, 2, 9});
+            edges.push_back(std::vector<std::size_t>{2, 3, 10});
+            edges.push_back(std::vector<std::size_t>{3, 0, 11});
+            edges.push_back(std::vector<std::size_t>{4, 5, 16});
+            edges.push_back(std::vector<std::size_t>{5, 6, 17});
+            edges.push_back(std::vector<std::size_t>{6, 7, 18});
+            edges.push_back(std::vector<std::size_t>{7, 4, 19});
+            edges.push_back(std::vector<std::size_t>{0, 4, 12});
+            edges.push_back(std::vector<std::size_t>{1, 5, 13});
+            edges.push_back(std::vector<std::size_t>{2, 6, 14});
+            edges.push_back(std::vector<std::size_t>{3, 7, 15});
+        }
+
+        return edges;
     }
 
     ///@}
