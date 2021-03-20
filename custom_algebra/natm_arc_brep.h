@@ -93,7 +93,7 @@ public:
 
     typedef BaseType::GeometryType GeometryType;
 
-    typedef BaseType::PointType NodeType;
+    typedef BaseType::NodeType NodeType;
 
     typedef BaseType::PointType PointType;
 
@@ -305,13 +305,13 @@ public:
     }
 
     /// Check if a point is on the boundary within a tolerance
-    virtual bool IsOnBoundary(const PointType& P, const double& tol) const
+    virtual bool IsOnBoundary(const PointType& P) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
     }
 
     /// Compute the intersection of the NATMArcBRep with a line connect by 2 points.
-    virtual PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const
+    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& tol) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
     }

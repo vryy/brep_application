@@ -20,16 +20,14 @@
 // System includes
 #include <string>
 #include <iostream>
+#include <sstream>
 
 
 // External includes
 
 
 // Project includes
-#include "includes/define.h"
-#include "includes/element.h"
-#include "includes/ublas_interface.h"
-#include "geometries/geometry_data.h"
+#include "custom_algebra/brep.h"
 
 
 namespace Kratos
@@ -68,13 +66,13 @@ public:
 
     typedef BRep BaseType;
 
-    typedef typename Element::GeometryType GeometryType;
+    typedef BaseType::GeometryType GeometryType;
 
-    typedef typename GeometryType::PointType NodeType;
+    typedef BaseType::NodeType NodeType;
 
-    typedef typename NodeType::PointType PointType;
+    typedef BaseType::PointType PointType;
 
-    typedef typename NodeType::CoordinatesArrayType CoordinatesArrayType;
+    typedef BaseType::CoordinatesArrayType CoordinatesArrayType;
 
     ///@}
     ///@name Life Cycle
@@ -105,76 +103,94 @@ public:
     ///@name Operations
     ///@{
 
-    virtual BRep::Pointer CloneBRep() const
+    BRep::Pointer CloneBRep() const final
     {
         return BRep::Pointer(new OrBRep(*this));
     }
 
-
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         if(mpBRep1->WorkingSpaceDimension() != mpBRep2->WorkingSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error, "The working space dimension is not compatible", "")
         return mpBRep1->WorkingSpaceDimension();
     }
 
-
-    virtual std::size_t LocalSpaceDimension() const
+    std::size_t LocalSpaceDimension() const final
     {
         if(mpBRep1->LocalSpaceDimension() != mpBRep2->LocalSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error, "The local space dimension is not compatible", "")
         return mpBRep1->LocalSpaceDimension();
     }
 
-    virtual bool IsInside(const PointType& P) const
+    /// Check if a point is inside/outside of the BRep
+    bool IsInside(const PointType& P) const final
     {
         return (mpBRep1->IsInside(P) || mpBRep2->IsInside(P));
+    }
+
+    /// Check if a point is inside/outside of the BRep
+    /// The point will be interpolated in reference configuration
+    /// Since now C++ does not support virtual template function, this function must be separated to 2 functions
+    bool IsInside0(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
+    {
+        return (mpBRep1->IsInside0(rGeometry, local_coords)
+             || mpBRep2->IsInside0(rGeometry, local_coords));
+    }
+
+    /// Check if a point is inside/outside of the BRep
+    /// The point will be interpolated in current configuration
+    bool IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
+    {
+        return (mpBRep1->IsInside1(rGeometry, local_coords)
+             || mpBRep2->IsInside1(rGeometry, local_coords));
     }
 
     /// Check if a geometry is cut by the level set
     /// 0: the cell is completely inside the domain bounded by level set
     /// 1: completely outside
     /// -1: the cell is cut by level set
-    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const
+    int CutStatus(GeometryType& r_geom, const int& configuration) const final
     {
-        if(mpBRep1->CutStatus(r_geom, configuration) == _OUT && mpBRep2->CutStatus(r_geom, configuration) == _OUT)
-        {
-            return _OUT;
-        }
-        else
-        {
-            if(mpBRep1->CutStatus(r_geom, configuration) == _IN || mpBRep2->CutStatus(r_geom, configuration) == _IN)
-            {
-                return _IN;
-            }
-            else
-            {
-                return _CUT;
-            }
-        }
+        int stat1 = mpBRep1->CutStatus(r_geom, configuration);
+        int stat2 = mpBRep2->CutStatus(r_geom, configuration);
+        return this->OrCutStatus(stat1, stat2);
     }
 
     /// Check if a set of points is cut by the level set
     /// 0: the cell is completely inside the domain bounded by level set
     /// 1: completely outside
     /// -1: the cell is cut by level set
-    virtual int CutStatus(const std::vector<PointType>& r_points) const
+    int CutStatus(const std::vector<PointType>& r_points) const final
     {
-        if(mpBRep1->CutStatus(r_points) == _OUT && mpBRep2->CutStatus(r_points) == _OUT)
-        {
-            return _OUT;
-        }
-        else
-        {
-            if(mpBRep1->CutStatus(r_points) == _IN || mpBRep2->CutStatus(r_points) == _IN)
-            {
-                return _IN;
-            }
-            else
-            {
-                return _CUT;
-            }
-        }
+        int stat1 = mpBRep1->CutStatus(r_points);
+        int stat2 = mpBRep2->CutStatus(r_points);
+        return this->OrCutStatus(stat1, stat2);
+    }
+
+    /// Check if a set of points is cut by the BRep
+    /// The geometry and the local information of the points are also provided.
+    /// This function allows the use of BRep defined on grid (nodes)
+    /// 0: the cell is completely inside the domain bounded by BRep
+    /// 1: completely outside
+    /// -1: the cell is cut by BRep
+    int CutStatus(const GeometryType& r_geom,
+        const std::vector<CoordinatesArrayType>& r_local_points,
+        const std::vector<PointType>& r_points) const final
+    {
+        int stat1 = mpBRep1->CutStatus(r_geom, r_local_points, r_points);
+        int stat2 = mpBRep2->CutStatus(r_geom, r_local_points, r_points);
+        return this->OrCutStatus(stat1, stat2);
+    }
+
+    /// Check if a geometry is cut by the BRep by sampling the geometry
+    /// 0: the cell is completely inside the domain bounded by BRep
+    /// 1: completely outside
+    /// -1: the cell is cut by BRep
+    int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
+    {
+        int stat1 = mpBRep1->CutStatusBySampling(r_geom, nsampling, configuration);
+        int stat2 = mpBRep2->CutStatusBySampling(r_geom, nsampling, configuration);
+        return this->OrCutStatus(stat1, stat2);
     }
 
     ///@}
@@ -192,20 +208,25 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
-        return "OR operation of two BReps";
+        std::stringstream ss;
+        ss << "OR operation of " << mpBRep1->Info() << " and " << mpBRep2->Info();
+        return ss.str();
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
+        mpBRep1->PrintData(rOStream);
+        rOStream << std::endl;
+        mpBRep2->PrintData(rOStream);
     }
 
 
@@ -274,6 +295,25 @@ private:
     ///@name Private Operations
     ///@{
 
+    /// OR the 2 cut statuses
+    int OrCutStatus(const int& stat1, const int& stat2) const
+    {
+        if(stat1 == _OUT && stat2 == _OUT)
+        {
+            return _OUT;
+        }
+        else
+        {
+            if(stat1 == _IN || stat2 == _IN)
+            {
+                return _IN;
+            }
+            else
+            {
+                return _CUT;
+            }
+        }
+    }
 
     ///@}
     ///@name Private  Access

@@ -14,17 +14,33 @@
 
 // Project includes
 #include "custom_algebra/brep.h"
+#include "custom_algebra/section/polygonal_section.h"
+#include "custom_utilities/brep_utility.h"
 #include "custom_utilities/brep_mesh_utility.h"
 
 
 namespace Kratos
 {
 
-BRep::BRep() : mTOL(1.0e-10)
+BRep::BRep() : mTOL(1.0e-10), mName("WoW")
 {}
 
 BRep::~BRep()
 {}
+
+bool BRep::IsInside0(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const
+{
+    PointType P;
+    BRepMeshUtility::GlobalCoordinates0(rGeometry, P, local_coords);
+    return this->IsInside(P);
+}
+
+bool BRep::IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const
+{
+    PointType P;
+    BRepMeshUtility::GlobalCoordinates(rGeometry, P, local_coords);
+    return this->IsInside(P);
+}
 
 int BRep::CutStatus(Element::Pointer p_elem, const int& configuration) const
 {
@@ -43,18 +59,25 @@ int BRep::CutStatus(GeometryType& r_geom, const int& configuration) const
         std::vector<PointType> points(r_geom.size());
         for (std::size_t i = 0; i < r_geom.size(); ++i)
             noalias(points[i]) = r_geom[i].GetInitialPosition();
-        return CutStatusOfPoints(points);
+        return this->CutStatusOfPoints(points);
     }
     else if (configuration == 1)
     {
-        return CutStatusOfPoints(r_geom);
+        return this->CutStatusOfPoints(r_geom);
         // REMARK: this will use the current position of node, e.g. in dynamics
     }
 }
 
 int BRep::CutStatus(const std::vector<PointType>& r_points) const
 {
-    return CutStatusOfPoints(r_points);
+    return this->CutStatusOfPoints(r_points);
+}
+
+int BRep::CutStatus(const GeometryType& r_geom,
+        const std::vector<CoordinatesArrayType>& r_local_points,
+        const std::vector<PointType>& r_points) const
+{
+    return this->CutStatusOfPoints(r_points);
 }
 
 int BRep::CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const
@@ -89,6 +112,31 @@ std::string BRep::CutStatusStr(const int& stat)
         return "OUT";
     else
         return "Undefined";
+}
+
+Section::Pointer BRep::Intersect(GeometryType& r_geom) const
+{
+    PolygonalSection::Pointer pSection = PolygonalSection::Pointer(new PolygonalSection());
+
+    /// get all the edges of the geometry
+    std::vector<std::vector<std::size_t> > edges = BRepUtility::GetEdges(r_geom.GetGeometryType());
+
+    int error_code;
+    PointType P;
+    for (std::size_t i = 0; i < edges.size(); ++i)
+    {
+        const std::vector<std::size_t>& edge = edges[i];
+
+        std::vector<PointType> points(edge.size());
+        for (std::size_t j = 0; j < edge.size(); ++j)
+            points[j] = r_geom[edge[j]].GetInitialPosition();
+
+        error_code = this->Bisect(P, points, this->Tolerance());
+        if (error_code == 0)
+            pSection->AddVertex(P);
+    }
+
+    return pSection;
 }
 
 }  // namespace Kratos.

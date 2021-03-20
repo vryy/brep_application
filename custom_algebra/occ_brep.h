@@ -75,7 +75,7 @@ public:
 
     typedef BaseType::GeometryType GeometryType;
 
-    typedef BaseType::PointType NodeType;
+    typedef BaseType::NodeType NodeType;
 
     typedef BaseType::PointType PointType;
 
@@ -115,26 +115,28 @@ public:
     }
 
     /// Clone this OCCBRep
-    virtual BRep::Pointer CloneOCCBRep() const
+    BRep::Pointer CloneOCCBRep() const
     {
         return BRep::Pointer(new OCCBRep());
     }
 
     /// Get working space dimension
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
+        // TODO
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
 
     /// Get local space dimension
-    virtual std::size_t LocalSpaceDimension() const
+    std::size_t LocalSpaceDimension() const final
     {
+        // TODO
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
 
     /// Check if a point is inside/outside of the OCCBRep
     // REF: https://www.opencascade.com/content/point-inside-solid-or-not
-    virtual bool IsInside(const PointType& P) const
+    bool IsInside(const PointType& P) const final
     {
         BRepClass3d_SolidClassifier solidClassifier(*mpShape);
         gp_Pnt occPoint(P[0], P[1], P[2]);
@@ -143,16 +145,16 @@ public:
     }
 
     /// Check if a point is on the boundary within a tolerance
-    virtual bool IsOnBoundary(const PointType& P, const double& tol) const
+    bool IsOnBoundary(const PointType& P) const final
     {
         BRepClass3d_SolidClassifier solidClassifier(*mpShape);
         gp_Pnt occPoint(P[0], P[1], P[2]);
-        solidClassifier.Perform(occPoint, tol);
+        solidClassifier.Perform(occPoint, this->Tolerance());
         return (solidClassifier.State() == TopAbs_State::TopAbs_ON);
     }
 
     /// Compute the intersection of the OCCBRep with a line connect by 2 points.
-    virtual PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& tol) const final
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
@@ -172,26 +174,25 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "OpenCasCade BRep";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         if (mpShape != NULL)
             OCC::DumpObject(rOStream, *mpShape);
         else
             rOStream << "OCCBRep contains no object";
     }
-
 
     ///@}
     ///@name Friends

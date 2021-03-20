@@ -30,6 +30,7 @@
 #include "includes/element.h"
 #include "includes/ublas_interface.h"
 #include "geometries/geometry_data.h"
+#include "section/section.h"
 
 
 namespace Kratos
@@ -88,7 +89,8 @@ public:
     BRep();
 
     /// Copy constructor.
-    BRep(BRep const& rOther) : mTOL(rOther.mTOL) {}
+    BRep(BRep const& rOther) : mTOL(rOther.mTOL), mName(rOther.mName)
+    {}
 
     /// Destructor.
     virtual ~BRep();
@@ -109,11 +111,18 @@ public:
         return BRep::Pointer(new BRep(*this));
     }
 
+    /// Set name for thie BRep
+    void SetName(const std::string& Name) {mName = Name;}
+
+    /// Get name of this BRep
+    std::string Name() const {return mName;}
+
     /// Set for geometric tolerance
     void SetTolerance(const double& TOL) {mTOL = TOL;}
 
     /// Get for geometric tolerance
-    const double GetTolerance() const {return mTOL;}
+    double GetTolerance() const {return mTOL;}
+    double Tolerance() const {return mTOL;}
 
     /// Get working space dimension
     virtual std::size_t WorkingSpaceDimension() const
@@ -133,8 +142,30 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
 
-    /// Check if a point is on the boundary within a tolerance
-    virtual bool IsOnBoundary(const PointType& P, const double& tol) const
+    /// Check if a point is inside/outside of the BRep
+    /// The point will be interpolated in reference configuration
+    /// Since now C++ does not support virtual template function, this function must be separated to 2 functions
+    bool IsInside(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords, const int& configuration) const
+    {
+        if (configuration == 0)
+            return IsInside0(rGeometry, local_coords);
+        else if (configuration == 1)
+            return IsInside1(rGeometry, local_coords);
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "Invalid configuration", configuration)
+    }
+
+    /// Check if a point is inside/outside of the BRep
+    /// The point will be interpolated in reference configuration
+    /// Since now C++ does not support virtual template function, this function must be separated to 2 functions
+    virtual bool IsInside0(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const;
+
+    /// Check if a point is inside/outside of the BRep
+    /// The point will be interpolated in current configuration
+    virtual bool IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const;
+
+    /// Check if a point is on the boundary
+    virtual bool IsOnBoundary(const PointType& P) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
@@ -157,6 +188,16 @@ public:
     /// -1: the cell is cut by BRep
     virtual int CutStatus(const std::vector<PointType>& r_points) const;
 
+    /// Check if a set of points is cut by the BRep
+    /// The geometry and the local information of the points are also provided.
+    /// This function allows the use of BRep defined on grid (nodes)
+    /// 0: the cell is completely inside the domain bounded by BRep
+    /// 1: completely outside
+    /// -1: the cell is cut by BRep
+    virtual int CutStatus(const GeometryType& r_geom,
+        const std::vector<CoordinatesArrayType>& r_local_points,
+        const std::vector<PointType>& r_points) const;
+
     /// return the string of the cut status
     static std::string CutStatusStr(const int& stat);
 
@@ -170,10 +211,29 @@ public:
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const;
+    virtual int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const;
 
-    /// Compute the intersection of the BRep with a line connect by 2 points.
-    virtual PointType Bisect(const PointType& P1, const PointType& P2, const double& tol) const
+    /// Compute the intersection of the BRep with a line
+    virtual int Bisect(PointType& P, const std::vector<PointType>& Points, const double& Tol) const
+    {
+        if (Points.size() == 2)
+            return Bisect(P, Points[0], Points[1], Tol);
+        else if (Points.size() == 3)
+            return Bisect(P, Points[0], Points[1], Points[2], Tol);
+        else
+            KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Invalid number of points")
+        return -2;
+    }
+
+    /// Compute the intersection of the BRep with a line connected by 2 points
+    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& Tol) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+    }
+
+    /// Compute the intersection of the BRep with a line connected by 3 points
+    /// Remark: P3 is the middle point, the line is interpolated by using Lagrange shape function
+    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const PointType& P3, const double& Tol) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
@@ -217,8 +277,8 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
 
-    /// projects a point on the surface of level_set
-    virtual void ProjectOnSurface(const PointType& P, PointType& Proj) const
+    /// projects a point on the surface of brep
+    virtual int ProjectOnSurface(const PointType& P, PointType& Proj) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
@@ -232,6 +292,9 @@ public:
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
     }
+
+    /// Intersect the BRep with a geometry
+    virtual Section::Pointer Intersect(GeometryType& r_geom) const;
 
     ///@}
     ///@name Access
@@ -363,6 +426,7 @@ private:
     ///@{
 
     double mTOL;
+    std::string mName;
 
     ///@}
     ///@name Private Operators

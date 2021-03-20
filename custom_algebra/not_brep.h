@@ -20,16 +20,14 @@
 // System includes
 #include <string>
 #include <iostream>
+#include <sstream>
 
 
 // External includes
 
 
 // Project includes
-#include "includes/define.h"
-#include "includes/element.h"
-#include "includes/ublas_interface.h"
-#include "geometries/geometry_data.h"
+#include "custom_algebra/brep.h"
 
 
 namespace Kratos
@@ -68,13 +66,13 @@ public:
 
     typedef BRep BaseType;
 
-    typedef typename Element::GeometryType GeometryType;
+    typedef BaseType::GeometryType GeometryType;
 
-    typedef typename GeometryType::PointType NodeType;
+    typedef BaseType::NodeType NodeType;
 
-    typedef typename NodeType::PointType PointType;
+    typedef BaseType::PointType PointType;
 
-    typedef typename NodeType::CoordinatesArrayType CoordinatesArrayType;
+    typedef BaseType::CoordinatesArrayType CoordinatesArrayType;
 
     ///@}
     ///@name Life Cycle
@@ -104,66 +102,84 @@ public:
     ///@name Operations
     ///@{
 
-    virtual BRep::Pointer CloneBRep() const
+    BRep::Pointer CloneBRep() const final
     {
         return BRep::Pointer(new NotBRep(*this));
     }
 
-
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return mpBRep->WorkingSpaceDimension();
     }
 
-
-    virtual std::size_t LocalSpaceDimension() const
+    std::size_t LocalSpaceDimension() const final
     {
         return mpBRep->LocalSpaceDimension();
     }
 
-    virtual bool IsInside(const PointType& P) const
+    /// Check if a point is inside/outside of the BRep
+    bool IsInside(const PointType& P) const final
     {
         return !mpBRep->IsInside(P);
+    }
+
+    /// Check if a point is inside/outside of the BRep
+    /// The point will be interpolated in reference configuration
+    /// Since now C++ does not support virtual template function, this function must be separated to 2 functions
+    bool IsInside0(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
+    {
+        return !mpBRep->IsInside0(rGeometry, local_coords);
+    }
+
+    /// Check if a point is inside/outside of the BRep
+    /// The point will be interpolated in current configuration
+    bool IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
+    {
+        return !mpBRep->IsInside1(rGeometry, local_coords);
     }
 
     /// Check if a geometry is cut by the level set
     /// 0: the cell is completely inside the domain bounded by level set
     /// 1: completely outside
     /// -1: the cell is cut by level set
-    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const
+    int CutStatus(GeometryType& r_geom, const int& configuration) const final
     {
-        if(mpBRep->CutStatus(r_geom, configuration) == _OUT)
-        {
-            return _IN;
-        }
-        else if(mpBRep->CutStatus(r_geom, configuration) == _IN)
-        {
-            return _OUT;
-        }
-        else
-        {
-            return _CUT;
-        }
+        int stat = mpBRep->CutStatus(r_geom, configuration);
+        return this->NotCutStatus(stat);
     }
 
     /// Check if a set of points is cut by the level set
     /// 0: the cell is completely inside the domain bounded by level set
     /// 1: completely outside
     /// -1: the cell is cut by level set
-    virtual int CutStatus(const std::vector<PointType>& r_points) const
+    int CutStatus(const std::vector<PointType>& r_points) const final
     {
-        if(mpBRep->CutStatus(r_points) == _OUT)
-        {
-            return _IN;
-        }
-        else if(mpBRep->CutStatus(r_points) == _IN)
-        {
-            return _OUT;
-        }
-        else
-        {
-            return _CUT;
-        }
+        int stat = mpBRep->CutStatus(r_points);
+        return this->NotCutStatus(stat);
+    }
+
+    /// Check if a set of points is cut by the BRep
+    /// The geometry and the local information of the points are also provided.
+    /// This function allows the use of BRep defined on grid (nodes)
+    /// 0: the cell is completely inside the domain bounded by BRep
+    /// 1: completely outside
+    /// -1: the cell is cut by BRep
+    int CutStatus(const GeometryType& r_geom,
+        const std::vector<CoordinatesArrayType>& r_local_points,
+        const std::vector<PointType>& r_points) const final
+    {
+        int stat = mpBRep->CutStatus(r_geom, r_local_points, r_points);
+        return this->NotCutStatus(stat);
+    }
+
+    /// Check if a geometry is cut by the BRep by sampling the geometry
+    /// 0: the cell is completely inside the domain bounded by BRep
+    /// 1: completely outside
+    /// -1: the cell is cut by BRep
+    int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
+    {
+        int stat = mpBRep->CutStatusBySampling(r_geom, nsampling, configuration);
+        return this->NotCutStatus(stat);
     }
 
     ///@}
@@ -181,20 +197,23 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
-        return "NOT operation of a BRep";
+        std::stringstream ss;
+        ss << "NOT operation of " << mpBRep->Info();
+        return ss.str();
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
+        mpBRep->PrintData(rOStream);
     }
 
 
@@ -262,6 +281,22 @@ private:
     ///@name Private Operations
     ///@{
 
+    /// Reverse the cut status
+    int NotCutStatus(const int& stat) const
+    {
+        if(stat == _OUT)
+        {
+            return _IN;
+        }
+        else if(stat == _IN)
+        {
+            return _OUT;
+        }
+        else
+        {
+            return _CUT;
+        }
+    }
 
     ///@}
     ///@name Private  Access
