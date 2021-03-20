@@ -98,7 +98,7 @@ public:
     virtual ~Rotation() {}
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << "Homogeneous Rotation";
         if (TAxis == 0)

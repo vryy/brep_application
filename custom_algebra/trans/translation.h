@@ -46,7 +46,7 @@ public:
     virtual ~Translation() {}
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << "Homogeneous Translation";
     }

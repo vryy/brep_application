@@ -89,7 +89,7 @@ public:
     virtual ~Mirror() {}
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << "Homogeneous Mirror";
         if (TAxis == 0)
