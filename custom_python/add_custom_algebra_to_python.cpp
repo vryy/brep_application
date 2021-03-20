@@ -156,7 +156,7 @@ void BRepApplication_AddFunctionsToPython()
 
     typedef ScalarFunction<FunctionR1R1> ScalarFunctionR1R1;
     class_<ScalarFunctionR1R1, ScalarFunctionR1R1::Pointer, boost::noncopyable, bases<FunctionR1R1> >
-    ("ScalarFunctionR1R1", init<const double>())
+    ("ScalarFunctionR1R1", init<const double&>())
     ;
 
     typedef ZeroFunction<FunctionR1R1> ZeroFunctionR1R1;
