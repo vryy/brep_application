@@ -95,7 +95,7 @@ public:
     {}
 
 
-    virtual BaseType::Pointer CloneFunction() const
+    BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new CubicSplineFunction(*this));
     }
@@ -127,7 +127,7 @@ public:
     ///@{
 
 
-    virtual double GetValue(const InputType& P) const
+    double GetValue(const InputType& P) const override
     {
         if (TDerivDegree == 0)
             return mS(P);
@@ -136,13 +136,13 @@ public:
     }
 
 
-    virtual double GetDerivative(const int& component, const InputType& P) const
+    double GetDerivative(const int& component, const InputType& P) const override
     {
         return mS.deriv(TDerivDegree+1, P);
     }
 
 
-    virtual double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const
+    double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const override
     {
         return mS.deriv(TDerivDegree+2, P);
     }
@@ -156,7 +156,7 @@ public:
     // }
 
 
-    virtual std::string GetFormula(const std::string& Format) const
+    std::string GetFormula(const std::string& Format) const override
     {
         return "S";
     }
@@ -177,19 +177,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Cubic Spline Function";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -294,19 +294,19 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-    virtual double GetValue(const InputType& P) const
+    double GetValue(const InputType& P) const final
     {
         return mS.deriv(3, P);
     }
 
 
-    virtual double GetDerivative(const int& component, const InputType& P) const
+    double GetDerivative(const int& component, const InputType& P) const final
     {
         return mS.deriv(4, P);
     }
 
 
-    virtual double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const
+    double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const final
     {
         return mS.deriv(5, P);
     }

@@ -111,21 +111,21 @@ public:
     ///@{
 
     /// inherit from Function
-    virtual SuperType::Pointer CloneFunction() const
+    SuperType::Pointer CloneFunction() const final
     {
         return SuperType::Pointer(new ParametricCurve(*this));
     }
 
 
     /// inherit from Curve
-    virtual Curve::Pointer Clone() const
+    Curve::Pointer Clone() const final
     {
         return BaseType::Pointer(new ParametricCurve(*this));
     }
 
 
     /// inherit from Function
-    virtual OutputType GetValue(const InputType& t) const
+    OutputType GetValue(const InputType& t) const final
     {
         OutputType P;
 
@@ -138,7 +138,7 @@ public:
 
 
     /// inherit from Function
-    virtual OutputType GetDerivative(const int& component, const InputType& t) const
+    OutputType GetDerivative(const int& component, const InputType& t) const final
     {
         OutputType P;
 
@@ -151,7 +151,7 @@ public:
 
 
     /// inherit from Function
-    virtual OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const
+    OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const final
     {
         OutputType P;
 
@@ -164,7 +164,7 @@ public:
 
 
     /// inherit from Function
-    virtual SuperType::Pointer GetDiffFunction(const int& component) const
+    SuperType::Pointer GetDiffFunction(const int& component) const final
     {
         return SuperType::Pointer(
                     new ParametricCurve(
@@ -228,19 +228,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Parametric Curve";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 

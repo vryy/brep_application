@@ -143,25 +143,25 @@ public:
     ///@{
 
 
-    virtual FunctionR3R1::Pointer CloneFunction() const
+    FunctionR3R1::Pointer CloneFunction() const final
     {
         return FunctionR3R1::Pointer(new MonomialFunctionR3R1());
     }
 
 
-    virtual double GetValue(const InputType& P) const
+    double GetValue(const InputType& P) const final
     {
         return pow(P[0], TDegreeX) * pow(P[1], TDegreeY) * pow(P[2], TDegreeZ);
     }
 
 
-    virtual std::string GetFormula(const std::string& Format) const
+    std::string GetFormula(const std::string& Format) const final
     {
         return GetFormulaMonomialFunctionR3R1<TDegreeX, TDegreeY, TDegreeZ>(Format);
     }
 
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         if(component == 0)
         {
@@ -195,19 +195,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Monomial Function R3R1";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 

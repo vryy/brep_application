@@ -139,13 +139,13 @@ public:
     }
 
 
-    virtual BaseType::Pointer CloneFunction() const
+    BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new MathPressoFunctionR3R1(*this));
     }
 
 
-    virtual double GetValue(const InputType& P) const
+    double GetValue(const InputType& P) const final
     {
         double data[3];
         data[0] = P[0];
@@ -155,7 +155,7 @@ public:
     }
 
 
-    virtual std::string GetFormula(const std::string& Format) const
+    std::string GetFormula(const std::string& Format) const final
     {
         return mStr;
     }
@@ -182,19 +182,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "MathPresso Function";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << mStr;
     }

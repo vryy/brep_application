@@ -104,13 +104,13 @@ public:
     ///@{
 
 
-    virtual BaseType::Pointer CloneFunction() const
+    BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new LoadFunctionR3RnPlateWithTheHole(*this));
     }
 
 
-    virtual OutputType GetValue(const InputType& P) const
+    OutputType GetValue(const InputType& P) const final
     {
         double r = sqrt(pow(P[0], 2) + pow(P[1], 2));
         double theta = acos(P[0]/r);
@@ -155,7 +155,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         std::stringstream ss;
         ss << "Load Function for plate with the hole problem: P = " << mP << ", mr = " << mr;
@@ -163,13 +163,13 @@ public:
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 

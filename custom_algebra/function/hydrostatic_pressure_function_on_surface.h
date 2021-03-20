@@ -115,14 +115,14 @@ public:
 
 
     /// inherit from Function
-    virtual BaseType::Pointer CloneFunction() const
+    BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new HydrostaticPressureFunctionOnSurface(*this));
     }
 
 
     /// inherit from Function
-    virtual OutputType GetValue(const InputType& T) const
+    OutputType GetValue(const InputType& T) const final
     {
         OutputType P;
 
@@ -138,7 +138,7 @@ public:
 
 
     /// inherit from Function
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         if (component == 0)
         {
@@ -188,19 +188,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "hydrostatic Pressure Function on Surface";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << "P: " << mPressure << std::endl;
         rOStream << "dP: " << mGradientPressure << std::endl;

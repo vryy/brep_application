@@ -103,19 +103,19 @@ public:
     ///@{
 
 
-    virtual typename BaseType::Pointer CloneFunction() const
+    typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new ScaleFunction(*this));
     }
 
 
-    virtual OutputType GetValue(const InputType& P) const
+    OutputType GetValue(const InputType& P) const final
     {
         return ma*mp_func->GetValue(P);
     }
 
 
-    virtual std::string GetFormula(const std::string& Format) const
+    std::string GetFormula(const std::string& Format) const final
     {
         std::stringstream ss;
         if(ma != 1.0)
@@ -125,7 +125,7 @@ public:
     }
 
 
-    virtual typename BaseType::Pointer GetDiffFunction(const int& component) const
+    typename BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return typename BaseType::Pointer(new ScaleFunction(ma, mp_func->GetDiffFunction(component)));
     }
@@ -146,19 +146,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Scale Function of " + mp_func->Info();
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 

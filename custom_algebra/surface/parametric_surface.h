@@ -109,14 +109,14 @@ public:
 
 
     /// inherit from Function
-    virtual BaseType::Pointer CloneFunction() const
+    BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new ParametricSurface(*this));
     }
 
 
     /// inherit from Function
-    virtual OutputType GetValue(const InputType& T) const
+    OutputType GetValue(const InputType& T) const final
     {
         OutputType P;
 
@@ -129,7 +129,7 @@ public:
 
 
     /// inherit from Function
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return BaseType::Pointer(
                     new ParametricSurface(
@@ -156,19 +156,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Parametric Surface";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 

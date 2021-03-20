@@ -106,25 +106,25 @@ public:
     ///@{
 
 
-    virtual typename BaseType::Pointer CloneFunction() const
+    typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new CosFunction(*this));
     }
 
 
-    virtual double GetValue(const InputType& P) const
+    double GetValue(const InputType& P) const final
     {
         return cos(mp_func->GetValue(P));
     }
 
 
-    virtual std::string GetFormula(const std::string& Format) const
+    std::string GetFormula(const std::string& Format) const final
     {
         return "cos(" + mp_func->GetFormula(Format) + ")";
     }
 
 
-    virtual typename BaseType::Pointer GetDiffFunction(const int& component) const;
+    typename BaseType::Pointer GetDiffFunction(const int& component) const final;
 
     ///@}
     ///@name Access
@@ -141,19 +141,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Cos Function";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 
@@ -294,25 +294,25 @@ public:
     ///@{
 
 
-    virtual typename BaseType::Pointer CloneFunction() const
+    typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new SinFunction(*this));
     }
 
 
-    virtual double GetValue(const InputType& P) const
+    double GetValue(const InputType& P) const final
     {
         return sin(mp_func->GetValue(P));
     }
 
 
-    virtual std::string GetFormula(const std::string& Format) const
+    std::string GetFormula(const std::string& Format) const final
     {
         return "sin(" + mp_func->GetFormula(Format) + ")";
     }
 
 
-    virtual typename BaseType::Pointer GetDiffFunction(const int& component) const;
+    typename BaseType::Pointer GetDiffFunction(const int& component) const final;
 
 
     ///@}
@@ -330,19 +330,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Sin Function";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 
@@ -483,25 +483,25 @@ public:
     ///@{
 
 
-    virtual typename BaseType::Pointer CloneFunction() const
+    typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new AcosFunction(*this));
     }
 
 
-    virtual double GetValue(const InputType& P) const
+    double GetValue(const InputType& P) const final
     {
         return acos(mp_func->GetValue(P));
     }
 
 
-    virtual std::string GetFormula(const std::string& Format) const
+    std::string GetFormula(const std::string& Format) const final
     {
         return "acos(" + mp_func->GetFormula(Format) + ")";
     }
 
 
-    virtual typename BaseType::Pointer GetDiffFunction(const int& component) const;
+    typename BaseType::Pointer GetDiffFunction(const int& component) const final;
 
 
     ///@}
@@ -519,19 +519,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Acos Function";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 

@@ -103,31 +103,31 @@ public:
     ///@{
 
 
-    virtual typename BaseType::Pointer CloneFunction() const
+    typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new NegateFunction(*this));
     }
 
 
-    virtual double GetValue(const InputType& P) const
+    double GetValue(const InputType& P) const final
     {
         return -mp_func->GetValue(P);
     }
 
 
-    virtual double GetDerivative(const int& component, const InputType& P) const
+    double GetDerivative(const int& component, const InputType& P) const final
     {
         return -mp_func->GetDerivative(component, P);
     }
 
 
-    virtual double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const
+    double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const final
     {
         return -mp_func->GetSecondDerivative(component_1, component_2, P);
     }
 
 
-    virtual std::string GetFormula(const std::string& Format) const
+    std::string GetFormula(const std::string& Format) const final
     {
         std::stringstream ss;
         ss << "-" << mp_func->GetFormula(Format);
@@ -135,7 +135,7 @@ public:
     }
 
 
-    virtual typename BaseType::Pointer GetDiffFunction(const int& component) const
+    typename BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return typename BaseType::Pointer(new NegateFunction(mp_func->GetDiffFunction(component)));
     }
@@ -156,19 +156,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "Negate Function of " + mp_func->Info();
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
     }
 
