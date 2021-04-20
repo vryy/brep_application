@@ -142,7 +142,7 @@ public:
 
         Triangle(const Point& ppi, const Point& ppj, const Point& ppk)
         {
-        	// select pi as the least index point
+            // select pi as the least index point
             if (ppi < ppj && ppi < ppk)
             {
                 pi = ppi;

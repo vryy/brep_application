@@ -199,6 +199,8 @@ public:
             // }
             // KRATOS_WATCH(nodes.size())
 
+            // TODO can we parallelize this process?
+
             boost::progress_display progress(rElements.size());
             for (ModelPart::ElementsContainerType::const_iterator it = rElements.begin(); it != rElements.end(); ++it)
             {
