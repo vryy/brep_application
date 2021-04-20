@@ -508,13 +508,24 @@ private:
         int stat;
         if(in_list.size() == 0 && out_list.size() == 0)
         {
-            for(std::size_t v = 0; v < r_points.size(); ++v)
-                KRATOS_WATCH(r_points[v])
-            KRATOS_WATCH(in_list.size())
-            KRATOS_WATCH(out_list.size())
-            KRATOS_WATCH(on_list.size())
-            KRATOS_WATCH(tolerance)
-            KRATOS_THROW_ERROR(std::logic_error, "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.", "")
+            if (on_list.size() > 0)
+            {
+                return BRep::_ON; // every points are on
+            }
+            else
+            {
+                std::cout << "----------------------------------------" << std::endl;
+                for(std::size_t v = 0; v < r_points.size(); ++v)
+                    KRATOS_WATCH(r_points[v])
+                KRATOS_WATCH(in_list.size())
+                KRATOS_WATCH(out_list.size())
+                KRATOS_WATCH(on_list.size())
+                KRATOS_WATCH(tolerance)
+                KRATOS_THROW_ERROR(std::logic_error, "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.", "")
+                // std::cout << "!!!WARNING!!!The geometry is degenerated." << std::endl;
+                std::cout << "----------------------------------------" << std::endl;
+                return BRep::_INVALID; // geometry is degenerated
+            }
         }
         else
         {

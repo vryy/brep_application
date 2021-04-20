@@ -80,6 +80,8 @@ public:
     static const int _CUT = -1;
     static const int _IN  = 0;
     static const int _OUT = 1;
+    static const int _ON = -2;
+    static const int _INVALID = -3;
 
     ///@}
     ///@name Life Cycle
