@@ -21,6 +21,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <unordered_set>
+#include <unordered_map>
 
 
 // External includes
@@ -79,6 +81,40 @@ public:
     typedef typename NodeType::PointType PointType;
 
     typedef typename NodeType::CoordinatesArrayType CoordinatesArrayType;
+
+    typedef struct Edge2
+    {
+        Edge2(const std::size_t& i, const std::size_t& j) : mi(i), mj(j) {}
+        const std::size_t& V1() const {return mi;}
+        const std::size_t& V2() const {return mj;}
+        bool operator==(const Edge2& e) const
+        {
+            return ((mi == e.mi) && (mj == e.mj)) || ((mi == e.mj) && (mj == e.mi)) ;
+        }
+        bool operator<(const Edge2& e) const
+        {
+            if (mi == e.mi)
+                return mj < e.mj;
+            else
+                return mi < e.mi;
+        }
+        Edge2& operator=(const Edge2& e)
+        {
+            mi = e.mi;
+            mj = e.mj;
+            return *this;
+        }
+        std::size_t mi, mj;
+        struct HashFunction // is necessary for unordered_set and unordered_map
+        {
+            std::size_t operator()(const Edge2& edge) const
+            {
+                std::size_t Hash1 = std::hash<std::size_t>()(edge.V1());
+                std::size_t Hash2 = std::hash<std::size_t>()(edge.V2());
+                return Hash1 ^ Hash2;
+            }
+        };
+    };
 
     ///@}
     ///@name Life Cycle
@@ -257,6 +293,78 @@ public:
 
         C /= rGeometry.size();
         return C;
+    }
+
+    /// Compute the center of a list of conditions
+    template<typename TConditionsContainerType>
+    static PointType ComputeCenter(const TConditionsContainerType& rConditions)
+    {
+        // get the boundary edges and nodal coordinates
+        // std::unordered_set<Edge2> boundary_edges;
+        std::unordered_set<Edge2, Edge2::HashFunction> boundary_edges;
+        std::vector<Edge2> local_edges;
+        std::unordered_map<std::size_t, PointType> nodes;
+
+        for (typename TConditionsContainerType::const_iterator it = rConditions.begin(); it != rConditions.end(); ++it)
+        {
+            local_edges.clear();
+            GetEdges(local_edges, it->GetGeometry());
+
+            for (std::size_t i = 0; i < local_edges.size(); ++i)
+            {
+                auto it2 = boundary_edges.find(local_edges[i]);
+                if (it2 == boundary_edges.end())
+                    boundary_edges.insert(local_edges[i]);
+                else
+                    boundary_edges.erase(local_edges[i]);
+            }
+
+            for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
+                nodes[it->GetGeometry()[i].Id()] = it->GetGeometry()[i].GetInitialPosition();
+        }
+
+        // get the nodes on boundary edges
+        std::unordered_set<std::size_t> boundary_nodes;
+        for (auto it = boundary_edges.begin(); it != boundary_edges.end(); ++it)
+        {
+            boundary_nodes.insert(it->V1());
+            boundary_nodes.insert(it->V2());
+        }
+
+        // compute the center
+        PointType P;
+        noalias(P) = ZeroVector(3);
+        for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); ++it)
+            noalias(P) += nodes[*it];
+        P /= boundary_nodes.size();
+
+        return P;
+    }
+
+    /// Get the edges of a finite element
+    /// Refer to GiD manual for numbering on edges
+    static void GetEdges(std::vector<Edge2>& edges, const GeometryType& rGeometry)
+    {
+        const GeometryData::KratosGeometryType& Type = rGeometry.GetGeometryType();
+
+        if ( Type == GeometryData::Kratos_Triangle2D3 || Type == GeometryData::Kratos_Triangle3D3
+          || Type == GeometryData::Kratos_Triangle2D6 || Type == GeometryData::Kratos_Triangle3D6 )
+        {
+            edges.push_back(Edge2(rGeometry[0].Id(), rGeometry[1].Id()));
+            edges.push_back(Edge2(rGeometry[1].Id(), rGeometry[2].Id()));
+            edges.push_back(Edge2(rGeometry[2].Id(), rGeometry[0].Id()));
+        }
+        else if ( Type == GeometryData::Kratos_Quadrilateral2D4 || Type == GeometryData::Kratos_Quadrilateral3D4
+               || Type == GeometryData::Kratos_Quadrilateral2D8 || Type == GeometryData::Kratos_Quadrilateral3D8
+               || Type == GeometryData::Kratos_Quadrilateral2D9 || Type == GeometryData::Kratos_Quadrilateral3D9 )
+        {
+            edges.push_back(Edge2(rGeometry[0].Id(), rGeometry[1].Id()));
+            edges.push_back(Edge2(rGeometry[1].Id(), rGeometry[2].Id()));
+            edges.push_back(Edge2(rGeometry[2].Id(), rGeometry[3].Id()));
+            edges.push_back(Edge2(rGeometry[3].Id(), rGeometry[0].Id()));
+        }
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "Not a 2D geometry type", "")
     }
 
     /// Get the edges of a finite element

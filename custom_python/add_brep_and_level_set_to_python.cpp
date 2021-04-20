@@ -240,6 +240,23 @@ boost::python::list LevelSet_CreateQ4ConditionsClosedLoopWithRange(
     return Output;
 }
 
+boost::python::list LinearLevelSet_CreateLineConditions(
+    LinearLevelSet& rDummy,
+    ModelPart& r_model_part,
+    const std::string& sample_condition_name,
+    Properties::Pointer pProperties,
+    const BRep::PointType& StartPoint, const BRep::PointType& EndPoint,
+    const int& type, const int& nsampling)
+{
+    std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
+        = rDummy.CreateLineConditions(r_model_part, sample_condition_name, pProperties,
+            StartPoint, EndPoint, type, nsampling);
+    boost::python::list Output;
+    Output.append(Results.first);
+    Output.append(Results.second);
+    return Output;
+}
+
 void NodalLevelSet_InitializeFromNodes(NodalLevelSet& dummy,
     const ModelPart::NodesContainerType& rNodes, const int& configuration)
 {
@@ -262,6 +279,13 @@ boost::python::list Curve_ProjectOnCurve(Curve& rDummy, const Curve::PointType& 
     Output.append(Proj);
     Output.append(stat);
     return Output;
+}
+
+BRep::PointType Section_ComputeCenter(Section& rDummy)
+{
+    BRep::PointType Point;
+    rDummy.ComputeCenter(Point);
+    return Point;
 }
 
 boost::python::list Section_Triangulation(Section& rDummy)
@@ -299,6 +323,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
 
     class_<Section, Section::Pointer, boost::noncopyable>
     ( "Section", init<>() )
+    .def("ComputeCenter", &Section_ComputeCenter)
     .def("Triangulation", &Section_Triangulation)
     .def(self_ns::str(self))
     ;
@@ -405,6 +430,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
 
     class_<LinearLevelSet, LinearLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
     ( "LinearLevelSet", init<const double&, const double&, const double&>() )
+    .def("CreateLineConditions", &LinearLevelSet_CreateLineConditions)
     ;
 
     class_<PlanarLevelSet, PlanarLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >

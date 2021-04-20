@@ -135,6 +135,15 @@ public:
     ///@name Access
     ///@{
 
+    /// Compute the center of the section
+    void ComputeCenter(PointType& rPoint) const final
+    {
+        noalias(rPoint) = ZeroVector(3);
+        for (std::size_t i = 0; i < mVertices.size(); ++i)
+            noalias(rPoint) += mVertices[i];
+        rPoint /= mVertices.size();
+    }
+
     /// Obtain a triangulation from the PolygonalSection
     int Triangulation(std::vector<PointType>& rPoints, std::vector<std::vector<std::size_t> >& Connectivities) const final
     {

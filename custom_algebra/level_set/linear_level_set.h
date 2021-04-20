@@ -28,6 +28,7 @@
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/level_set/level_set.h"
+#include "custom_utilities/brep_mesh_utility.h"
 
 
 namespace Kratos
@@ -124,6 +125,7 @@ public:
         return grad;
     }
 
+
     /// inherit from BRep
     void GetTangent(const PointType& P, std::vector<PointType>& rTangentialVectors) const final
     {
@@ -134,11 +136,52 @@ public:
         rTangentialVectors[0](2) = 0.0;
     }
 
+
     /// inherit from BRep
     void GetTangentDerivatives(const PointType& P, std::vector<Matrix>& Derivatives) const final
     {
         Derivatives.resize(1);
         Derivatives[0] = ZeroMatrix(3, 3);
+    }
+
+
+    /***********EXCLUSIVE INTERFACE****************/
+
+
+    /// Generate the sampling points on the level set surface
+    void GeneratePoints(std::vector<PointType>& points,
+        const PointType& StartPoint, const PointType& EndPoint,
+        const std::size_t& nsampling) const
+    {
+        // check if the start point and end point are on the line
+        double f;
+        f = this->GetValue(StartPoint);
+        if (f > this->Tolerance())
+            KRATOS_THROW_ERROR(std::logic_error, "The start point does not lie on the line", "")
+        f = this->GetValue(EndPoint);
+        if (f > this->Tolerance())
+            KRATOS_THROW_ERROR(std::logic_error, "The end point does not lie on the line", "")
+
+        BRepMeshUtility::GenerateSamplingPoints(points, StartPoint, EndPoint, nsampling);
+    }
+
+
+    /// Create the conditions based on sampling points on the line
+    std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> CreateLineConditions(ModelPart& r_model_part,
+        const std::string& sample_condition_name,
+        Properties::Pointer pProperties,
+        const PointType& StartPoint,
+        const PointType& EndPoint,
+        const int& type,
+        const std::size_t& nsampling) const
+    {
+        // firstly create the sampling points on surface
+        std::vector<PointType> sampling_points;
+        this->GeneratePoints(sampling_points, StartPoint, EndPoint, nsampling);
+        // KRATOS_WATCH(sampling_points.size())
+        const bool close = false;
+        BRepMeshUtility::ConditionMeshInfoType Info = BRepMeshUtility::CreateLineConditions(r_model_part, sampling_points, sample_condition_name, type, close, pProperties);
+        return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 
 

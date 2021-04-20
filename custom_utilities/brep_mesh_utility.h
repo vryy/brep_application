@@ -122,6 +122,10 @@ public:
     static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
             const GeometryType& r_geom, const std::size_t& nsampling);
 
+    /// Generate the sampling points along a line
+    static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
+            const PointType& StartPoint, const PointType& EndPoint, const std::size_t& nsampling);
+
     /// Generate the sampling points on a circle surface
     static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
             const PointType& rCenter, const PointType& rNormal,
@@ -140,6 +144,13 @@ public:
         const bool& close, // if false: open loop; true: close loop
         Properties::Pointer pProperties);
 
+    /// Create the line conditions based on given points list
+    static ConditionMeshInfoType CreateLineConditions(ModelPart& r_model_part,
+        const std::vector<PointType>& sampling_points,
+        const std::string& sample_condition_name,
+        const int& type, // if 1: generate L2 conditions; 2: L3 conditions;
+        const bool& close, // if false: open loop; true: close loop
+        Properties::Pointer pProperties);
 
     /// Create the triangle elements on the cylinder
     static ConditionMeshInfoSimpleType CreateTriangleConditions(ModelPart& r_model_part,
@@ -150,12 +161,10 @@ public:
         const int& activation_level,
         Properties::Pointer pProperties);
 
-
     /// Create the conditions out from the section
     static ConditionMeshInfoSimpleType CreateTriangleConditions(ModelPart& r_model_part,
         const Section& rSection, const std::string& sample_condition_name,
         Properties::Pointer pProperties);
-
 
     /// Create the quad elements based on given points list
     static ElementMeshInfoType CreateQuadElements(ModelPart& r_model_part,
@@ -165,7 +174,6 @@ public:
         const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
         const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
         Properties::Pointer pProperties);
-
 
     /// Create the quad elements based on given points list
     static ElementMeshInfoType CreateQuadElements(ModelPart& r_model_part,
@@ -176,7 +184,6 @@ public:
         const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
         const int& initial_activation_level,
         Properties::Pointer pProperties);
-
 
     /// Create the quad conditions based on given points list
     static ConditionMeshInfoType CreateQuadConditions(ModelPart& r_model_part,
@@ -189,14 +196,12 @@ public:
         const bool& reverse,
         Properties::Pointer pProperties);
 
-
     /// Create a block of hex elements based on given points list
     static ElementMeshInfoType CreateHexElements(ModelPart& r_model_part,
         const std::vector<std::vector<std::vector<PointType> > >& sampling_points,
         const std::string& sample_element_name,
         const int& type, // if 1: generate H8 elements; 2: H20 elements; 3: H27 elements
         Properties::Pointer pProperties);
-
 
     /// Helper function to compute the global coordinates in the reference frame
     static CoordinatesArrayType& GlobalCoordinates0( const GeometryType& rGeometry, CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
@@ -213,7 +218,6 @@ public:
 
         return rResult;
     }
-
 
     /// Helper function to compute the global coordinates in the current frame
     static CoordinatesArrayType& GlobalCoordinates( const GeometryType& rGeometry, CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
@@ -361,6 +365,19 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
+
+    /// Create the line entities based on given points list
+    template<class TEntityType, class TEntitiesContainerType>
+    static std::tuple<NodesContainerType, TEntitiesContainerType> CreateLineEntities(
+        ModelPart& r_model_part,
+        TEntitiesContainerType& rEntities,
+        const std::vector<PointType>& sampling_points,
+        const TEntityType& rCloneElement,
+        std::size_t& last_node_id,
+        std::size_t& last_element_id,
+        const int& type, // if 1: generate L2 elements; 2: L3 elements;
+        const bool& close, // if false: open loop; true: close loop
+        Properties::Pointer pProperties);
 
     /// Create the mesh of triangle elements based on given points list
     /// Internally, a Delaunay triangulation is used to generate the triangle mesh

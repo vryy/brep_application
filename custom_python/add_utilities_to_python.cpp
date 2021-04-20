@@ -11,6 +11,7 @@
 #include <boost/python.hpp>
 
 // Project includes
+#include "includes/model_part.h"
 #include "custom_python/add_utilities_to_python.h"
 #ifdef BREP_APPLICATION_USE_OPENCASCADE
 #include "custom_utilities/occ_utility.h"
@@ -75,6 +76,11 @@ Element::GeometryType::PointType::PointType BRepUtility_ComputerCenterElement(BR
 Condition::GeometryType::PointType::PointType BRepUtility_ComputerCenterCondition(BRepUtility& rDummy, Condition::Pointer pCondition)
 {
     return rDummy.ComputeCenter(pCondition->GetGeometry());
+}
+
+Condition::GeometryType::PointType::PointType BRepUtility_ComputerCenterConditions(BRepUtility& rDummy, ModelPart::ConditionsContainerType& rConditions)
+{
+    return rDummy.ComputeCenter(rConditions);
 }
 
 boost::python::list BRepMeshUtility_CreateTriangleConditions1(BRepMeshUtility& rDummy,
@@ -337,6 +343,7 @@ void BRepApplication_AddUtilitiesToPython()
     .def("SwapConnectivityOfVolume", &BRepUtility_Swap<3, std::vector<std::size_t> >)
     .def("ComputeCenter", &BRepUtility_ComputerCenterElement)
     .def("ComputeCenter", &BRepUtility_ComputerCenterCondition)
+    .def("ComputeCenter", &BRepUtility_ComputerCenterConditions)
     ;
 
     class_<BRepMeshUtility, BRepMeshUtility::Pointer, boost::noncopyable>
