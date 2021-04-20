@@ -624,20 +624,14 @@ private:
             num_1 = num_division_1;
             num_2 = num_division_2 + 1;
         }
-        else if (type == 2)
-        {
-            node.resize(8);
-            num_1 = num_division_1/2;
-            num_2 = (num_division_2+1)/2;
-        }
-        else if (type == 3)
+        else if ((type == 2) || (type == 3))
         {
             node.resize(9);
             num_1 = num_division_1/2;
             num_2 = (num_division_2+1)/2;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid type", type)
+            KRATOS_THROW_ERROR(std::logic_error, "Invalid mesh type", type)
 
         condition_connectivities.resize(num_1);
 
@@ -678,7 +672,7 @@ private:
                     node[4] = last_id + (2*i + 1) * (num_division_2+1) + 2*j + 2;
                     node[7] = last_id + (2*i + 2) * (num_division_2+1) + 2*j + 2;
 
-                    if (j < num_2-1)
+                    if (j < num_2-1) // // num_2-1 == num_division_2
                     {
                         node[2] = last_id + 2*i * (num_division_2+1) + 2*j + 3;
                         node[5] = last_id + (2*i + 1) * (num_division_2+1) + 2*j + 3;
