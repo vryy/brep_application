@@ -28,6 +28,7 @@
 
 // Project includes
 #include "includes/model_part.h"
+#include "utilities/openmp_utils.h"
 #include "custom_algebra/level_set/level_set.h"
 #include "custom_utilities/grid_binning.h"
 #include "custom_utilities/brep_mesh_utility.h"
@@ -201,27 +202,87 @@ public:
 
             // TODO can we parallelize this process?
 
-            boost::progress_display progress(rElements.size());
+            /** serial calculation of the nodal level set values **/
+            // boost::progress_display progress(rElements.size());
+            // for (ModelPart::ElementsContainerType::const_iterator it = rElements.begin(); it != rElements.end(); ++it)
+            // {
+            //     for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
+            //     {
+            //         if (mNodalNodalLevelSetValues.find(it->GetGeometry()[i].Id()) == mNodalNodalLevelSetValues.end())
+            //         {
+            //             // std::cout << "compute for node " << it->GetGeometry()[i].Id() << std::endl;
+            //             mNodalNodalLevelSetValues[it->GetGeometry()[i].Id()] = mpLevelSet->GetValue(it->GetGeometry()[i].GetInitialPosition());
+            //         }
+            //     }
+            //     ++progress;
+            // }
+
+            /** multithreaded calculation of the nodal level set values **/
+
+            // collect all the nodes and coordinates
+            std::unordered_map<std::size_t, double> X_coords;
+            std::unordered_map<std::size_t, double> Y_coords;
+            std::unordered_map<std::size_t, double> Z_coords;
             for (ModelPart::ElementsContainerType::const_iterator it = rElements.begin(); it != rElements.end(); ++it)
             {
                 for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
                 {
-                    if (mNodalNodalLevelSetValues.find(it->GetGeometry()[i].Id()) == mNodalNodalLevelSetValues.end())
-                    {
-                        // std::cout << "compute for node " << it->GetGeometry()[i].Id() << std::endl;
-                        mNodalNodalLevelSetValues[it->GetGeometry()[i].Id()] = mpLevelSet->GetValue(it->GetGeometry()[i].GetInitialPosition());
-                    }
+                    X_coords[it->GetGeometry()[i].Id()] = it->GetGeometry()[i].GetInitialPosition()[0];
+                    Y_coords[it->GetGeometry()[i].Id()] = it->GetGeometry()[i].GetInitialPosition()[1];
+                    Z_coords[it->GetGeometry()[i].Id()] = it->GetGeometry()[i].GetInitialPosition()[2];
                 }
-                ++progress;
             }
 
-            #ifdef ENABLE_PROFILING
-            std::cout << "Initialize nodal level set from " << rElements.size()
-                      << " elements completed, time = " << (OpenMPUtils::GetCurrentTime() - start) << "s" << std::endl;
-            #else
-                      std::cout << "Initialize nodal level set from " << rElements.size()
-                      << " elements completed" << std::endl;
-            #endif
+            std::vector<std::size_t> node_ids(X_coords.size());
+            std::size_t cnt = 0;
+            for (auto it : X_coords)
+                node_ids[cnt++] = it.first;
+
+            // boost::progress_display progress(node_ids.size());
+            // for (auto it : node_ids)
+            // {
+            //     mNodalNodalLevelSetValues[it] = mpLevelSet->GetValue(X_coords[it], Y_coords[it], Z_coords[it]);
+            //     ++progress;
+            // }
+
+            // create a partition of the node array
+            int number_of_threads = OpenMPUtils::GetNumThreads();
+            std::size_t number_of_nodes = node_ids.size();
+            std::cout << "Number of threads for nodal level set " << this->Name() << " calculation: " << number_of_threads << std::endl;
+            std::cout << "Number of nodes for nodal level set " << this->Name() << " calculation: " << number_of_nodes << std::endl;
+
+            boost::numeric::ublas::vector<unsigned int> node_partition;
+            OpenMPUtils::CreatePartition(number_of_threads, number_of_nodes, node_partition);
+            KRATOS_WATCH(node_partition)
+
+            std::vector<std::vector<double> > nodal_values(number_of_threads);
+            for (int k = 0; k < number_of_threads; ++k)
+                nodal_values[k].resize(node_partition[k+1] - node_partition[k]);
+
+            // parallel calculation of nodal level set values
+            boost::progress_display progress(node_ids.size());
+            #pragma omp parallel for
+            for (int k = 0; k < number_of_threads; ++k)
+            {
+                std::size_t node_id, cnt1 = 0;
+                for (std::size_t i = node_partition[k]; i < node_partition[k+1]; ++i)
+                {
+                    node_id = node_ids[i];
+                    nodal_values[k][cnt1++] = mpLevelSet->GetValue(X_coords[node_id], Y_coords[node_id], Z_coords[node_id]);
+                    ++progress;
+                }
+            }
+
+            // populate the nodal level set value container
+            for (int k = 0; k < number_of_threads; ++k)
+            {
+                std::size_t node_id, cnt1 = 0;
+                for (std::size_t i = node_partition[k]; i < node_partition[k+1]; ++i)
+                {
+                    node_id = node_ids[i];
+                    mNodalNodalLevelSetValues[node_id] = nodal_values[k][cnt1++];
+                }
+            }
 
             if (mOpMode == 1)
             {
