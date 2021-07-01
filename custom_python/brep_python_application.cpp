@@ -18,6 +18,7 @@
 // Project includes
 #include "includes/define.h"
 #include "brep_application.h"
+#include "brep_application_variables.h"
 #include "custom_python/add_custom_algebra_to_python.h"
 #include "custom_python/add_brep_and_level_set_to_python.h"
 #include "custom_python/add_transformation_to_python.h"

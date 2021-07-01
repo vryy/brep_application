@@ -17,23 +17,18 @@
 
 // Project includes
 #include "brep_application.h"
-// #include "geometries/triangle_2d_3.h"
+#include "brep_application_variables.h"
 
 
 namespace Kratos
 {
 
-    KRATOS_CREATE_VARIABLE( boost::python::object, LOAD_FUNCTION )
-    KRATOS_CREATE_VARIABLE( int, CUT_STATUS )
-    KRATOS_CREATE_VARIABLE( double, CURVE_SEARCH_TOLERANCE )
-    KRATOS_CREATE_VARIABLE( int, CURVE_MAX_ITERATIONS )
-    KRATOS_CREATE_VARIABLE( double, CURVE_LOWER_BOUND )
-    KRATOS_CREATE_VARIABLE( double, CURVE_UPPER_BOUND )
-    KRATOS_CREATE_VARIABLE( int, CURVE_NUMBER_OF_SAMPLING )
-    KRATOS_CREATE_VARIABLE( Vector, PLANE_EQUATION_PARAMETERS )
-
     KratosBRepApplication::KratosBRepApplication()
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    : KratosApplication("KratosBRepApplication")
+    #else
     : KratosApplication()
+    #endif
     {}
 
     void KratosBRepApplication::Register()
@@ -43,7 +38,7 @@ namespace Kratos
         std::cout << "Initializing KratosBRepApplication... " << std::endl;
 
         // register variables to Kratos kernel
-        KRATOS_REGISTER_VARIABLE( LOAD_FUNCTION )
+        //KRATOS_REGISTER_VARIABLE( LOAD_FUNCTION )
         KRATOS_REGISTER_VARIABLE( CUT_STATUS )
         KRATOS_REGISTER_VARIABLE( CURVE_SEARCH_TOLERANCE )
         KRATOS_REGISTER_VARIABLE( CURVE_MAX_ITERATIONS )

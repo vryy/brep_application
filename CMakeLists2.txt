@@ -1,0 +1,116 @@
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+message("**** configuring KratosBRepApplication ****")
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/custom_cmake_modules")
+
+#include cotire (CMake module to hep generating precompiled header to speed-up the build process)
+# include(cotire)
+
+######### add include directory here
+include_directories( ${CMAKE_SOURCE_DIR}/kratos )
+include_directories( ${CMAKE_SOURCE_DIR}/applications )
+#######################################################################
+
+FIND_PACKAGE(MathPresso QUIET)
+IF(${MATHPRESSO_FOUND} MATCHES TRUE)
+    MESSAGE("mathpresso is found at " ${MATHPRESSO_DIR})
+    ADD_DEFINITIONS(-DBREP_APPLICATION_USE_MASHPRESSO)
+ELSE()
+    MESSAGE("mathpresso is not found")
+ENDIF()
+
+FIND_PACKAGE(OpenCasCade QUIET)
+IF(${OCC_FOUND} MATCHES TRUE)
+    MESSAGE("BRepApplication uses OpenCasCade with include directory:" ${OCC_INCLUDE_DIR})
+    MESSAGE("BRepApplication uses OpenCasCade with libraries:" ${OCC_LIBRARIES})
+    include_directories(${OCC_INCLUDE_DIR})
+    ADD_DEFINITIONS(-DBREP_APPLICATION_USE_OPENCASCADE)
+ELSE()
+    MESSAGE("OpenCasCade is not found")
+ENDIF()
+
+#FIND_PACKAGE(CityGML QUIET)
+#IF(${CITYGML_FOUND} MATCHES TRUE)
+#    MESSAGE("CityGML libraries:" ${CITYGML_LIBRARIES})
+#    include_directories(${CITYGML_INCLUDE_DIR})
+#    ADD_DEFINITIONS(-DBREP_APPLICATION_USE_CITYGML)
+#ELSE()
+#    MESSAGE("CityGML is not found")
+#ENDIF()
+
+FIND_PACKAGE(CGAL QUIET)
+if(CGAL_FOUND)
+    # SET(CGAL_DIR ${CGAL_ROOT}/lib/CGAL)
+    add_definitions(-DBREP_APPLICATION_USE_CGAL)
+    add_definitions(-DBREP_APPLICATION_USE_GMP)
+    INCLUDE_DIRECTORIES(${CGAL_INCLUDE_DIR})
+    message(STATUS "CGAL is found at " ${CGAL_ROOT} " and enabled for BRepApplication")
+else()
+    message(STATUS "CGAL is not found and linked with BRepApplication")
+endif()
+
+
+######### add compilation units here
+set( KRATOS_BREP_APPLICATION_SOURCES
+    # main application compilation unit
+    ${CMAKE_CURRENT_SOURCE_DIR}/brep_application_variables.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/brep_application.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_algebra/brep.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/brep_mesh_utility.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_custom_algebra_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_transformation_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_brep_and_level_set_to_python.cpp
+)
+
+IF(${OCC_FOUND} MATCHES TRUE)
+set( KRATOS_BREP_APPLICATION_SOURCES ${KRATOS_BREP_APPLICATION_SOURCES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/MakeSphere.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/MakeBottle.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/ReadSTEP.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/WriteSTEP.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_occ_to_python.cpp
+)
+endif()
+
+set( KRATOS_BREP_APPLICATION_SOURCES ${KRATOS_BREP_APPLICATION_SOURCES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_utilities_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/brep_python_application.cpp
+)
+#######################################################################
+
+## define library Kratos which defines the basic python interface
+add_library(KratosBRepApplication SHARED ${KRATOS_BREP_APPLICATION_SOURCES})
+target_link_libraries(KratosBRepApplication KratosCore)
+IF(${MATHPRESSO_FOUND} MATCHES TRUE)
+    target_link_libraries(KratosBRepApplication ${MATHPRESSO_LIBRARIES})
+ENDIF()
+IF(${OCC_FOUND} MATCHES TRUE)
+    target_link_libraries(KratosBRepApplication ${OCC_LIBRARIES})
+ENDIF()
+if(${CGAL_FOUND})
+    target_link_libraries(KratosBRepApplication ${CGAL_LIBRARIES})
+    target_link_libraries(KratosBRepApplication ${GMP_LIBRARIES})
+endif()
+set_target_properties(KratosBRepApplication PROPERTIES PREFIX "")
+# cotire(KratosBRepApplication)
+install(TARGETS KratosBRepApplication DESTINATION libs )
+#######################################################################
+
+## changing the .dll suffix to .pyd for Windows compatibility
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    set_target_properties(KratosBRepApplication PROPERTIES SUFFIX .pyd)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+#######################################################################
+
+## install application's python script if required
+if(${INSTALL_PYTHON_FILES} MATCHES ON)
+  get_filename_component (CURRENT_DIR_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python_scripts DESTINATION applications/${CURRENT_DIR_NAME}  FILES_MATCHING PATTERN "*.py"  PATTERN ".svn" EXCLUDE)
+endif(${INSTALL_PYTHON_FILES} MATCHES ON)
+#######################################################################
+
+## Add to the KratosMultiphysics Python module
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/BRepApplication.py" DESTINATION KratosMultiphysics )
+install(FILES ${MATHPRESSO_LIBRARIES} DESTINATION libs )
+#######################################################################
