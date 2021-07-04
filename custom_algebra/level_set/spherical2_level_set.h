@@ -12,8 +12,8 @@
 //
 
 
-#if !defined(KRATOS_SPHERICAL_LEVEL_SET_H_INCLUDED )
-#define  KRATOS_SPHERICAL_LEVEL_SET_H_INCLUDED
+#if !defined(KRATOS_SPHERICAL_2_LEVEL_SET_H_INCLUDED )
+#define  KRATOS_SPHERICAL_2_LEVEL_SET_H_INCLUDED
 
 
 
@@ -27,7 +27,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "custom_algebra/level_set/level_set.h"
+#include "custom_algebra/level_set/spherical_level_set.h"
 
 
 namespace Kratos
@@ -54,37 +54,36 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-///
-/**
- * Level set representing the signed-distance function to a sphere
- */
-class SphericalLevelSet : public LevelSet
+/// Short class definition.
+/** Detail class definition.
+*/
+class Spherical2LevelSet : public SphericalLevelSet
 {
 public:
     ///@name Type Definitions
     ///@{
 
-    /// Pointer definition of SphericalLevelSet
-    KRATOS_CLASS_POINTER_DEFINITION(SphericalLevelSet);
+    /// Pointer definition of Spherical2LevelSet
+    KRATOS_CLASS_POINTER_DEFINITION(Spherical2LevelSet);
 
-    typedef LevelSet BaseType;
+    typedef SphericalLevelSet BaseType;
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    SphericalLevelSet(const double& cX, const double& cY, const double& cZ, const double& R)
-    : BaseType(), mcX(cX), mcY(cY), mcZ(cZ), mR(R)
+    Spherical2LevelSet(const double& cX, const double& cY, const double& cZ, const double& R)
+    : BaseType(cX, cY, cZ, R)
     {}
 
     /// Copy constructor.
-    SphericalLevelSet(SphericalLevelSet const& rOther)
-    : BaseType(rOther), mcX(rOther.mcX), mcY(rOther.mcY), mcZ(rOther.mcZ), mR(rOther.mR)
+    Spherical2LevelSet(Spherical2LevelSet const& rOther)
+    : BaseType(rOther)
     {}
 
     /// Destructor.
-    virtual ~SphericalLevelSet() {}
+    virtual ~Spherical2LevelSet() {}
 
 
     ///@}
@@ -97,47 +96,27 @@ public:
     ///@{
 
 
-    LevelSet::Pointer CloneLevelSet() const override
+    LevelSet::Pointer CloneLevelSet() const final
     {
-        return LevelSet::Pointer(new SphericalLevelSet(*this));
+        return LevelSet::Pointer(new Spherical2LevelSet(*this));
     }
 
 
-    std::size_t WorkingSpaceDimension() const final
+    double GetValue(const PointType& P) const final
     {
-        return 3;
+        return pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2) + pow(P(2) - mcZ, 2) - pow(mR, 2);
     }
 
 
-    double GetValue(const PointType& P) const override
-    {
-        return sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2) + pow(P(2) - mcZ, 2)) - mR;
-    }
-
-
-    Vector GetGradient(const PointType& P) const override
+    Vector GetGradient(const PointType& P) const final
     {
         Vector grad(3);
-        double aux = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2) + pow(P(2) - mcZ, 2));
-        grad(0) = (P(0) - mcX) / aux;
-        grad(1) = (P(1) - mcY) / aux;
-        grad(2) = (P(2) - mcZ) / aux;
+        grad(0) = 2.0 * (P(0) - mcX);
+        grad(1) = 2.0 * (P(1) - mcY);
+        grad(2) = 2.0 * (P(2) - mcZ);
         return grad;
     }
 
-    /// projects a point on the surface of level_set
-    int ProjectOnSurface(const PointType& P, PointType& Proj) const final
-    {
-        double vector_length = sqrt(pow(P(0)-mcX, 2) + pow(P(1)-mcY, 2) + pow(P(2)-mcZ, 2));
-        if (vector_length == 0)
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's in the center of Brep sphere  ", "");
-
-        Proj(0) = (P(0) - mcX) * mR / vector_length + mcX;
-        Proj(1) = (P(1) - mcY) * mR / vector_length + mcY;
-        Proj(2) = (P(2) - mcZ) * mR / vector_length + mcZ;
-
-        return 0;
-    }
 
     ///@}
     ///@name Access
@@ -154,15 +133,9 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const override
+    std::string Info() const final
     {
-        return "Spherical Level Set";
-    }
-
-    /// Print object's data.
-    void PrintData(std::ostream& rOStream) const final
-    {
-        rOStream << "cX: " << mcX << ", cY: " << mcY << ", cZ: " << mcZ << ", R: " << mR;
+        return "Spherical-2 Level Set";
     }
 
 
@@ -182,7 +155,6 @@ protected:
     ///@name Protected member Variables
     ///@{
 
-    double mcX, mcY, mcZ, mR;
 
     ///@}
     ///@name Protected Operators
@@ -246,11 +218,11 @@ private:
     ///@{
 
     /// Assignment operator.
-    SphericalLevelSet& operator=(SphericalLevelSet const& rOther);
+    Spherical2LevelSet& operator=(Spherical2LevelSet const& rOther);
 
     ///@}
 
-}; // Class SphericalLevelSet
+}; // Class Spherical2LevelSet
 
 ///@}
 
@@ -265,12 +237,12 @@ private:
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
-                SphericalLevelSet& rThis)
+                Spherical2LevelSet& rThis)
 {}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,
-                const SphericalLevelSet& rThis)
+                const Spherical2LevelSet& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -284,4 +256,4 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_SPHERICAL_LEVEL_SET_H_INCLUDED  defined
+#endif // KRATOS_SPHERICAL_2_LEVEL_SET_H_INCLUDED  defined

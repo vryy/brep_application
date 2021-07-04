@@ -55,9 +55,11 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
+///
+/**
+ * Level set representing the signed distance function to a circle
+ * f = sqrt((X - cx)^2 + (Y - cy)^2) - R
+ */
 class CircularLevelSet : public LevelSet
 {
 public:
@@ -69,7 +71,13 @@ public:
 
     typedef LevelSet BaseType;
 
+    #if defined(__clang__)
+    static constexpr double PI = 3.1415926535897932384626433832795028841971693;
+    #elif defined(__GNUC__) || defined(__GNUG__)
     static constexpr double PI = std::atan(1.0)*4;
+    #else
+    static constexpr double PI = std::atan(1.0)*4;
+    #endif
 
     ///@}
     ///@name Life Cycle
@@ -99,7 +107,7 @@ public:
     ///@{
 
 
-    LevelSet::Pointer CloneLevelSet() const final
+    LevelSet::Pointer CloneLevelSet() const override
     {
         return LevelSet::Pointer(new CircularLevelSet(*this));
     }
@@ -111,32 +119,35 @@ public:
     }
 
 
-    double GetValue(const PointType& P) const final
+    double GetValue(const PointType& P) const override
     {
-        return pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2) - pow(mR, 2);
+        return sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2)) - mR;
     }
 
 
-    Vector GetGradient(const PointType& P) const final
+    Vector GetGradient(const PointType& P) const override
     {
         Vector grad(3);
-        grad(0) = 2.0 * (P(0) - mcX);
-        grad(1) = 2.0 * (P(1) - mcY);
+        double aux = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2));
+        grad(0) = (P(0) - mcX) / aux;
+        grad(1) = (P(1) - mcY) / aux;
         grad(2) = 0.0;
         return grad;
     }
 
 
-    Matrix GetGradientDerivatives(const PointType& P) const final
+    Matrix GetGradientDerivatives(const PointType& P) const override
     {
         Matrix Jac(3, 3);
         noalias(Jac) = ZeroMatrix(3, 3);
 
-        Jac(0, 0) = 2.0;
-        Jac(0, 1) = 0.0;
+        double aux = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2));
 
-        Jac(1, 0) = 0.0;
-        Jac(1, 1) = 2.0;
+        Jac(0, 0) = 1.0/aux - pow(P(0) - mcX, 2) / pow(aux, 3);
+        Jac(0, 1) = -(P(0) - mcX)*(P(1) - mcY) / pow(aux, 3);
+
+        Jac(1, 0) = Jac(0, 1);
+        Jac(1, 1) = 1.0/aux - pow(P(1) - mcY, 2) / pow(aux, 3);
 
         return Jac;
     }
@@ -245,7 +256,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const final
+    std::string Info() const override
     {
         return "Circular Level Set";
     }
@@ -273,6 +284,7 @@ protected:
     ///@name Protected member Variables
     ///@{
 
+    double mcX, mcY, mR;
 
     ///@}
     ///@name Protected Operators
@@ -309,9 +321,6 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-
-
-    double mcX, mcY, mR;
 
 
     ///@}

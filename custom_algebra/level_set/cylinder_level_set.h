@@ -30,8 +30,6 @@
 #include "custom_algebra/level_set/level_set.h"
 #include "custom_utilities/brep_mesh_utility.h"
 
-/*#define PI 3.1415926535897932384626433832795028841971693*/
-
 namespace Kratos
 {
 ///@addtogroup BRepApplication
@@ -56,9 +54,10 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
+///
+/**
+ * Level set representing the signed-distance function to a cylinder
+ */
 class CylinderLevelSet : public LevelSet
 {
 public:
@@ -70,7 +69,13 @@ public:
 
     typedef LevelSet BaseType;
 
+    #if defined(__clang__)
+    static constexpr double PI = 3.1415926535897932384626433832795028841971693;
+    #elif defined(__GNUC__) || defined(__GNUG__)
     static constexpr double PI = std::atan(1.0)*4;
+    #else
+    static constexpr double PI = std::atan(1.0)*4;
+    #endif
 
     ///@}
     ///@name Life Cycle
@@ -110,7 +115,7 @@ public:
     ///@{
 
 
-    LevelSet::Pointer CloneLevelSet() const final
+    LevelSet::Pointer CloneLevelSet() const override
     {
         return LevelSet::Pointer(new CylinderLevelSet(*this));
     }
@@ -122,58 +127,27 @@ public:
     }
 
 
-    double GetValue(const PointType& P) const final
+    double GetValue(const PointType& P) const override
     {
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
         double pX = mcX + t*mdX;
         double pY = mcY + t*mdY;
         double pZ = mcZ + t*mdZ;
-//        double pX = (P(0) - mcX) * mdX;
-//        double pY = (P(1) - mcY) * mdY;
-//        double pZ = (P(2) - mcZ) * mdZ;
-        return pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2) - pow(mR, 2);
+        return sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2)) - mR;
     }
 
 
-    Vector GetGradient(const PointType& P) const final
+    Vector GetGradient(const PointType& P) const override
     {
-//        double pX = (P(0) - mcX) * mdX;
-//        double pY = (P(1) - mcY) * mdY;
-//        double pZ = (P(2) - mcZ) * mdZ;
-//        Vector grad(3);
-//        grad(0) = 2.0 * (P(0) - pX) * (1.0 - mdX);
-//        grad(1) = 2.0 * (P(1) - pY) * (1.0 - mdY);
-//        grad(2) = 2.0 * (P(2) - pZ) * (1.0 - mdZ);
-
-        double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
-        double pX = mcX + t*mdX;
-        double pY = mcY + t*mdY;
-        double pZ = mcZ + t*mdZ;
-        Vector grad(3);
-        grad(0) = 2.0 * (P(0) - pX) * (1.0 - mdX*mdX);
-        grad(1) = 2.0 * (P(1) - pY) * (1.0 - mdY*mdY);
-        grad(2) = 2.0 * (P(2) - pZ) * (1.0 - mdZ*mdZ);
-        return grad;
+        // TODO
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not yet implemented")
     }
 
 
-    Matrix GetGradientDerivatives(const PointType& P) const final
+    Matrix GetGradientDerivatives(const PointType& P) const override
     {
-        Matrix Jac(3, 3);
-
-        Jac(0, 0) = 2.0 * (1.0 - mdX*mdX) * (1.0 - mdX*mdX);
-        Jac(0, 1) = 2.0 * (1.0 - mdX*mdX) * (-mdX*mdY);
-        Jac(0, 2) = 2.0 * (1.0 - mdX*mdX) * (-mdX*mdZ);
-
-        Jac(1, 0) = 2.0 * (1.0 - mdY*mdY) * (-mdY*mdX);
-        Jac(1, 1) = 2.0 * (1.0 - mdY*mdY) * (1.0 - mdY*mdY);
-        Jac(1, 2) = 2.0 * (1.0 - mdY*mdY) * (-mdY*mdZ);
-
-        Jac(2, 0) = 2.0 * (1.0 - mdZ*mdZ) * (-mdZ*mdX);
-        Jac(2, 1) = 2.0 * (1.0 - mdZ*mdZ) * (-mdZ*mdY);
-        Jac(2, 2) = 2.0 * (1.0 - mdZ*mdZ) * (1.0 - mdZ*mdZ);
-
-        return Jac;
+        // TODO
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not yet implemented")
     }
 
 
@@ -363,7 +337,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const final
+    std::string Info() const override
     {
         return "Cylinder Level Set";
     }
@@ -393,6 +367,10 @@ protected:
     ///@name Protected member Variables
     ///@{
 
+    double mcX, mcY, mcZ; // point on center line
+    double mdX, mdY, mdZ; // director vector
+    double mLength;
+    double mR;
 
     ///@}
     ///@name Protected Operators
@@ -429,13 +407,6 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-
-
-    double mcX, mcY, mcZ; // point on center line
-    double mdX, mdY, mdZ; // director vector
-    double mLength;
-    double mR;
-
 
     ///@}
     ///@name Private Operators
