@@ -97,6 +97,7 @@ std::string GetFormulaMonomialFunctionR3R1(const std::string& Format)
             ss << "1.0";
         return ss.str();
     }
+    return ""; // to reduce the warning from compiler
 }
 
 template<std::size_t TDegreeX, std::size_t TDegreeY, std::size_t TDegreeZ>
