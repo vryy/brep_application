@@ -53,7 +53,10 @@ void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayTy
         }
     }
     else if( r_geom.GetGeometryFamily() == GeometryData::Kratos_Quadrilateral
-        || (r_geom.GetGeometryFamily() == GeometryData::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::Kratos_Bezier2D) )
+    #ifndef SD_APP_FORWARD_COMPATIBILITY
+        || (r_geom.GetGeometryFamily() == GeometryData::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::Kratos_Bezier2D)
+    #endif
+    )
     {
         double xi_min, xi_max, eta_min, eta_max;
 
@@ -113,7 +116,10 @@ void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayTy
         }
     }
     else if( r_geom.GetGeometryFamily() == GeometryData::Kratos_Hexahedra
-        ||  (r_geom.GetGeometryFamily() == GeometryData::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::Kratos_Bezier3D) )
+    #ifndef SD_APP_FORWARD_COMPATIBILITY
+        ||  (r_geom.GetGeometryFamily() == GeometryData::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::Kratos_Bezier3D)
+    #endif
+    )
     {
         double xi_min, xi_max, eta_min, eta_max, zeta_min, zeta_max;
 
@@ -200,8 +206,8 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
     zvec[1] = 0.0;
     zvec[2] = 1.0;
 
-    PointType T1 = MathUtils<double>::CrossProduct(rNormal, zvec);
-    PointType T2 = MathUtils<double>::CrossProduct(rNormal, T1);
+    PointType T1 = static_cast<PointType>(MathUtils<double>::CrossProduct(rNormal, zvec));
+    PointType T2 = static_cast<PointType>(MathUtils<double>::CrossProduct(rNormal, T1));
 
     GenerateSamplingPoints(SamplingPoints, rCenter, T1, T2, radius, nsampling_axial, nsampling_radial);
 }
@@ -212,8 +218,8 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
 {
     const double pi = 4.0*std::atan(1.0);
 
-    PointType T1 = rTangent1 / norm_2(rTangent1);
-    PointType T2 = rTangent2 / norm_2(rTangent2);
+    PointType T1 = static_cast<PointType>(rTangent1 / norm_2(rTangent1));
+    PointType T2 = static_cast<PointType>(rTangent2 / norm_2(rTangent2));
 
     SamplingPoints.push_back(rCenter);
 
@@ -224,7 +230,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
         {
             double theta = (j+1)*2.0*pi / nsampling_radial;
 
-            PointType P = rCenter + r*(std::cos(theta)*T1 + std::sin(theta)*T2);
+            PointType P = static_cast<PointType>(rCenter + r*(std::cos(theta)*T1 + std::sin(theta)*T2));
             SamplingPoints.push_back(P);
         }
     }
@@ -559,7 +565,9 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
             typename TEntityType::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
             // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
             pNewElement->Set(ACTIVE, true);
+            #ifndef SD_APP_FORWARD_COMPATIBILITY
             pNewElement->SetValue(IS_INACTIVE, false);
+            #endif
             if (activation_dir != 0)
                 pNewElement->SetValue(ACTIVATION_LEVEL_var, activation_level + initial_activation_level);
             NewElements.push_back(pNewElement);
@@ -899,7 +907,9 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPar
                 Element::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
                 // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
                 pNewElement->Set(ACTIVE, true);
+                #ifndef SD_APP_FORWARD_COMPATIBILITY
                 pNewElement->SetValue(IS_INACTIVE, false);
+                #endif
                 NewElements.push_back(pNewElement);
             }
         }
@@ -1007,7 +1017,9 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
         typename TEntityType::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
         // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
         pNewElement->Set(ACTIVE, true);
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         pNewElement->SetValue(IS_INACTIVE, false);
+        #endif
         NewElements.push_back(pNewElement);
     }
 
@@ -1036,14 +1048,14 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     if (sampling_points.size() < 3)
         KRATOS_THROW_ERROR(std::logic_error, "The given point list is not sufficient for triangulation", "")
 
-    PointType T1 = sampling_points[1] - sampling_points[0];
+    PointType T1 = static_cast<PointType>(sampling_points[1] - sampling_points[0]);
     T1 /= norm_2(T1);
-    PointType Tmp = sampling_points[2] - sampling_points[0];
+    PointType Tmp = static_cast<PointType>(sampling_points[2] - sampling_points[0]);
 
-    PointType N = MathUtils<double>::CrossProduct(T1, Tmp);
+    PointType N = static_cast<PointType>(MathUtils<double>::CrossProduct(T1, Tmp));
     N /= norm_2(N);
 
-    PointType T2 = MathUtils<double>::CrossProduct(N, T1);
+    PointType T2 = static_cast<PointType>(MathUtils<double>::CrossProduct(N, T1));
     T2 /= norm_2(T2);
 
     // KRATOS_WATCH(T1)
@@ -1131,7 +1143,9 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
         typename TEntityType::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
         // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
         pNewElement->Set(ACTIVE, true);
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         pNewElement->SetValue(IS_INACTIVE, false);
+        #endif
         pNewElement->SetValue(ACTIVATION_LEVEL_var, activation_level);
         NewElements.push_back(pNewElement);
     }
@@ -1188,7 +1202,9 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
         typename TEntityType::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
         // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
         pNewElement->Set(ACTIVE, true);
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         pNewElement->SetValue(IS_INACTIVE, false);
+        #endif
         pNewElement->SetValue(ACTIVATION_LEVEL_var, activation_level);
         NewElements.push_back(pNewElement);
     }
@@ -1335,7 +1351,9 @@ void BRepMeshUtility::CreateEntitiesOnSurface(TEntitiesContainerType& NewConditi
         typename TEntityType::Pointer pNewCondition = rCloneEntity.Create(++last_cond_id, temp_condition_nodes, pProperties);
         // std::cout << "condition " << pNewCondition->Id() << " is created" << std::endl;
         pNewCondition->Set(ACTIVE, true);
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         pNewCondition->SetValue(IS_INACTIVE, false);
+        #endif
         NewConditions.push_back(pNewCondition);
     }
 }
@@ -1393,7 +1411,9 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
             typename TSurfaceEntityType::Pointer pNewCondition = rCloneSurfaceEntity.Create(++last_condition_id, temp_condition_nodes, pProperties);
             // std::cout << "condition " << pNewCondition->Id() << " is created" << std::endl;
             pNewCondition->Set(ACTIVE, true);
+            #ifndef SD_APP_FORWARD_COMPATIBILITY
             pNewCondition->SetValue(IS_INACTIVE, false);
+            #endif
             NewConditions.push_back(pNewCondition);
         }
     }
@@ -1421,7 +1441,9 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
             typename TEntityType::Pointer pNewElement = rCloneEntity.Create(++last_element_id, temp_element_nodes, pProperties);
             // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
             pNewElement->Set(ACTIVE, true);
+            #ifndef SD_APP_FORWARD_COMPATIBILITY
             pNewElement->SetValue(IS_INACTIVE, false);
+            #endif
             NewElements.push_back(pNewElement);
         }
     }
@@ -1482,7 +1504,9 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
             typename TEntityType::Pointer pNewElement = rCloneEntity.Create(++last_element_id, temp_element_nodes, pProperties);
             // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
             pNewElement->Set(ACTIVE, true);
+            #ifndef SD_APP_FORWARD_COMPATIBILITY
             pNewElement->SetValue(IS_INACTIVE, false);
+            #endif
             NewElements.push_back(pNewElement);
         }
     }
@@ -1543,7 +1567,9 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
             typename TEntityType::Pointer pNewElement = rCloneEntity.Create(++last_element_id, temp_element_nodes, pProperties);
             // std::cout << "element " << pNewElement->Id() << " is created" << std::endl;
             pNewElement->Set(ACTIVE, true);
+            #ifndef SD_APP_FORWARD_COMPATIBILITY
             pNewElement->SetValue(IS_INACTIVE, false);
+            #endif
             NewElements.push_back(pNewElement);
         }
     }
