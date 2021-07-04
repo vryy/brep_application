@@ -243,6 +243,8 @@ public:
             return this->CutStatusOfPoints(r_geom, this->GetTolerance());
             // REMARK: this will use the current position of node, e.g. in dynamics
         }
+        else
+            return BRep::_INVALID;
     }
 
 

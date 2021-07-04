@@ -153,12 +153,19 @@ public:
     /// Turn back information as a string.
     std::string Info() const final
     {
-        return "Union Level Set";
+        std::stringstream ss;
+        ss << "(Union Level Set of " << mp_level_set_1->Info() << " and " << mp_level_set_2->Info() << ")";
+        return ss.str();
     }
 
     /// Print object's data.
     void PrintData(std::ostream& rOStream) const final
     {
+        // rOStream << "(" << Info() << " of ";
+        // mp_level_set_1->PrintData(rOStream);
+        // rOStream << " and ";
+        // mp_level_set_1->PrintData(rOStream);
+        // rOStream << ")";
     }
 
 
