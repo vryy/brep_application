@@ -29,9 +29,12 @@
 #include "custom_algebra/level_set/level_set.h"
 #include "custom_algebra/level_set/nodal_level_set.h"
 #include "custom_algebra/level_set/circular_level_set.h"
+#include "custom_algebra/level_set/circular2_level_set.h"
 #include "custom_algebra/level_set/doughnut_level_set.h"
 #include "custom_algebra/level_set/spherical_level_set.h"
+#include "custom_algebra/level_set/spherical2_level_set.h"
 #include "custom_algebra/level_set/cylinder_level_set.h"
+#include "custom_algebra/level_set/cylinder2_level_set.h"
 #include "custom_algebra/level_set/cone_level_set.h"
 #include "custom_algebra/level_set/linear_level_set.h"
 #include "custom_algebra/level_set/planar_level_set.h"
@@ -40,6 +43,7 @@
 #include "custom_algebra/level_set/union_level_set.h"
 #include "custom_algebra/level_set/intersection_level_set.h"
 #include "custom_algebra/level_set/difference_level_set.h"
+#include "custom_algebra/level_set/closest_level_set.h"
 #include "custom_algebra/level_set/distance_to_curve_level_set.h"
 #include "custom_algebra/curve/curve.h"
 #include "custom_algebra/curve/parametric_curve.h"
@@ -409,8 +413,16 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "CircularLevelSet", init<const double&, const double&, const double&>() )
     ;
 
+    class_<Circular2LevelSet, Circular2LevelSet::Pointer, boost::noncopyable, bases<CircularLevelSet> >
+    ( "Circular2LevelSet", init<const double&, const double&, const double&>() )
+    ;
+
     class_<SphericalLevelSet, SphericalLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
     ( "SphericalLevelSet", init<const double&, const double&, const double&, const double&>() )
+    ;
+
+    class_<Spherical2LevelSet, Spherical2LevelSet::Pointer, boost::noncopyable, bases<SphericalLevelSet> >
+    ( "Spherical2LevelSet", init<const double&, const double&, const double&, const double&>() )
     ;
 
     class_<DoughnutLevelSet, DoughnutLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
@@ -422,6 +434,10 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def("CreateQ4Elements", &LevelSet_CreateQ4Elements<CylinderLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoop<CylinderLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoopWithRange<CylinderLevelSet>)
+    ;
+
+    class_<Cylinder2LevelSet, Cylinder2LevelSet::Pointer, boost::noncopyable, bases<CylinderLevelSet> >
+    ( "Cylinder2LevelSet", init<const double&, const double&, const double&, const double&, const double&, const double&, const double&>() )
     ;
 
     class_<ConeLevelSet, ConeLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
@@ -457,6 +473,10 @@ void BRepApplication_AddBRepAndLevelSetToPython()
 
     class_<DifferenceLevelSet, DifferenceLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
     ( "DifferenceLevelSet", init<const LevelSet::Pointer, const LevelSet::Pointer>() )
+    ;
+
+    class_<ClosestLevelSet, ClosestLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
+    ( "ClosestLevelSet", init<const LevelSet::Pointer, const LevelSet::Pointer>() )
     ;
 
     class_<DistanceToCurveLevelSet, DistanceToCurveLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
