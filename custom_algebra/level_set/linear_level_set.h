@@ -55,9 +55,10 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
+///
+/**
+ * Level set representing signed-distance function to a line
+ */
 class LinearLevelSet : public LevelSet
 {
 public:
@@ -77,8 +78,17 @@ public:
 
     /// Default constructor.
     LinearLevelSet(const double& A, const double& B, const double& C)
-    : BaseType(), mA(A), mB(B), mC(C)
-    {}
+    : BaseType()
+    {
+        double aux = sqrt(pow(A, 2) + pow(B, 2));
+
+        if (aux < 1.0e-10)
+            KRATOS_THROW_ERROR(std::logic_error, "The line is degenerated", "")
+
+        mA = A / aux;
+        mB = B / aux;
+        mC = C / aux;
+    }
 
     /// Copy constructor.
     LinearLevelSet(LinearLevelSet const& rOther)

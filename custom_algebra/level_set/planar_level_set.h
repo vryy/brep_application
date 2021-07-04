@@ -54,9 +54,10 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
+///
+/**
+ * Level set representing signed-distance function to a plane
+ */
 class PlanarLevelSet : public LevelSet
 {
 public:
@@ -76,8 +77,18 @@ public:
 
     /// Default constructor.
     PlanarLevelSet(const double& A, const double& B, const double& C, const double& D)
-    : BaseType(), mA(A), mB(B), mC(C), mD(D)
-    {}
+    : BaseType()
+    {
+        double aux = sqrt(pow(A, 2) + pow(B, 2) + pow(C, 2));
+
+        if (aux < 1.0e-10)
+            KRATOS_THROW_ERROR(std::logic_error, "The plane is degenerated", "")
+
+        mA = A / aux;
+        mB = B / aux;
+        mC = C / aux;
+        mD = D / aux;
+    }
 
     /// Contructor with origin and normal vector
     PlanarLevelSet(const PointType& Origin, const PointType& Normal)
