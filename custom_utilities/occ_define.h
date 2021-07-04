@@ -12,11 +12,19 @@ namespace Kratos
 namespace OCC
 {
 
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+template<class T>
+using shared_ptr = Kratos::shared_ptr<T>;
+
+template<class T>
+using weak_ptr = Kratos::weak_ptr<T>;
+#else
 template<class T>
 using shared_ptr = boost::shared_ptr<T>;
 
 template<class T>
 using weak_ptr = boost::weak_ptr<T>;
+#endif
 
 /// Helper function to print OCC object
 template<class T>
