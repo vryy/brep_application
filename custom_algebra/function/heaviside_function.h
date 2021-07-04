@@ -116,7 +116,7 @@ public:
 
     double GetValue(const InputType& P) const final
     {
-        if(mr_brep.IsInside(P))
+        if(mr_brep.IsInside(static_cast<BRep::PointType>(P)))
             return 1.0;
         else
             return 0.0;

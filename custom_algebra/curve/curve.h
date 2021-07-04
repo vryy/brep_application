@@ -34,7 +34,7 @@
 #include "containers/data_value_container.h"
 #include "custom_algebra/function/function.h"
 #include "custom_algebra/level_set/level_set.h"
-#include "brep_application/brep_application.h"
+#include "brep_application_variables.h"
 
 
 namespace Kratos
@@ -378,11 +378,11 @@ private:
         // if the bisection can't find the point in [tmin, tmax] region. The projection point will be computed before tmin or after tmax using the tangent information on that point.
         if (stat != 0)
         {
-            PointType First = this->GetValue(tmin);
-            PointType dFirst = this->GetDerivative(0, tmin);
+            PointType First = static_cast<PointType>(this->GetValue(tmin));
+            PointType dFirst = static_cast<PointType>(this->GetDerivative(0, tmin));
 
-            PointType Last = this->GetValue(tmax);
-            PointType dLast = this->GetDerivative(0, tmax);
+            PointType Last = static_cast<PointType>(this->GetValue(tmax));
+            PointType dLast = static_cast<PointType>(this->GetDerivative(0, tmax));
 
             double test1 = inner_prod(P - First, dFirst);
             double test2 = inner_prod(P - Last, dLast);
