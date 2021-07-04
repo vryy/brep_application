@@ -56,9 +56,9 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
- * Level Set that compute the distance to a curve
+///
+/**
+ * Level Set computes the distance to a curve
  */
 class DistanceToCurveLevelSet : public LevelSet
 {
@@ -144,7 +144,7 @@ public:
         if (P(0) == Proj(0) && P(1) == Proj(1) && P(2) == Proj(2))
             KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the curve of Brep distance_to_curve  ", "");
 
-        Proj = (P - Proj) * mR / norm_2(P - Proj) + Proj;
+        noalias(Proj) = (P - Proj) * mR / norm_2(P - Proj) + Proj;
 
         return 0;
     }
