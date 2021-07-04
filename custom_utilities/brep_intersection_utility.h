@@ -147,8 +147,8 @@ public:
 
         // perform the sampling on the effective circle
         double a, c, s;
-        constexpr double pi = atan(1.0)*4;
-        constexpr double rfactor = 2.0; // we take the factor 2 to make sure the point is outside the distance-to-curve level set
+        const double pi = atan(1.0)*4;
+        const double rfactor = 2.0; // we take the factor 2 to make sure the point is outside the distance-to-curve level set
         PointType P;
         rPoints.resize(nsampling);
         for (std::size_t i = 0; i < nsampling; ++i)

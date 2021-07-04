@@ -30,8 +30,6 @@
 #include "custom_algebra/level_set/level_set.h"
 #include "custom_utilities/brep_mesh_utility.h"
 
-/*#define PI 3.1415926535897932384626433832795028841971693*/
-
 namespace Kratos
 {
 ///@addtogroup BRepApplication
@@ -70,7 +68,13 @@ public:
 
     typedef LevelSet BaseType;
 
+    #if defined(__clang__)
+    static constexpr double PI = 3.1415926535897932384626433832795028841971693;
+    #elif defined(__GNUC__) || defined(__GNUG__)
     static constexpr double PI = std::atan(1.0)*4;
+    #else
+    static constexpr double PI = std::atan(1.0)*4;
+    #endif
 
     ///@}
     ///@name Life Cycle

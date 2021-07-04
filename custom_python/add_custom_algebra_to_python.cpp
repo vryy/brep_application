@@ -329,9 +329,9 @@ void BRepApplication_AddFunctionsToPython()
     ( "FunctionR3RnVariable", no_init )
     ;
 
-    class_<Variable<boost::python::object>, boost::noncopyable>
-    ( "PythonObject", no_init )
-    ;
+    // class_<Variable<boost::python::object>, boost::noncopyable> // does not compile with clang
+    // ( "PythonObject", no_init )
+    // ;
 
     typedef HeavisideFunction<FunctionR3R1> HeavisideFunctionR3R1;
     class_<HeavisideFunctionR3R1, HeavisideFunctionR3R1::Pointer, boost::noncopyable, bases<FunctionR3R1> >
