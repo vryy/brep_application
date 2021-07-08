@@ -935,7 +935,7 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     const TEntityType& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& type, // if 1: generate L2 elements; 2: L3 elements;
+    const int& type, // if 1: generate L2 elements; 2, 3: L3 elements; from 13 to 19: 13 (L4 element), 14 (L5 element), ...
     const bool& close, // if false: open loop; true: close loop
     Properties::Pointer pProperties)
 {
@@ -945,27 +945,42 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     std::size_t last_node_id_old = last_node_id;
     std::size_t num_division_1 = sampling_points.size() - 1;
     // KRATOS_WATCH(last_node_id)
+    // KRATOS_WATCH(last_node_id_old)
+    // KRATOS_WATCH(num_division_1)
 
     std::size_t num_1, num_2;
     std::vector<std::size_t> node;
-    if (type == 1)
+    int order;
+    if (type == 1) // L2 element
     {
+        order = 1;
         node.resize(2);
         if (close)
             num_1 = num_division_1 + 1;
         else
             num_1 = num_division_1;
     }
-    else if (type == 2 || type == 3)
+    else if (type == 2 || type == 3) // L3 element
     {
+        order = 2;
         node.resize(3);
         if (close)
             num_1 = (num_division_1+1)/2;
         else
             num_1 = num_division_1/2;
     }
+    else if (type >= 13 && type <= 19) // high-order line element
+    {
+        order = type % 10;
+        node.resize(order+1);
+        if (close)
+            num_1 = (num_division_1+1)/order;
+        else
+            num_1 = num_division_1/order;
+    }
     else
         KRATOS_THROW_ERROR(std::logic_error, "Invalid mesh type", type)
+    // KRATOS_WATCH(num_1)
 
     // firstly create nodes and add to model_part
     ModelPart::NodesContainerType NewNodes;
@@ -1012,6 +1027,25 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
             temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[0], NodeKey).base()));
             temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[1], NodeKey).base()));
             temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[2], NodeKey).base()));
+        }
+        else if (type >= 13 && type <= 19)
+        {
+            node[0] = last_node_id_old + order*i + 1;
+            if (i < num_division_1/order)
+                node[1] = last_node_id_old + order*i + order + 1;
+            else
+                node[1] = last_node_id_old + 1;
+
+            for (int j = 0; j < order-1; ++j)
+                node[j+2] = last_node_id_old + order*i + j + 2;
+
+            // std::cout << "node:";
+            // for (int j = 0; j < order+1; ++j)
+            //     std::cout << " " << node[j];
+            // std::cout << std::endl;
+
+            for (int j = 0; j < order+1; ++j)
+                temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[j], NodeKey).base()));
         }
 
         typename TEntityType::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);

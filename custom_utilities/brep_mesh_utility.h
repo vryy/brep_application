@@ -375,7 +375,7 @@ private:
         const TEntityType& rCloneElement,
         std::size_t& last_node_id,
         std::size_t& last_element_id,
-        const int& type, // if 1: generate L2 elements; 2: L3 elements;
+        const int& type, // if 1: generate L2 elements; 2, 3: L3 elements;
         const bool& close, // if false: open loop; true: close loop
         Properties::Pointer pProperties);
 
