@@ -245,6 +245,10 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateLineElements(ModelPa
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
     std::size_t last_element_id = BRepUtility::GetLastElementId(r_model_part);
+
+    if (!KratosComponents<Element>::Has(sample_element_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "does not exist in the Kratos database")
+
     Element const& rCloneElement = KratosComponents<Element>::Get(sample_element_name);
 
     BoundaryLayerInfoType boundary_layers;
@@ -271,6 +275,10 @@ BRepMeshUtility::ConditionMeshInfoType BRepMeshUtility::CreateLineConditions(Mod
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
     std::size_t last_condition_id = BRepUtility::GetLastConditionId(r_model_part);
+
+    if (!KratosComponents<Condition>::Has(sample_condition_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "does not exist in the Kratos database")
+
     Condition const& rCloneCondition = KratosComponents<Condition>::Get(sample_condition_name);
 
     BoundaryLayerInfoType boundary_layers;
@@ -302,6 +310,9 @@ BRepMeshUtility::ConditionMeshInfoSimpleType BRepMeshUtility::CreateTriangleCond
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
     std::size_t last_cond_id = BRepUtility::GetLastConditionId(r_model_part);
 
+    if (!KratosComponents<Condition>::Has(sample_condition_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "does not exist in the Kratos database")
+
     const Condition& rCloneCondition = KratosComponents<Condition>::Get(sample_condition_name);
 
     return CreateTriangleEntities<Condition, ModelPart::ConditionsContainerType>(r_model_part, r_model_part.Conditions(),
@@ -319,6 +330,9 @@ BRepMeshUtility::ConditionMeshInfoSimpleType BRepMeshUtility::CreateTriangleCond
     std::vector<PointType> points;
     std::vector<std::vector<std::size_t> > connectivities;
     rSection.Triangulation(points, connectivities);
+
+    if (!KratosComponents<Condition>::Has(sample_condition_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "does not exist in the Kratos database")
 
     const Condition& rCloneCondition = KratosComponents<Condition>::Get(sample_condition_name);
     int activation_level = 0;
@@ -446,6 +460,9 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
     else
         KRATOS_THROW_ERROR(std::logic_error, "Invalid mesh type", type)
 
+    if (!KratosComponents<VariableData>::Has("ACTIVATION_LEVEL"))
+        KRATOS_THROW_ERROR(std::logic_error, "ACTIVATION_LEVEL", "does not exist in the Kratos database")
+
     Variable<int>& ACTIVATION_LEVEL_var = static_cast<Variable<int>&>(KratosComponents<VariableData>::Get("ACTIVATION_LEVEL"));
 
     // firstly create nodes and add to model_part
@@ -462,6 +479,9 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
     }
 
     // secondly create elements
+    if (!KratosComponents<TEntityType>::Has(sample_element_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "does not exist in the Kratos database")
+
     TEntityType const& rCloneElement = KratosComponents<TEntityType>::Get(sample_element_name);
     typename TEntityType::NodesArrayType temp_element_nodes;
     TEntitiesContainerType NewElements;
@@ -641,7 +661,10 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPar
 
     // secondly create elements
     std::size_t last_element_id = BRepUtility::GetLastElementId(r_model_part);
-    // KRATOS_WATCH(last_element_id)
+    // KRATOS_WATCH(last_element_id
+    if (!KratosComponents<Element>::Has(sample_element_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "does not exist in the Kratos database")
+
     Element const& rCloneElement = KratosComponents<Element>::Get(sample_element_name);
     Element::NodesArrayType temp_element_nodes;
     ModelPart::ElementsContainerType NewElements;
@@ -1140,6 +1163,9 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     //     std::cout << t->pi.id << " " << t->pj.id << " " << t->pk.id << std::endl;
     // }
 
+    if (!KratosComponents<VariableData>::Has("ACTIVATION_LEVEL"))
+        KRATOS_THROW_ERROR(std::logic_error, "ACTIVATION_LEVEL", "does not exist in the Kratos database")
+
     Variable<int>& ACTIVATION_LEVEL_var = static_cast<Variable<int>&>(KratosComponents<VariableData>::Get("ACTIVATION_LEVEL"));
 
     // firstly create nodes and add to model_part
@@ -1206,6 +1232,9 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     const int& activation_level,
     Properties::Pointer pProperties)
 {
+    if (!KratosComponents<VariableData>::Has("ACTIVATION_LEVEL"))
+        KRATOS_THROW_ERROR(std::logic_error, "ACTIVATION_LEVEL", "does not exist in the Kratos database")
+
     Variable<int>& ACTIVATION_LEVEL_var = static_cast<Variable<int>&>(KratosComponents<VariableData>::Get("ACTIVATION_LEVEL"));
 
     // firstly create nodes and add to model_part
