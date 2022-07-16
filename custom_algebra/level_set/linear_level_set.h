@@ -155,6 +155,17 @@ public:
     }
 
 
+    /// projects a point on the surface of level_set
+    int ProjectOnSurface(const PointType& P, PointType& Proj) const final
+    {
+        double t = -(mA*P[0] + mB*P[1] + mC) / (pow(mA, 2) + pow(mB, 2));
+        Proj[0] = P[0] + mA*t;
+        Proj[1] = P[1] + mB*t;
+        Proj[2] = 0.0;
+        return 0;
+    }
+
+
     /***********EXCLUSIVE INTERFACE****************/
 
 
