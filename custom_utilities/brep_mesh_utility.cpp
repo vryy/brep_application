@@ -500,7 +500,7 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
         {
             temp_element_nodes.clear();
 
-            if (type == 1)
+            if (type == 1) // Q4 element
             {
                 node[0] = last_node_id_old + i * (num_division_2 + 1) + j + 1;
                 node[2] = last_node_id_old + (i + 1) * (num_division_2 + 1) + j + 1;
@@ -530,8 +530,48 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
                     temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[3], NodeKey).base()));
                     temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[1], NodeKey).base()));
                 }
+
+                // KRATOS_WATCH(node[0])
+                // KRATOS_WATCH(node[1])
+                // KRATOS_WATCH(node[3])
+                // KRATOS_WATCH(node[2])
+                // KRATOS_WATCH("--------------------")
+
+                // extract the layer information
+                std::vector<std::size_t> layer_cond(2);
+                if (j == 0)
+                {
+                    if (reverse == false) {layer_cond[0] = node[2]; layer_cond[1] = node[0];}
+                    else {layer_cond[0] = node[0]; layer_cond[1] = node[2];}
+                    boundary_layers["xmin"].push_back(layer_cond);
+                    boundary_nodes["xmin"].insert(layer_cond.begin(), layer_cond.end());
+                }
+
+                if (j == num_2-1)
+                {
+                    if (reverse == false) {layer_cond[0] = node[1]; layer_cond[1] = node[3];}
+                    else {layer_cond[0] = node[3]; layer_cond[1] = node[1];}
+                    boundary_layers["xmax"].push_back(layer_cond);
+                    boundary_nodes["xmax"].insert(layer_cond.begin(), layer_cond.end());
+                }
+
+                if (i == 0)
+                {
+                    if (reverse == false) {layer_cond[0] = node[0]; layer_cond[1] = node[1];}
+                    else {layer_cond[0] = node[1]; layer_cond[1] = node[0];}
+                    boundary_layers["ymin"].push_back(layer_cond);
+                    boundary_nodes["ymin"].insert(layer_cond.begin(), layer_cond.end());
+                }
+
+                if (i == num_1-1)
+                {
+                    if (reverse == false) {layer_cond[0] = node[3]; layer_cond[1] = node[2];}
+                    else {layer_cond[0] = node[2]; layer_cond[1] = node[3];}
+                    boundary_layers["ymax"].push_back(layer_cond);
+                    boundary_nodes["ymax"].insert(layer_cond.begin(), layer_cond.end());
+                }
             }
-            else if ((type == 2) || (type == 3))
+            else if ((type == 2) || (type == 3)) // Q8 or Q9 element
             {
                 node[0] = last_node_id_old + 2*i * (num_division_2+1) + 2*j + 1;
                 node[3] = last_node_id_old + (2*i + 1) * (num_division_2+1) + 2*j + 1;
@@ -580,6 +620,40 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
                     if (type == 3)
                         temp_element_nodes.push_back(*(BRepUtility::FindKey(r_model_part.Nodes(), node[4], NodeKey).base()));
                 }
+
+                // extract the layer information
+                std::vector<std::size_t> layer_cond(3);
+                if (j == 0)
+                {
+                    if (reverse == false) {layer_cond[0] = node[6]; layer_cond[1] = node[0]; layer_cond[2] = node[3];}
+                    else {layer_cond[0] = node[0]; layer_cond[1] = node[6]; layer_cond[2] = node[3];}
+                    boundary_layers["xmin"].push_back(layer_cond);
+                    boundary_nodes["xmin"].insert(layer_cond.begin(), layer_cond.end());
+                }
+
+                if (j == num_2-1)
+                {
+                    if (reverse == false) {layer_cond[0] = node[2]; layer_cond[1] = node[8]; layer_cond[2] = node[5];}
+                    else {layer_cond[0] = node[8]; layer_cond[1] = node[2]; layer_cond[2] = node[5];}
+                    boundary_layers["xmax"].push_back(layer_cond);
+                    boundary_nodes["xmax"].insert(layer_cond.begin(), layer_cond.end());
+                }
+
+                if (i == 0)
+                {
+                    if (reverse == false) {layer_cond[0] = node[0]; layer_cond[1] = node[2]; layer_cond[2] = node[1];}
+                    else {layer_cond[0] = node[2]; layer_cond[1] = node[0]; layer_cond[2] = node[1];}
+                    boundary_layers["ymin"].push_back(layer_cond);
+                    boundary_nodes["ymin"].insert(layer_cond.begin(), layer_cond.end());
+                }
+
+                if (i == num_1-1)
+                {
+                    if (reverse == false) {layer_cond[0] = node[8]; layer_cond[1] = node[6]; layer_cond[2] = node[7];}
+                    else {layer_cond[0] = node[6]; layer_cond[1] = node[8]; layer_cond[2] = node[7];}
+                    boundary_layers["ymax"].push_back(layer_cond);
+                    boundary_nodes["ymax"].insert(layer_cond.begin(), layer_cond.end());
+                }
             }
 
             typename TEntityType::Pointer pNewElement = rCloneElement.Create(++last_element_id, temp_element_nodes, pProperties);
@@ -603,6 +677,12 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
     }
 
     rEntities.Unique();
+
+    // KRATOS_WATCH(__FILE__)
+    // KRATOS_WATCH(__LINE__)
+
+    // KRATOS_WATCH(boundary_layers.size())
+    // KRATOS_WATCH(boundary_nodes.size())
 
     return std::make_tuple(NewNodes, NewElements, boundary_nodes, boundary_layers);
 }
@@ -697,7 +777,7 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPar
             {
                 temp_element_nodes.clear();
 
-                if (type == 1)
+                if (type == 1) // H8 element
                 {
                     node[0] = last_node_id_old + (i * (num_2 + 1) + j) * (num_3 + 1) + k + 1;
                     node[1] = last_node_id_old + (i * (num_2 + 1) + j + 1) * (num_3 + 1) + k + 1;
@@ -757,7 +837,7 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPar
                         boundary_nodes["zmax"].insert(layer_cond.begin(), layer_cond.end());
                     }
                 }
-                else if (type == 2)
+                else if (type == 2) // H20 element
                 {
                     node[0] = last_node_id_old + 2*((i * (num_2 + 1) + j) * (num_3 + 1) + k) + 1;
                     node[1] = last_node_id_old + 2*((i * (num_2 + 1) + j + 1) * (num_3 + 1) + k) + 1;
@@ -837,7 +917,7 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPar
                         boundary_nodes["zmax"].insert(layer_cond.begin(), layer_cond.end());
                     }
                 }
-                else if (type == 3)
+                else if (type == 3) // H27 element
                 {
                     node[0] = last_node_id_old + 2*((i * (num_2 + 1) + j) * (num_3 + 1) + k) + 1;
                     node[1] = last_node_id_old + 2*((i * (num_2 + 1) + j + 1) * (num_3 + 1) + k) + 1;
