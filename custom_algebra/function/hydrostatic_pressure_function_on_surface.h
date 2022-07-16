@@ -84,7 +84,7 @@ public:
     ///@{
 
     /// Default constructor.
-    HydrostaticPressureFunctionOnSurface(const double& Pressure, const double& GradientPressure, const array_1d<double, 2>& Normal)
+    HydrostaticPressureFunctionOnSurface(const double& Pressure, const double& GradientPressure, const array_1d<double, 3>& Normal)
     : BaseType(), mPressure(Pressure), mGradientPressure(GradientPressure), mNormal(Normal / norm_2(Normal))
     {}
 
