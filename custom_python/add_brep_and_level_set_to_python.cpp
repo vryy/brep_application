@@ -490,7 +490,8 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     double(NodalLevelSet::*NodalLevelSet_pointer_to_GetValueAtNode)(const NodalLevelSet::NodeType&) const = &NodalLevelSet::GetValue;
 
     class_<NodalLevelSet, NodalLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "NodalLevelSet", init<LevelSet::Pointer>() )
+    ( "NodalLevelSet", init<>() )
+    .def(init<LevelSet::Pointer>())
     .add_property("Postfix", &NodalLevelSet::Postfix, &NodalLevelSet::SetPostfix)
     .add_property("IsNodalLevelSet", &NodalLevelSet::IsNodalLevelSet)
     .add_property("OperationMode", &NodalLevelSet::OperationMode, &NodalLevelSet::SetOperationMode)

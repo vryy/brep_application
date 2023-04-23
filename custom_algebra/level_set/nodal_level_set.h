@@ -30,8 +30,8 @@
 #include "includes/model_part.h"
 #include "utilities/openmp_utils.h"
 #include "custom_algebra/level_set/level_set.h"
-#include "custom_utilities/grid_binning.h"
 #include "custom_utilities/brep_mesh_utility.h"
+#include "brep_application_variables.h"
 
 
 #define ENABLE_PROFILING
@@ -98,10 +98,17 @@ public:
     ///@{
 
     /// Default constructor.
+    NodalLevelSet()
+    : BaseType()
+    , mpLevelSet(NULL)
+    , mOpMode(0)
+    , mPostfix("nodal_level_set_values")
+    {}
+
+    /// Constructor with level set
     NodalLevelSet(LevelSet::Pointer pLevelSet)
     : BaseType()
     , mpLevelSet(pLevelSet)
-    , mpGridBinning(NULL)
     , mOpMode(0)
     , mPostfix("nodal_level_set_values")
     {}
@@ -110,9 +117,9 @@ public:
     NodalLevelSet(NodalLevelSet const& rOther)
     : BaseType(rOther)
     , mpLevelSet(rOther.mpLevelSet)
-    , mpGridBinning(rOther.mpGridBinning)
     , mOpMode(rOther.mOpMode)
     , mPostfix(rOther.mPostfix)
+    , mNodalNodalLevelSetValues(rOther.mNodalNodalLevelSetValues)
     {}
 
     /// Destructor.
@@ -154,16 +161,10 @@ public:
     /// + 0: compute nodal level set values
     /// + 1: compute nodal level set values and store to file
     /// + 2: read nodal set values from file
+    /// + 3: read nodal set values using GetSolutionStepValue
     void SetOperationMode(const int& opMode)
     {
         mOpMode = opMode;
-    }
-
-
-    /// Set the grid binning for this level set
-    void SetGridBinning(GridBinning::Pointer pGridBinning)
-    {
-        mpGridBinning = pGridBinning;
     }
 
 
@@ -188,6 +189,9 @@ public:
 
         if ((mOpMode == 0) || (mOpMode == 1))
         {
+            if (mpLevelSet == NULL)
+                KRATOS_THROW_ERROR(std::logic_error, "The master level set is not set", "")
+
             #ifdef ENABLE_PROFILING
             double start = OpenMPUtils::GetCurrentTime();
             #endif
@@ -329,6 +333,8 @@ public:
             std::cout << "Read nodal level set values from " << filename << " completed, "
                       << mNodalNodalLevelSetValues.size() << " values are read" << std::endl;
         }
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "Invalid ot not supported operation mode ", mOpMode)
     }
 
 
@@ -341,31 +347,44 @@ public:
 
         mNodalNodalLevelSetValues.clear();
 
-        boost::progress_display progress(rNodes.size());
-        if (configuration == 0)
+        if (mOpMode == 0)
         {
-            for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
-            {
-                mNodalNodalLevelSetValues[it->Id()] = mpLevelSet->GetValue(it->GetInitialPosition());
-                ++progress;
-            }
-        }
-        else if (configuration == 1)
-        {
-            for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
-            {
-                mNodalNodalLevelSetValues[it->Id()] = mpLevelSet->GetValue(it->X(), it->Y(), it->Z());
-                ++progress;
-            }
-        }
+            if (mpLevelSet == NULL)
+                KRATOS_THROW_ERROR(std::logic_error, "The master level set is not set", "")
 
-        #ifdef ENABLE_PROFILING
-        std::cout << "Initialize nodal level set from " << rNodes.size()
-                  << " nodes completed, time = " << (OpenMPUtils::GetCurrentTime() - start) << "s" << std::endl;
-        #else
-                  std::cout << "Initialize nodal level set from " << rNodes.size()
-                  << " nodes completed" << std::endl;
-        #endif
+            boost::progress_display progress(rNodes.size());
+            if (configuration == 0)
+            {
+                for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
+                {
+                    mNodalNodalLevelSetValues[it->Id()] = mpLevelSet->GetValue(it->GetInitialPosition());
+                    ++progress;
+                }
+            }
+            else if (configuration == 1)
+            {
+                for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
+                {
+                    mNodalNodalLevelSetValues[it->Id()] = mpLevelSet->GetValue(it->X(), it->Y(), it->Z());
+                    ++progress;
+                }
+            }
+
+            #ifdef ENABLE_PROFILING
+            std::cout << "Initialize nodal level set from " << rNodes.size()
+                      << " nodes completed, time = " << (OpenMPUtils::GetCurrentTime() - start) << "s" << std::endl;
+            #else
+                      std::cout << "Initialize nodal level set from " << rNodes.size()
+                      << " nodes completed" << std::endl;
+            #endif
+        }
+        else if (mOpMode == 3)
+        {
+            for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
+                mNodalNodalLevelSetValues[it->Id()] = it->GetSolutionStepValue(LEVEL_SET_VALUE);
+        }
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "Invalid ot not supported operation mode ", mOpMode)
     }
 
 
@@ -382,7 +401,7 @@ public:
     /// Check if a point is inside/outside of the BRep
     bool IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
     {
-        return IsInside0(rGeometry, local_coords);
+        return this->IsInside0(rGeometry, local_coords);
     }
 
 
@@ -508,7 +527,10 @@ public:
     /// projects a point on the surface of level_set
     int ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
-        return mpLevelSet->ProjectOnSurface(P, Proj);
+        if (mpLevelSet != NULL)
+            return mpLevelSet->ProjectOnSurface(P, Proj);
+        else
+            return -1;
     }
 
     ///@}
@@ -529,31 +551,6 @@ public:
     }
 
 
-    /// inherit from LevelSet
-    /// Get level set value at a point
-    double GetValue(const PointType& P) const final
-    {
-        if (mpGridBinning == NULL)
-        {
-            this->PrintInfo(std::cout);
-            KRATOS_THROW_ERROR(std::logic_error, "Grid Binning is not set. GetValue for point will not work", "")
-        }
-
-        auto it = mpGridBinning->find(P);
-        if (it != mpGridBinning->end())
-        {
-            CoordinatesArrayType local_coords;
-            it->GetGeometry().PointLocalCoordinates(local_coords, P);
-
-            return this->CalculateOnPoint(it->GetGeometry(), local_coords);
-        }
-        else
-        {
-            std::cout << "WARNING: point " << P << " is not contained in the grid binning" << std::endl;
-        }
-    }
-
-
     /// Get level set value at a node
     double GetValue(const NodeType& rNode) const
     {
@@ -566,6 +563,7 @@ public:
         else
         {
             std::cout << "WARNING: node " << rNode.Id() << " does not have level set value. Consider to initialize first the model_part" << std::endl;
+            return 0.0;
         }
     }
 
@@ -594,20 +592,28 @@ public:
     /// Print information about this object.
     void PrintInfo(std::ostream& rOStream) const final
     {
-        rOStream << Info() << " of ";
-        mpLevelSet->PrintInfo(rOStream);
+        if (mpLevelSet != NULL)
+        {
+            rOStream << Info() << " of ";
+            mpLevelSet->PrintInfo(rOStream);
+        }
+        else
+            rOStream << Info();
     }
 
     /// Print object's data.
     void PrintData(std::ostream& rOStream) const final
     {
-        mpLevelSet->PrintData(rOStream);
-        rOStream << std::endl;
+        if (mpLevelSet != NULL)
+        {
+            mpLevelSet->PrintData(rOStream);
+            rOStream << std::endl;
+        }
 
         rOStream << "Nodal level set values:" << std::endl;
         for (auto it = mNodalNodalLevelSetValues.begin(); it != mNodalNodalLevelSetValues.end(); ++it)
         {
-            rOStream << it->first << ": " << it->second << std::endl;
+            rOStream << " " << it->first << ": " << it->second << std::endl;
         }
     }
 
@@ -670,7 +676,6 @@ private:
     // an internal container to store the level set values at nodes
     LevelSet::Pointer mpLevelSet;
     std::unordered_map<std::size_t, double> mNodalNodalLevelSetValues;
-    GridBinning::Pointer mpGridBinning;
 
     int mOpMode;
 

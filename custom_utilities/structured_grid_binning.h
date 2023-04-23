@@ -103,7 +103,7 @@ public:
         const double& V1_1, const double& V1_2, const double& V1_3, // alignment vector V1
         const double& V2_1, const double& V2_2, const double& V2_3, // alignment vector V2
         const double& V3_1, const double& V3_2, const double& V3_3) // alignment vector V3
-    : mTolerance(1.0-6)
+    : mTolerance(1.0e-6), mpElements(NULL)
     {
         mOrigin[0] = O_1; mOrigin[1] = O_2; mOrigin[2] = O_3;
         mV1[0] = V1_1; mV1[1] = V1_2; mV1[2] = V1_3;
@@ -173,13 +173,15 @@ public:
     ///@name Access
     ///@{
 
-    ElementsContainerType::iterator find(const PointType& P)
+    ElementsContainerType::iterator find(const PointType& P) override
     {
+        // TODO
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
-    ElementsContainerType::iterator end()
+    ElementsContainerType::iterator end() override
     {
+        // TODO
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
@@ -193,18 +195,18 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Grid Binning";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -269,6 +271,7 @@ private:
     std::set<long long> mV1_coords;
     std::set<long long> mV2_coords;
     std::set<long long> mV3_coords;
+    // std::map<IndexType, SpatialKey> mElementKeyMap;
 
     ///@}
     ///@name Private Operators
