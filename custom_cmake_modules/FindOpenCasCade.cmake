@@ -23,6 +23,7 @@ if(NOT DEFINED OCE_DIR)
   endif()
 endif()
 
+# find_package(OCE QUIET)
 if(${FREECAD_USE_OCC_VARIANT} MATCHES "Community Edition")
   find_package(OCE QUIET)
 endif()
