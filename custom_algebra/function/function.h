@@ -262,7 +262,7 @@ public:
 
     static inline int GetMaxIntegrationOrder()
     {
-        return GeometryData::NumberOfIntegrationMethods;
+        return static_cast<int>(GeometryData::IntegrationMethod::NumberOfIntegrationMethods);
     }
 
     static inline GeometryData::IntegrationMethod GetIntegrationMethod(const int& integration_order)
@@ -274,23 +274,23 @@ public:
 
         if(integration_order == 1)
         {
-            ThisIntegrationMethod = GeometryData::GI_GAUSS_1;
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
         }
         else if(integration_order == 2)
         {
-            ThisIntegrationMethod = GeometryData::GI_GAUSS_2;
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_2;
         }
         else if(integration_order == 3)
         {
-            ThisIntegrationMethod = GeometryData::GI_GAUSS_3;
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_3;
         }
         else if(integration_order == 4)
         {
-            ThisIntegrationMethod = GeometryData::GI_GAUSS_4;
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_4;
         }
         else if(integration_order == 5)
         {
-            ThisIntegrationMethod = GeometryData::GI_GAUSS_5;
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_5;
         }
 //        else if(integration_order == 6)
 //        {
@@ -313,7 +313,7 @@ public:
 //            ThisIntegrationMethod = GeometryData::GI_GAUSS_10;
 //        }
         else
-            ThisIntegrationMethod = GeometryData::NumberOfIntegrationMethods; // this will never be obtained, just to silence the compiler
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::NumberOfIntegrationMethods; // this will never be obtained, just to silence the compiler
 
         return ThisIntegrationMethod;
     }

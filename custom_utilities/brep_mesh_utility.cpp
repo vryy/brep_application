@@ -29,7 +29,7 @@ namespace Kratos
 void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayType>& SamplingLocalPoints,
             const GeometryType& r_geom, const std::size_t& nsampling)
 {
-    if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Triangle )
+    if(r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_Triangle )
     {
         constexpr double xi_min = 0.0, xi_max = 1.0;
         constexpr double eta_min = 0.0, eta_max = 1.0;
@@ -52,15 +52,15 @@ void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayTy
             }
         }
     }
-    else if( r_geom.GetGeometryFamily() == GeometryData::Kratos_Quadrilateral
+    else if( r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_Quadrilateral
     #ifndef SD_APP_FORWARD_COMPATIBILITY
-        || (r_geom.GetGeometryFamily() == GeometryData::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::Kratos_Bezier2D)
+        || (r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Bezier2D)
     #endif
     )
     {
         double xi_min, xi_max, eta_min, eta_max;
 
-        if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Quadrilateral)
+        if(r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_Quadrilateral)
         {
             xi_min = -1.0; xi_max = 1.0;
             eta_min = -1.0; eta_max = 1.0;
@@ -86,7 +86,7 @@ void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayTy
             }
         }
     }
-    else if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Tetrahedra )
+    else if(r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_Tetrahedra )
     {
         constexpr double xi_min = 0.0, xi_max = 1.0;
         constexpr double eta_min = 0.0, eta_max = 1.0;
@@ -115,15 +115,15 @@ void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayTy
             }
         }
     }
-    else if( r_geom.GetGeometryFamily() == GeometryData::Kratos_Hexahedra
+    else if( r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_Hexahedra
     #ifndef SD_APP_FORWARD_COMPATIBILITY
-        ||  (r_geom.GetGeometryFamily() == GeometryData::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::Kratos_Bezier3D)
+        ||  (r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_NURBS && r_geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Bezier3D)
     #endif
     )
     {
         double xi_min, xi_max, eta_min, eta_max, zeta_min, zeta_max;
 
-        if(r_geom.GetGeometryFamily() == GeometryData::Kratos_Hexahedra)
+        if(r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_Hexahedra)
         {
             xi_min = -1.0; xi_max = 1.0;
             eta_min = -1.0; eta_max = 1.0;
@@ -159,7 +159,7 @@ void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayTy
     else
     {
         std::stringstream ss;
-        ss << "Geometry " << r_geom.GetGeometryType() << " is not supported";
+        ss << "Geometry " << static_cast<int>(r_geom.GetGeometryType()) << " is not supported";
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 }
@@ -1564,7 +1564,7 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
     // create the elements
     GeometryData::KratosGeometryType geom_type = rSurfaceEntities.begin()->GetGeometry().GetGeometryType();
     typename TEntityType::NodesArrayType temp_element_nodes;
-    if (geom_type == GeometryData::Kratos_Quadrilateral3D4)
+    if (geom_type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D4)
     {
         // create elements
         for (typename TSurfaceEntitiesContainerType::const_iterator it = rSurfaceEntities.begin(); it != rSurfaceEntities.end(); ++it)
@@ -1590,7 +1590,7 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
             NewElements.push_back(pNewElement);
         }
     }
-    else if (geom_type == GeometryData::Kratos_Quadrilateral3D8)
+    else if (geom_type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D8)
     {
         // collect the corner nodes
         std::unordered_set<std::size_t> list_corner_nodes;
@@ -1653,7 +1653,7 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
             NewElements.push_back(pNewElement);
         }
     }
-    else if (geom_type == GeometryData::Kratos_Quadrilateral3D9)
+    else if (geom_type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D9)
     {
         // create additional nodes
         std::unordered_map<std::size_t, std::size_t> map_middle_nodes;
@@ -1717,7 +1717,7 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
         }
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "Invalid surface geometry type", geom_type)
+        KRATOS_THROW_ERROR(std::logic_error, "Invalid surface geometry type", static_cast<int>(geom_type))
 }
 
 //////// template instantiation

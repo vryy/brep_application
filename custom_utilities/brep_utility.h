@@ -347,16 +347,16 @@ public:
     {
         const GeometryData::KratosGeometryType& Type = rGeometry.GetGeometryType();
 
-        if ( Type == GeometryData::Kratos_Triangle2D3 || Type == GeometryData::Kratos_Triangle3D3
-          || Type == GeometryData::Kratos_Triangle2D6 || Type == GeometryData::Kratos_Triangle3D6 )
+        if ( Type == GeometryData::KratosGeometryType::Kratos_Triangle2D3 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D3
+          || Type == GeometryData::KratosGeometryType::Kratos_Triangle2D6 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D6 )
         {
             edges.push_back(Edge2(rGeometry[0].Id(), rGeometry[1].Id()));
             edges.push_back(Edge2(rGeometry[1].Id(), rGeometry[2].Id()));
             edges.push_back(Edge2(rGeometry[2].Id(), rGeometry[0].Id()));
         }
-        else if ( Type == GeometryData::Kratos_Quadrilateral2D4 || Type == GeometryData::Kratos_Quadrilateral3D4
-               || Type == GeometryData::Kratos_Quadrilateral2D8 || Type == GeometryData::Kratos_Quadrilateral3D8
-               || Type == GeometryData::Kratos_Quadrilateral2D9 || Type == GeometryData::Kratos_Quadrilateral3D9 )
+        else if ( Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D4 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D4
+               || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D8 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D8
+               || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D9 )
         {
             edges.push_back(Edge2(rGeometry[0].Id(), rGeometry[1].Id()));
             edges.push_back(Edge2(rGeometry[1].Id(), rGeometry[2].Id()));
@@ -373,34 +373,34 @@ public:
     {
         std::vector<std::vector<std::size_t> > edges;
 
-        if (Type == GeometryData::Kratos_Triangle2D3 || Type == GeometryData::Kratos_Triangle3D3)
+        if (Type == GeometryData::KratosGeometryType::Kratos_Triangle2D3 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D3)
         {
             edges.push_back(std::vector<std::size_t>{0, 1});
             edges.push_back(std::vector<std::size_t>{1, 2});
             edges.push_back(std::vector<std::size_t>{2, 0});
         }
-        else if (Type == GeometryData::Kratos_Quadrilateral2D4 || Type == GeometryData::Kratos_Quadrilateral3D4)
+        else if (Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D4 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D4)
         {
             edges.push_back(std::vector<std::size_t>{0, 1});
             edges.push_back(std::vector<std::size_t>{1, 2});
             edges.push_back(std::vector<std::size_t>{2, 3});
             edges.push_back(std::vector<std::size_t>{3, 0});
         }
-        else if (Type == GeometryData::Kratos_Triangle2D6 || Type == GeometryData::Kratos_Triangle3D6)
+        else if (Type == GeometryData::KratosGeometryType::Kratos_Triangle2D6 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D6)
         {
             edges.push_back(std::vector<std::size_t>{0, 1, 3});
             edges.push_back(std::vector<std::size_t>{1, 2, 4});
             edges.push_back(std::vector<std::size_t>{2, 0, 5});
         }
-        else if (Type == GeometryData::Kratos_Quadrilateral2D8 || Type == GeometryData::Kratos_Quadrilateral3D8
-              || Type == GeometryData::Kratos_Quadrilateral2D9 || Type == GeometryData::Kratos_Quadrilateral3D9)
+        else if (Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D8 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D8
+              || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D9)
         {
             edges.push_back(std::vector<std::size_t>{0, 1, 4});
             edges.push_back(std::vector<std::size_t>{1, 2, 5});
             edges.push_back(std::vector<std::size_t>{2, 3, 6});
             edges.push_back(std::vector<std::size_t>{3, 0, 7});
         }
-        else if (Type == GeometryData::Kratos_Tetrahedra3D4)
+        else if (Type == GeometryData::KratosGeometryType::Kratos_Tetrahedra3D4)
         {
             edges.push_back(std::vector<std::size_t>{0, 1});
             edges.push_back(std::vector<std::size_t>{1, 2});
@@ -409,7 +409,7 @@ public:
             edges.push_back(std::vector<std::size_t>{1, 3});
             edges.push_back(std::vector<std::size_t>{2, 3});
         }
-        else if (Type == GeometryData::Kratos_Tetrahedra3D10)
+        else if (Type == GeometryData::KratosGeometryType::Kratos_Tetrahedra3D10)
         {
             edges.push_back(std::vector<std::size_t>{0, 1, 4});
             edges.push_back(std::vector<std::size_t>{1, 2, 5});
@@ -418,7 +418,7 @@ public:
             edges.push_back(std::vector<std::size_t>{1, 3, 8});
             edges.push_back(std::vector<std::size_t>{2, 3, 9});
         }
-        else if (Type == GeometryData::Kratos_Hexahedra3D8)
+        else if (Type == GeometryData::KratosGeometryType::Kratos_Hexahedra3D8)
         {
             edges.push_back(std::vector<std::size_t>{0, 1});
             edges.push_back(std::vector<std::size_t>{1, 2});
@@ -433,7 +433,7 @@ public:
             edges.push_back(std::vector<std::size_t>{2, 6});
             edges.push_back(std::vector<std::size_t>{3, 7});
         }
-        else if (Type == GeometryData::Kratos_Hexahedra3D20 || Type == GeometryData::Kratos_Hexahedra3D27)
+        else if (Type == GeometryData::KratosGeometryType::Kratos_Hexahedra3D20 || Type == GeometryData::KratosGeometryType::Kratos_Hexahedra3D27)
         {
             edges.push_back(std::vector<std::size_t>{0, 1, 8});
             edges.push_back(std::vector<std::size_t>{1, 2, 9});
