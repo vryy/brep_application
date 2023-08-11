@@ -57,6 +57,8 @@ namespace Kratos
 ///
 /**
  * Level set representing the cylinder
+ * It is noted that, the normal is pointing outwards. Therefore in a contact applicatio, e.g. pinching,
+ * the normal has to be reversed using the InverseLevelSet
  */
 class Cylinder2LevelSet : public CylinderLevelSet
 {

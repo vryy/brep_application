@@ -176,7 +176,7 @@ public:
 //    }
 
 
-    /// Compute the gradient at a point
+    /// Compute the gradient at a point, i.e. [d Phi / dX, d Phi / dY, d Phi / dZ]
     Vector GetGradient(const double& X, const double& Y, const double& Z) const
     {
         PointType P;
@@ -201,6 +201,9 @@ public:
 
 
     /// compute the derivatives of the gradient w.r.t the global point
+    /// [d^2 Phi / d X^2, d^2 Phi / dX dY, d^2 Phi / dX dZ
+    ///  d^2 Phi / dX dY, d^2 Phi / d^2 Y, d^2 Phi / dY dZ
+    ///  d^2 Phi / dX dZ, d^2 Phi / dY dZ, d^2 Phi / d Z^2]
     virtual Matrix GetGradientDerivatives(const PointType& P) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
