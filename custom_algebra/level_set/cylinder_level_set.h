@@ -141,8 +141,16 @@ public:
 
     Vector GetGradient(const PointType& P) const override
     {
-        // TODO
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not yet implemented")
+        double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
+        double pX = mcX + t*mdX;
+        double pY = mcY + t*mdY;
+        double pZ = mcZ + t*mdZ;
+        double Aux = sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2));
+        Vector grad(3);
+        grad(0) = ((P(0) - pX) * (1.0 - mdX*mdX) - (P(1) - pY) * mdY*mdX - (P(2) - pZ) * mdZ*mdX) / Aux;
+        grad(1) = ((P(1) - pY) * (1.0 - mdY*mdY) - (P(0) - pX) * mdX*mdY - (P(2) - pZ) * mdZ*mdY) / Aux;
+        grad(2) = ((P(2) - pZ) * (1.0 - mdZ*mdZ) - (P(0) - pX) * mdX*mdZ - (P(1) - pY) * mdY*mdZ) / Aux;
+        return grad;
     }
 
 
