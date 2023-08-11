@@ -131,6 +131,12 @@ public:
     }
 
 
+    Matrix GetGradientDerivatives(const PointType& P) const final
+    {
+        return -mp_level_set->GetGradientDerivatives(P);
+    }
+
+
     /// Get the original level set
     BaseType::Pointer pLeveSet() const
     {
@@ -140,6 +146,16 @@ public:
     void pSetLevelSet(BaseType::Pointer p_level_set)
     {
         mp_level_set = p_level_set;
+    }
+
+    int ProjectOnSurface(const PointType& P, PointType& Proj) const final
+    {
+        return mp_level_set->ProjectOnSurface(P, Proj);
+    }
+
+    void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const final
+    {
+        mp_level_set->ProjectionDerivatives(P, Derivatives);
     }
 
     ///@}
