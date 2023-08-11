@@ -69,7 +69,7 @@ public:
 
     typedef LevelSet BaseType;
 
-    #if defined(__clang__)
+    #if defined(__clang__) || defined(__INTEL_COMPILER)
     static constexpr double PI = 3.1415926535897932384626433832795028841971693;
     #elif defined(__GNUC__) || defined(__GNUG__)
     static constexpr double PI = std::atan(1.0)*4;
