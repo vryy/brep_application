@@ -7,19 +7,14 @@
 //
 //
 
-
 #if !defined(KRATOS_BREP_APPLICATION_ADD_OPENCASCADE_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_BREP_APPLICATION_ADD_OPENCASCADE_TO_PYTHON_H_INCLUDED
 
-
 // System includes
-
 
 // External includes
 
-
 // Project includes
-
 
 namespace Kratos
 {

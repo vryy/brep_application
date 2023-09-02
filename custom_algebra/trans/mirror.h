@@ -93,11 +93,17 @@ public:
     {
         rOStream << "Homogeneous Mirror";
         if (TAxis == 0)
+        {
             rOStream << "_X";
+        }
         else if (TAxis == 1)
+        {
             rOStream << "_Y";
+        }
         else if (TAxis == 2)
+        {
             rOStream << "_Z";
+        }
     }
 
 };
@@ -115,4 +121,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Mirror<TAxis, TDa
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MIRROR_H_INCLUDED
-

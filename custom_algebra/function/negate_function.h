@@ -11,24 +11,18 @@
 //  Date:            22 Feb 2017
 //
 
-
 #if !defined(KRATOS_NEGATE_FUNCTION_H_INCLUDED )
 #define  KRATOS_NEGATE_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
-
 
 namespace Kratos
 {
@@ -73,59 +67,51 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     NegateFunction(const typename BaseType::Pointer p_func)
-    : BaseType(), mp_func(p_func)
+        : BaseType(), mp_func(p_func)
     {}
 
     /// Copy constructor.
     NegateFunction(NegateFunction const& rOther)
-    : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction())
+        : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction())
     {}
 
     /// Destructor.
     virtual ~NegateFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new NegateFunction(*this));
     }
 
-
     double GetValue(const InputType& P) const final
     {
         return -mp_func->GetValue(P);
     }
-
 
     double GetDerivative(const int& component, const InputType& P) const final
     {
         return -mp_func->GetDerivative(component, P);
     }
 
-
     double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const final
     {
         return -mp_func->GetSecondDerivative(component_1, component_2, P);
     }
-
 
     std::string GetFormula(const std::string& Format) const final
     {
@@ -134,22 +120,18 @@ public:
         return ss.str();
     }
 
-
     typename BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return typename BaseType::Pointer(new NegateFunction(mp_func->GetDiffFunction(component)));
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -172,11 +154,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -184,43 +164,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -232,21 +204,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -264,11 +232,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream NegateFunction
 template<class TFunction>

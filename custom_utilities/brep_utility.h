@@ -11,11 +11,8 @@
 //  Date:            29 Mar 2017
 //
 
-
 #if !defined(KRATOS_BREP_UTILITY_H_INCLUDED )
 #define  KRATOS_BREP_UTILITY_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -24,9 +21,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -36,7 +31,6 @@
 #include "includes/deprecated_variables.h"
 #include "containers/pointer_vector_set.h"
 #include "brep_application/custom_algebra/function/function.h"
-
 
 namespace Kratos
 {
@@ -94,9 +88,13 @@ public:
         bool operator<(const Edge2& e) const
         {
             if (mi == e.mi)
+            {
                 return mj < e.mj;
+            }
             else
+            {
                 return mi < e.mi;
+            }
         }
         Edge2& operator=(const Edge2& e)
         {
@@ -126,11 +124,9 @@ public:
     /// Destructor.
     virtual ~BRepUtility() {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -141,7 +137,7 @@ public:
     static typename TContainerType::iterator FindKey(TContainerType& ThisContainer, TKeyType ThisKey, std::string ComponentName)
     {
         typename TContainerType::iterator i_result;
-        if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
+        if ((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
         {
             std::stringstream buffer;
             buffer << ComponentName << " #" << ThisKey << " is not found.";
@@ -151,72 +147,77 @@ public:
         return i_result;
     }
 
-
     /// Get the last node id of the model part
     static std::size_t GetLastNodeId(ModelPart& r_model_part)
     {
         std::size_t lastNodeId = 0;
-        for(typename ModelPart::NodesContainerType::iterator it = r_model_part.Nodes().begin();
+        for (typename ModelPart::NodesContainerType::iterator it = r_model_part.Nodes().begin();
                 it != r_model_part.Nodes().end(); ++it)
         {
-            if(it->Id() > lastNodeId)
+            if (it->Id() > lastNodeId)
+            {
                 lastNodeId = it->Id();
+            }
         }
 
         return lastNodeId;
     }
 
-
     /// Get the last element id of the model part
     static std::size_t GetLastElementId(ModelPart& r_model_part)
     {
         std::size_t lastElementId = 0;
-        for(typename ModelPart::ElementsContainerType::ptr_iterator it = r_model_part.Elements().ptr_begin();
+        for (typename ModelPart::ElementsContainerType::ptr_iterator it = r_model_part.Elements().ptr_begin();
                 it != r_model_part.Elements().ptr_end(); ++it)
         {
-            if((*it)->Id() > lastElementId)
+            if ((*it)->Id() > lastElementId)
+            {
                 lastElementId = (*it)->Id();
+            }
         }
 
         return lastElementId;
     }
 
-
     /// Get the last condition id of the model part
     static std::size_t GetLastConditionId(ModelPart& r_model_part)
     {
         std::size_t lastCondId = 0;
-        for(typename ModelPart::ConditionsContainerType::ptr_iterator it = r_model_part.Conditions().ptr_begin();
+        for (typename ModelPart::ConditionsContainerType::ptr_iterator it = r_model_part.Conditions().ptr_begin();
                 it != r_model_part.Conditions().ptr_end(); ++it)
         {
-            if((*it)->Id() > lastCondId)
+            if ((*it)->Id() > lastCondId)
+            {
                 lastCondId = (*it)->Id();
+            }
         }
 
         return lastCondId;
     }
 
-
     /// Get the last properties id of the model_part
     static std::size_t GetLastPropertiesId(ModelPart& r_model_part)
     {
         std::size_t lastPropId = 0;
-        for(typename ModelPart::PropertiesContainerType::ptr_iterator it = r_model_part.rProperties().ptr_begin();
+        for (typename ModelPart::PropertiesContainerType::ptr_iterator it = r_model_part.rProperties().ptr_begin();
                 it != r_model_part.rProperties().ptr_end(); ++it)
         {
-            if((*it)->Id() > lastPropId)
+            if ((*it)->Id() > lastPropId)
+            {
                 lastPropId = (*it)->Id();
+            }
         }
 
         return lastPropId;
     }
 
-
     template<int TDim, typename TConnectivityType>
     static void SwapConnectivity(const TConnectivityType& input, TConnectivityType& output)
     {
         if (output.size() != input.size())
+        {
             output.resize(input.size());
+        }
 
         if (TDim == 2) // swapping for surface element/condition
         {
@@ -266,7 +267,9 @@ public:
                 output[8] = input[8];
             }
             else
-                KRATOS_THROW_ERROR(std::logic_error, "The input size is invalid: ", input.size())
+            {
+                KRATOS_ERROR << "The input size " << input.size() << " is invalid";
+            }
         }
         else if (TDim == 3) // swapping for volume element/condition
         {
@@ -278,7 +281,9 @@ public:
                 output[3] = input[3];
             }
             else
-                KRATOS_THROW_ERROR(std::logic_error, "The input size is invalid: ", input.size())
+            {
+                KRATOS_ERROR << "The input size " << input.size() << " is invalid";
+            }
         }
     }
 
@@ -289,7 +294,9 @@ public:
         noalias(C) = ZeroVector(3);
 
         for (std::size_t i = 0; i < rGeometry.size(); ++i)
+        {
             noalias(C) += rGeometry[i].GetInitialPosition();
+        }
 
         C /= rGeometry.size();
         return C;
@@ -314,13 +321,19 @@ public:
             {
                 auto it2 = boundary_edges.find(local_edges[i]);
                 if (it2 == boundary_edges.end())
+                {
                     boundary_edges.insert(local_edges[i]);
+                }
                 else
+                {
                     boundary_edges.erase(local_edges[i]);
+                }
             }
 
             for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
+            {
                 nodes[it->GetGeometry()[i].Id()] = it->GetGeometry()[i].GetInitialPosition();
+            }
         }
 
         // get the nodes on boundary edges
@@ -335,7 +348,9 @@ public:
         PointType P;
         noalias(P) = ZeroVector(3);
         for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); ++it)
+        {
             noalias(P) += nodes[*it];
+        }
         P /= boundary_nodes.size();
 
         return P;
@@ -348,15 +363,15 @@ public:
         const GeometryData::KratosGeometryType& Type = rGeometry.GetGeometryType();
 
         if ( Type == GeometryData::KratosGeometryType::Kratos_Triangle2D3 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D3
-          || Type == GeometryData::KratosGeometryType::Kratos_Triangle2D6 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D6 )
+                || Type == GeometryData::KratosGeometryType::Kratos_Triangle2D6 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D6 )
         {
             edges.push_back(Edge2(rGeometry[0].Id(), rGeometry[1].Id()));
             edges.push_back(Edge2(rGeometry[1].Id(), rGeometry[2].Id()));
             edges.push_back(Edge2(rGeometry[2].Id(), rGeometry[0].Id()));
         }
         else if ( Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D4 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D4
-               || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D8 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D8
-               || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D9 )
+                  || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D8 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D8
+                  || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D9 )
         {
             edges.push_back(Edge2(rGeometry[0].Id(), rGeometry[1].Id()));
             edges.push_back(Edge2(rGeometry[1].Id(), rGeometry[2].Id()));
@@ -364,7 +379,9 @@ public:
             edges.push_back(Edge2(rGeometry[3].Id(), rGeometry[0].Id()));
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Not a 2D geometry type", "")
+        {
+            KRATOS_ERROR << "Not a 2D geometry type";
+        }
     }
 
     /// Get the edges of a finite element
@@ -375,78 +392,78 @@ public:
 
         if (Type == GeometryData::KratosGeometryType::Kratos_Triangle2D3 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D3)
         {
-            edges.push_back(std::vector<std::size_t>{0, 1});
-            edges.push_back(std::vector<std::size_t>{1, 2});
-            edges.push_back(std::vector<std::size_t>{2, 0});
+            edges.push_back(std::vector<std::size_t> {0, 1});
+            edges.push_back(std::vector<std::size_t> {1, 2});
+            edges.push_back(std::vector<std::size_t> {2, 0});
         }
         else if (Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D4 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D4)
         {
-            edges.push_back(std::vector<std::size_t>{0, 1});
-            edges.push_back(std::vector<std::size_t>{1, 2});
-            edges.push_back(std::vector<std::size_t>{2, 3});
-            edges.push_back(std::vector<std::size_t>{3, 0});
+            edges.push_back(std::vector<std::size_t> {0, 1});
+            edges.push_back(std::vector<std::size_t> {1, 2});
+            edges.push_back(std::vector<std::size_t> {2, 3});
+            edges.push_back(std::vector<std::size_t> {3, 0});
         }
         else if (Type == GeometryData::KratosGeometryType::Kratos_Triangle2D6 || Type == GeometryData::KratosGeometryType::Kratos_Triangle3D6)
         {
-            edges.push_back(std::vector<std::size_t>{0, 1, 3});
-            edges.push_back(std::vector<std::size_t>{1, 2, 4});
-            edges.push_back(std::vector<std::size_t>{2, 0, 5});
+            edges.push_back(std::vector<std::size_t> {0, 1, 3});
+            edges.push_back(std::vector<std::size_t> {1, 2, 4});
+            edges.push_back(std::vector<std::size_t> {2, 0, 5});
         }
         else if (Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D8 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D8
-              || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D9)
+                 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9 || Type == GeometryData::KratosGeometryType::Kratos_Quadrilateral3D9)
         {
-            edges.push_back(std::vector<std::size_t>{0, 1, 4});
-            edges.push_back(std::vector<std::size_t>{1, 2, 5});
-            edges.push_back(std::vector<std::size_t>{2, 3, 6});
-            edges.push_back(std::vector<std::size_t>{3, 0, 7});
+            edges.push_back(std::vector<std::size_t> {0, 1, 4});
+            edges.push_back(std::vector<std::size_t> {1, 2, 5});
+            edges.push_back(std::vector<std::size_t> {2, 3, 6});
+            edges.push_back(std::vector<std::size_t> {3, 0, 7});
         }
         else if (Type == GeometryData::KratosGeometryType::Kratos_Tetrahedra3D4)
         {
-            edges.push_back(std::vector<std::size_t>{0, 1});
-            edges.push_back(std::vector<std::size_t>{1, 2});
-            edges.push_back(std::vector<std::size_t>{2, 0});
-            edges.push_back(std::vector<std::size_t>{0, 3});
-            edges.push_back(std::vector<std::size_t>{1, 3});
-            edges.push_back(std::vector<std::size_t>{2, 3});
+            edges.push_back(std::vector<std::size_t> {0, 1});
+            edges.push_back(std::vector<std::size_t> {1, 2});
+            edges.push_back(std::vector<std::size_t> {2, 0});
+            edges.push_back(std::vector<std::size_t> {0, 3});
+            edges.push_back(std::vector<std::size_t> {1, 3});
+            edges.push_back(std::vector<std::size_t> {2, 3});
         }
         else if (Type == GeometryData::KratosGeometryType::Kratos_Tetrahedra3D10)
         {
-            edges.push_back(std::vector<std::size_t>{0, 1, 4});
-            edges.push_back(std::vector<std::size_t>{1, 2, 5});
-            edges.push_back(std::vector<std::size_t>{2, 0, 6});
-            edges.push_back(std::vector<std::size_t>{0, 3, 7});
-            edges.push_back(std::vector<std::size_t>{1, 3, 8});
-            edges.push_back(std::vector<std::size_t>{2, 3, 9});
+            edges.push_back(std::vector<std::size_t> {0, 1, 4});
+            edges.push_back(std::vector<std::size_t> {1, 2, 5});
+            edges.push_back(std::vector<std::size_t> {2, 0, 6});
+            edges.push_back(std::vector<std::size_t> {0, 3, 7});
+            edges.push_back(std::vector<std::size_t> {1, 3, 8});
+            edges.push_back(std::vector<std::size_t> {2, 3, 9});
         }
         else if (Type == GeometryData::KratosGeometryType::Kratos_Hexahedra3D8)
         {
-            edges.push_back(std::vector<std::size_t>{0, 1});
-            edges.push_back(std::vector<std::size_t>{1, 2});
-            edges.push_back(std::vector<std::size_t>{2, 3});
-            edges.push_back(std::vector<std::size_t>{3, 0});
-            edges.push_back(std::vector<std::size_t>{4, 5});
-            edges.push_back(std::vector<std::size_t>{5, 6});
-            edges.push_back(std::vector<std::size_t>{6, 7});
-            edges.push_back(std::vector<std::size_t>{7, 4});
-            edges.push_back(std::vector<std::size_t>{0, 4});
-            edges.push_back(std::vector<std::size_t>{1, 5});
-            edges.push_back(std::vector<std::size_t>{2, 6});
-            edges.push_back(std::vector<std::size_t>{3, 7});
+            edges.push_back(std::vector<std::size_t> {0, 1});
+            edges.push_back(std::vector<std::size_t> {1, 2});
+            edges.push_back(std::vector<std::size_t> {2, 3});
+            edges.push_back(std::vector<std::size_t> {3, 0});
+            edges.push_back(std::vector<std::size_t> {4, 5});
+            edges.push_back(std::vector<std::size_t> {5, 6});
+            edges.push_back(std::vector<std::size_t> {6, 7});
+            edges.push_back(std::vector<std::size_t> {7, 4});
+            edges.push_back(std::vector<std::size_t> {0, 4});
+            edges.push_back(std::vector<std::size_t> {1, 5});
+            edges.push_back(std::vector<std::size_t> {2, 6});
+            edges.push_back(std::vector<std::size_t> {3, 7});
         }
         else if (Type == GeometryData::KratosGeometryType::Kratos_Hexahedra3D20 || Type == GeometryData::KratosGeometryType::Kratos_Hexahedra3D27)
         {
-            edges.push_back(std::vector<std::size_t>{0, 1, 8});
-            edges.push_back(std::vector<std::size_t>{1, 2, 9});
-            edges.push_back(std::vector<std::size_t>{2, 3, 10});
-            edges.push_back(std::vector<std::size_t>{3, 0, 11});
-            edges.push_back(std::vector<std::size_t>{4, 5, 16});
-            edges.push_back(std::vector<std::size_t>{5, 6, 17});
-            edges.push_back(std::vector<std::size_t>{6, 7, 18});
-            edges.push_back(std::vector<std::size_t>{7, 4, 19});
-            edges.push_back(std::vector<std::size_t>{0, 4, 12});
-            edges.push_back(std::vector<std::size_t>{1, 5, 13});
-            edges.push_back(std::vector<std::size_t>{2, 6, 14});
-            edges.push_back(std::vector<std::size_t>{3, 7, 15});
+            edges.push_back(std::vector<std::size_t> {0, 1, 8});
+            edges.push_back(std::vector<std::size_t> {1, 2, 9});
+            edges.push_back(std::vector<std::size_t> {2, 3, 10});
+            edges.push_back(std::vector<std::size_t> {3, 0, 11});
+            edges.push_back(std::vector<std::size_t> {4, 5, 16});
+            edges.push_back(std::vector<std::size_t> {5, 6, 17});
+            edges.push_back(std::vector<std::size_t> {6, 7, 18});
+            edges.push_back(std::vector<std::size_t> {7, 4, 19});
+            edges.push_back(std::vector<std::size_t> {0, 4, 12});
+            edges.push_back(std::vector<std::size_t> {1, 5, 13});
+            edges.push_back(std::vector<std::size_t> {2, 6, 14});
+            edges.push_back(std::vector<std::size_t> {3, 7, 15});
         }
 
         return edges;
@@ -456,11 +473,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -483,11 +498,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -495,36 +508,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -533,31 +539,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -578,11 +578,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, BRepUtility& rThis)
@@ -604,6 +602,5 @@ inline std::ostream& operator << (std::ostream& rOStream, const BRepUtility& rTh
 ///@} addtogroup block
 
 }  // namespace Kratos.
-
 
 #endif // KRATOS_BREP_UTILITY_H_INCLUDED  defined

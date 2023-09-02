@@ -11,24 +11,18 @@
 //  Date:            24 Feb 2017
 //
 
-
 #if !defined(KRATOS_PARAMETRIC_CURVE_H_INCLUDED )
 #define  KRATOS_PARAMETRIC_CURVE_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 #include <iomanip>
 
-
 // External includes
-
 
 // Project includes
 #include "custom_algebra/curve/curve.h"
-
 
 namespace Kratos
 {
@@ -81,8 +75,8 @@ public:
 
     /// Default constructor.
     ParametricCurve(const FunctionR1R1::Pointer p_func_x,
-        const FunctionR1R1::Pointer p_func_y, const FunctionR1R1::Pointer p_func_z)
-    : BaseType(), mp_func_x(p_func_x), mp_func_y(p_func_y), mp_func_z(p_func_z)
+                    const FunctionR1R1::Pointer p_func_y, const FunctionR1R1::Pointer p_func_z)
+        : BaseType(), mp_func_x(p_func_x), mp_func_y(p_func_y), mp_func_z(p_func_z)
     {
         DataValueContainer::SetValue(CURVE_LOWER_BOUND, -1.0);
         DataValueContainer::SetValue(CURVE_LOWER_BOUND, 2.0);
@@ -91,20 +85,18 @@ public:
 
     /// Copy constructor.
     ParametricCurve(ParametricCurve const& rOther)
-    : BaseType(rOther)
-    , mp_func_x(rOther.mp_func_x->CloneFunction())
-    , mp_func_y(rOther.mp_func_y->CloneFunction())
-    , mp_func_z(rOther.mp_func_z->CloneFunction())
+        : BaseType(rOther)
+        , mp_func_x(rOther.mp_func_x->CloneFunction())
+        , mp_func_y(rOther.mp_func_y->CloneFunction())
+        , mp_func_z(rOther.mp_func_z->CloneFunction())
     {}
 
     /// Destructor.
     virtual ~ParametricCurve() {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -116,13 +108,11 @@ public:
         return SuperType::Pointer(new ParametricCurve(*this));
     }
 
-
     /// inherit from Curve
     Curve::Pointer Clone() const final
     {
         return BaseType::Pointer(new ParametricCurve(*this));
     }
-
 
     /// inherit from Function
     OutputType GetValue(const InputType& t) const final
@@ -136,7 +126,6 @@ public:
         return P;
     }
 
-
     /// inherit from Function
     OutputType GetDerivative(const int& component, const InputType& t) const final
     {
@@ -148,7 +137,6 @@ public:
 
         return P;
     }
-
 
     /// inherit from Function
     OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const final
@@ -162,19 +150,17 @@ public:
         return P;
     }
 
-
     /// inherit from Function
     SuperType::Pointer GetDiffFunction(const int& component) const final
     {
         return SuperType::Pointer(
-                    new ParametricCurve(
-                        mp_func_x->GetDiffFunction(component),
-                        mp_func_y->GetDiffFunction(component),
-                        mp_func_z->GetDiffFunction(component)
-                    )
-                );
+                   new ParametricCurve(
+                       mp_func_x->GetDiffFunction(component),
+                       mp_func_y->GetDiffFunction(component),
+                       mp_func_z->GetDiffFunction(component)
+                   )
+               );
     }
-
 
     void Export(const std::string& filename, const double& tmin, const double& tmax, const std::size_t& nsampling, const int& deriv) const
     {
@@ -184,13 +170,13 @@ public:
         OutputType P, DP, D2P;
 
         fid << "t\t\t\t\tx\t\t\t\ty\t\t\t\tz";
-        if (deriv > 0) fid << "\t\t\t\tdx\t\t\t\tdy\t\t\t\tdz";
-        if (deriv > 1) fid << "\t\t\t\td2x\t\t\t\td2y\t\t\t\td2z";
+        if (deriv > 0) { fid << "\t\t\t\tdx\t\t\t\tdy\t\t\t\tdz"; }
+        if (deriv > 1) { fid << "\t\t\t\td2x\t\t\t\td2y\t\t\t\td2z"; }
         fid << "\n";
 
         for (std::size_t i = 0; i < nsampling; ++i)
         {
-            double t = tmin + i*(tmax-tmin)/(nsampling-1);
+            double t = tmin + i * (tmax - tmin) / (nsampling - 1);
             P = this->GetValue(t);
             fid << t << "\t" << P[0] << "\t" << P[1] << "\t" << P[2];
 
@@ -212,16 +198,13 @@ public:
         fid.close();
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -244,11 +227,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -256,43 +237,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -306,21 +279,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -338,11 +307,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, ParametricCurve& rThis)

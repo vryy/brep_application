@@ -35,7 +35,6 @@
 #include "custom_algebra/function/load_function_plate_with_the_hole.h"
 #include "custom_algebra/function/hydrostatic_pressure_function_on_surface.h"
 
-
 namespace Kratos
 {
 
@@ -45,7 +44,7 @@ namespace Python
 using namespace boost::python;
 
 double Helper_FunctionR3R1_GetValue_1(FunctionR3R1& rDummy,
-        const double& x, const double& y)
+                                      const double& x, const double& y)
 {
     FunctionR3R1::InputType P;
     P[0] = x;
@@ -54,7 +53,7 @@ double Helper_FunctionR3R1_GetValue_1(FunctionR3R1& rDummy,
 }
 
 double Helper_FunctionR3R1_GetValue_2(FunctionR3R1& rDummy,
-        const double& x, const double& y, const double& z)
+                                      const double& x, const double& y, const double& z)
 {
     FunctionR3R1::InputType P;
     P[0] = x;
@@ -77,23 +76,23 @@ double Helper_FunctionR1R1_GetSecondDerivative(FunctionR1R1& rDummy,
 
 template<int TDerivDegree>
 void CubicSplineFunction_SetPoints(CubicSplineFunction<TDerivDegree>& rDummy, boost::python::list list_t,
-    boost::python::list list_x)
+                                   boost::python::list list_x)
 {
     std::vector<double> t;
     std::vector<double> x;
 
     typedef boost::python::stl_input_iterator<double> iterator_tree_type;
 
-    BOOST_FOREACH(const typename iterator_tree_type::value_type& v,
+    BOOST_FOREACH(const typename iterator_tree_type::value_type & v,
                   std::make_pair(iterator_tree_type(list_t), // begin
-                  iterator_tree_type() ) ) // end
+                                 iterator_tree_type() ) ) // end
     {
         t.push_back(v);
     }
 
-    BOOST_FOREACH(const typename iterator_tree_type::value_type& v,
+    BOOST_FOREACH(const typename iterator_tree_type::value_type & v,
                   std::make_pair(iterator_tree_type(list_x), // begin
-                  iterator_tree_type() ) ) // end
+                                 iterator_tree_type() ) ) // end
     {
         x.push_back(v);
     }
@@ -1762,12 +1761,12 @@ void BRepApplication_AddFunctionsToPython()
     ("MonomialFunctionR3R1X6Y6Z6", init<>())
     ;
 
-    #ifdef BREP_APPLICATION_USE_MASHPRESSO
+#ifdef BREP_APPLICATION_USE_MASHPRESSO
     class_<MathPressoFunctionR3R1, MathPressoFunctionR3R1::Pointer, boost::noncopyable, bases<FunctionR3R1> >
     ("MathPressoFunctionR3R1", init<const std::string&>())
     .def(self_ns::str(self))
     ;
-    #endif
+#endif
 
     /**************************************************************/
     /************* EXPORT INTERFACE FOR FUNCTIONR3R3 **************/
@@ -1822,4 +1821,3 @@ void BRepApplication_AddFunctionsToPython()
 }
 }  // namespace Python.
 }  // namespace Kratos.
-

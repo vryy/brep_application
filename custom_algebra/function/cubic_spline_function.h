@@ -11,19 +11,14 @@
 //  Date:            1 Feb 2018
 //
 
-
 #if !defined(KRATOS_CUBIC_SPLINE_FUNCTION_H_INCLUDED )
 #define  KRATOS_CUBIC_SPLINE_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -76,7 +71,6 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -87,19 +81,17 @@ public:
 
     /// Copy constructor.
     CubicSplineFunction(CubicSplineFunction const& rOther)
-    : BaseType(rOther), mS(rOther.mS)
+        : BaseType(rOther), mS(rOther.mS)
     {}
 
     /// Destructor.
     virtual ~CubicSplineFunction()
     {}
 
-
     BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new CubicSplineFunction(*this));
     }
-
 
     void SetPoints(const std::vector<double>& t, const std::vector<double>& x)
     {
@@ -116,37 +108,35 @@ public:
         mS.set_right_boundary(static_cast<tk::spline::bd_type>(type), value);
     }
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
     ///@{
 
-
     double GetValue(const InputType& P) const override
     {
         if (TDerivDegree == 0)
+        {
             return mS(P);
+        }
         else if (TDerivDegree > 0)
+        {
             return mS.deriv(TDerivDegree, P);
+        }
     }
-
 
     double GetDerivative(const int& component, const InputType& P) const override
     {
-        return mS.deriv(TDerivDegree+1, P);
+        return mS.deriv(TDerivDegree + 1, P);
     }
-
 
     double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const override
     {
-        return mS.deriv(TDerivDegree+2, P);
+        return mS.deriv(TDerivDegree + 2, P);
     }
-
 
     // virtual FunctionR1R1::Pointer GetDiffFunction(const int& component) const
     // {
@@ -155,22 +145,18 @@ public:
     //     return pFunc;
     // }
 
-
     std::string GetFormula(const std::string& Format) const override
     {
         return "S";
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -193,18 +179,15 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
 protected:
     ///@name Protected static Member Variables
     ///@{
-
 
     ///@}
     ///@name Protected member Variables
@@ -216,26 +199,21 @@ protected:
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -243,31 +221,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -279,8 +251,6 @@ private:
     ///@}
 
 }; // Class CubicSplineFunction
-
-
 
 template<>
 class CubicSplineFunction<3> : public CubicSplineFunction<0>
@@ -299,18 +269,15 @@ public:
         return mS.deriv(3, P);
     }
 
-
     double GetDerivative(const int& component, const InputType& P) const final
     {
         return mS.deriv(4, P);
     }
 
-
     double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const final
     {
         return mS.deriv(5, P);
     }
-
 
     // virtual FunctionR1R1::Pointer GetDiffFunction(const int& component) const
     // {
@@ -323,11 +290,9 @@ public:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream CubicSplineFunction
 template<int TDerivDegree>
@@ -345,7 +310,6 @@ inline std::ostream& operator << (std::ostream& rOStream, const CubicSplineFunct
     return rOStream;
 }
 ///@}
-
 
 ///@} addtogroup block
 

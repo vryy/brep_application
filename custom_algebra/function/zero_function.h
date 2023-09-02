@@ -11,24 +11,18 @@
 //  Date:            22 Feb 2017
 //
 
-
 #if !defined(KRATOS_ZERO_FUNCTION_H_INCLUDED )
 #define  KRATOS_ZERO_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
-
 
 namespace Kratos
 {
@@ -73,7 +67,6 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -90,56 +83,46 @@ public:
     virtual ~ZeroFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     static typename BaseType::Pointer Create()
     {
         return typename BaseType::Pointer(new ZeroFunction());
     }
 
-
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new ZeroFunction(*this));
     }
-
 
     double GetValue(const InputType& P) const final
     {
         return 0.0;
     }
 
-
     std::string GetFormula(const std::string& Format) const final
     {
         return "0.0";
     }
-
 
     typename BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return typename BaseType::Pointer(new ZeroFunction());
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -162,11 +145,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -174,36 +155,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -211,31 +185,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -253,11 +221,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream ZeroFunction
 template<class TFunction>
@@ -275,7 +241,6 @@ inline std::ostream& operator << (std::ostream& rOStream, const ZeroFunction<TFu
     return rOStream;
 }
 ///@}
-
 
 ///@} addtogroup block
 

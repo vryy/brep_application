@@ -11,26 +11,20 @@
 //  Date:            15 Feb 2017
 //
 
-
 #if !defined(KRATOS_INVERSE_LEVEL_SET_H_INCLUDED )
 #define  KRATOS_INVERSE_LEVEL_SET_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "includes/element.h"
 #include "includes/ublas_interface.h"
 #include "custom_algebra/level_set/level_set.h"
-
 
 namespace Kratos
 {
@@ -85,57 +79,49 @@ public:
 
     /// Default constructor.
     InverseLevelSet(const BaseType::Pointer p_level_set)
-    : BaseType(), mp_level_set(p_level_set)
+        : BaseType(), mp_level_set(p_level_set)
     {}
 
     /// Copy constructor.
     InverseLevelSet(InverseLevelSet const& rOther)
-    : BaseType(rOther), mp_level_set(rOther.mp_level_set->CloneLevelSet())
+        : BaseType(rOther), mp_level_set(rOther.mp_level_set->CloneLevelSet())
     {}
 
     /// Destructor.
     virtual ~InverseLevelSet() {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new InverseLevelSet(*this));
     }
 
-
     std::size_t WorkingSpaceDimension() const final
     {
         return mp_level_set->WorkingSpaceDimension();
     }
-
 
     double GetValue(const PointType& P) const final
     {
         return -mp_level_set->GetValue(P);
     }
 
-
     Vector GetGradient(const PointType& P) const final
     {
         return -mp_level_set->GetGradient(P);
     }
 
-
     Matrix GetGradientDerivatives(const PointType& P) const final
     {
         return -mp_level_set->GetGradientDerivatives(P);
     }
-
 
     /// Get the original level set
     BaseType::Pointer pLeveSet() const
@@ -162,11 +148,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -186,11 +170,9 @@ public:
         mp_level_set->PrintData(rOStream);
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -198,39 +180,31 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
 
-
     BaseType::Pointer mp_level_set;
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -238,31 +212,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -280,11 +248,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, InverseLevelSet& rThis)

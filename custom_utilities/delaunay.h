@@ -11,19 +11,14 @@
 //  Date:            24 Jun 2020
 //
 
-
 #if !defined(DELAUNAY_H_INCLUDED )
 #define  DELAUNAY_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 
@@ -53,7 +48,7 @@ public:
 
         Point add(const double& a, const Point& p) const
         {
-            return Point(x + a*p.x, y + a*p.y);
+            return Point(x + a * p.x, y + a * p.y);
         }
 
         double distanceTo(const Point& p) const
@@ -63,7 +58,7 @@ public:
 
         double scalarProduct(const Point& p) const
         {
-            return x*p.x + y*p.y;
+            return x * p.x + y * p.y;
         }
 
         double norm2() const
@@ -122,9 +117,13 @@ public:
         bool operator<(const Edge& e) const
         {
             if (p1 == e.p1)
+            {
                 return p2 < e.p2;
+            }
             else
+            {
                 return p1 < e.p1;
+            }
         }
 
         Edge& operator=(const Edge& e)
@@ -163,8 +162,8 @@ public:
             }
 
             // make the triangle ccw
-            double test = (pj.x-pi.x)*(pk.y-pi.y) - (pj.y-pi.y)*(pk.x-pi.x);
-            if (test < 0) std::swap(pj, pk);
+            double test = (pj.x - pi.x) * (pk.y - pi.y) - (pj.y - pi.y) * (pk.x - pi.x);
+            if (test < 0) { std::swap(pj, pk); }
 
             // compute the center of circumferential circle and its radius
             Point dij = pi.add(-1.0, pj);
@@ -208,12 +207,18 @@ public:
             if (pi == t.pi)
             {
                 if (pj == t.pj)
+                {
                     return pk < t.pk;
+                }
                 else
+                {
                     return pj < t.pj;
+                }
             }
             else
+            {
                 return pi < t.pi;
+            }
         }
 
         Triangle& operator=(const Triangle& t)
@@ -247,7 +252,9 @@ public:
         void addEdges(const TEdgeContainerType& es)
         {
             for (auto e = es.begin(); e != es.end(); ++e)
+            {
                 addEdge(*e);
+            }
         }
     };
 
@@ -255,10 +262,14 @@ public:
     Delaunay(const double& xmin, const double& xmax, const double& ymin, const double& ymax)
     {
         bps.resize(4);
-        bps[0] = Point(xmin, ymin); bps[0].id = 1;
-        bps[1] = Point(xmax, ymin); bps[1].id = 2;
-        bps[2] = Point(xmax, ymax); bps[2].id = 3;
-        bps[3] = Point(xmin, ymax); bps[3].id = 4;
+        bps[0] = Point(xmin, ymin);
+        bps[0].id = 1;
+        bps[1] = Point(xmax, ymin);
+        bps[1].id = 2;
+        bps[2] = Point(xmax, ymax);
+        bps[2].id = 3;
+        bps[3] = Point(xmin, ymax);
+        bps[3].id = 4;
 
         triangles.insert(Triangle(bps[0], bps[1], bps[2]));
         triangles.insert(Triangle(bps[0], bps[2], bps[3]));
@@ -323,14 +334,14 @@ public:
         std::cout << "points:" << std::endl;
         for (auto p = points.begin(); p != points.end(); ++p)
         {
-            std::cout << p->id-4 << ": " << p->x << ", " << p->y << std::endl;
+            std::cout << p->id - 4 << ": " << p->x << ", " << p->y << std::endl;
         }
 
         std::cout << "triangles:" << std::endl;
         auto tris = this->getTriangles();
         for (auto t = tris.begin(); t != tris.end(); ++t)
         {
-            std::cout << t->pi.id-4 << " " << t->pj.id-4 << " " << t->pk.id-4 << std::endl;
+            std::cout << t->pi.id - 4 << " " << t->pj.id - 4 << " " << t->pk.id - 4 << std::endl;
         }
     }
 
@@ -346,7 +357,9 @@ private:
         for (auto t = triangles.begin(); t != triangles.end(); ++t)
         {
             if (t->isInsideCC(p))
+            {
                 a.push_back(*t);
+            }
         }
         return a;
     }
@@ -369,7 +382,9 @@ private:
         for (auto p = bps.begin(); p != bps.end(); ++p)
         {
             if (t.hasPoint(*p))
+            {
                 return true;
+            }
         }
         return false;
     }

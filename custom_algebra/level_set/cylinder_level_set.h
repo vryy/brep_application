@@ -11,19 +11,14 @@
 //  Date:            14 Feb 2017
 //
 
-
 #if !defined(KRATOS_CYLINDER_LEVEL_SET_H_INCLUDED )
 #define  KRATOS_CYLINDER_LEVEL_SET_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -71,13 +66,13 @@ public:
 
     typedef LevelSet BaseType;
 
-    #if defined(__clang__) || defined(__INTEL_COMPILER)
+#if defined(__clang__) || defined(__INTEL_COMPILER)
     static constexpr double PI = 3.1415926535897932384626433832795028841971693;
-    #elif defined(__GNUC__) || defined(__GNUG__)
-    static constexpr double PI = std::atan(1.0)*4;
-    #else
-    static constexpr double PI = std::atan(1.0)*4;
-    #endif
+#elif defined(__GNUC__) || defined(__GNUG__)
+    static constexpr double PI = std::atan(1.0) * 4;
+#else
+    static constexpr double PI = std::atan(1.0) * 4;
+#endif
 
     ///@}
     ///@name Life Cycle
@@ -85,74 +80,67 @@ public:
 
     /// Default constructor.
     CylinderLevelSet(const double& cX, const double& cY, const double& cZ, const double& dX, const double& dY, const double& dZ, const double& R)
-    : BaseType(), mcX(cX), mcY(cY), mcZ(cZ), mR(R)
+        : BaseType(), mcX(cX), mcY(cY), mcZ(cZ), mR(R)
     {
         mLength = sqrt(pow(dX, 2) + pow(dY, 2) + pow(dZ, 2));
 
-        if(mLength == 0.0)
+        if (mLength == 0.0)
             KRATOS_THROW_ERROR(std::logic_error, "The director vector can't be null", "")
 
-        mdX = dX / mLength;
+            mdX = dX / mLength;
         mdY = dY / mLength;
         mdZ = dZ / mLength;
     }
 
     /// Copy constructor.
     CylinderLevelSet(CylinderLevelSet const& rOther)
-    : BaseType(rOther), mcX(rOther.mcX), mcY(rOther.mcY), mcZ(rOther.mcZ)
-    , mdX(rOther.mdX), mdY(rOther.mdY), mdZ(rOther.mdZ), mR(rOther.mR)
+        : BaseType(rOther), mcX(rOther.mcX), mcY(rOther.mcY), mcZ(rOther.mcZ)
+        , mdX(rOther.mdX), mdY(rOther.mdY), mdZ(rOther.mdZ), mR(rOther.mR)
     {}
 
     /// Destructor.
     virtual ~CylinderLevelSet() {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     LevelSet::Pointer CloneLevelSet() const override
     {
         return LevelSet::Pointer(new CylinderLevelSet(*this));
     }
 
-
     std::size_t WorkingSpaceDimension() const final
     {
         return 3;
     }
 
-
     double GetValue(const PointType& P) const override
     {
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
-        double pX = mcX + t*mdX;
-        double pY = mcY + t*mdY;
-        double pZ = mcZ + t*mdZ;
+        double pX = mcX + t * mdX;
+        double pY = mcY + t * mdY;
+        double pZ = mcZ + t * mdZ;
         return sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2)) - mR;
     }
-
 
     Vector GetGradient(const PointType& P) const override
     {
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
-        double pX = mcX + t*mdX;
-        double pY = mcY + t*mdY;
-        double pZ = mcZ + t*mdZ;
+        double pX = mcX + t * mdX;
+        double pY = mcY + t * mdY;
+        double pZ = mcZ + t * mdZ;
         double Aux = sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2));
         Vector grad(3);
-        grad(0) = ((P(0) - pX) * (1.0 - mdX*mdX) - (P(1) - pY) * mdY*mdX - (P(2) - pZ) * mdZ*mdX) / Aux;
-        grad(1) = ((P(1) - pY) * (1.0 - mdY*mdY) - (P(0) - pX) * mdX*mdY - (P(2) - pZ) * mdZ*mdY) / Aux;
-        grad(2) = ((P(2) - pZ) * (1.0 - mdZ*mdZ) - (P(0) - pX) * mdX*mdZ - (P(1) - pY) * mdY*mdZ) / Aux;
+        grad(0) = ((P(0) - pX) * (1.0 - mdX * mdX) - (P(1) - pY) * mdY * mdX - (P(2) - pZ) * mdZ * mdX) / Aux;
+        grad(1) = ((P(1) - pY) * (1.0 - mdY * mdY) - (P(0) - pX) * mdX * mdY - (P(2) - pZ) * mdZ * mdY) / Aux;
+        grad(2) = ((P(2) - pZ) * (1.0 - mdZ * mdZ) - (P(0) - pX) * mdX * mdZ - (P(1) - pY) * mdY * mdZ) / Aux;
         return grad;
     }
-
 
     Matrix GetGradientDerivatives(const PointType& P) const override
     {
@@ -160,10 +148,9 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not yet implemented")
     }
 
-
     /// Generate the sampling points on the level set surface
     std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-        const double& start_angle, const double& end_angle, const double& tmin, const double& tmax) const
+            const double& start_angle, const double& end_angle, const double& tmin, const double& tmax) const
     {
         // KRATOS_WATCH(nsampling_axial)
         // KRATOS_WATCH(nsampling_radial)
@@ -173,14 +160,16 @@ public:
 
         double t, d;
         PointType P, T, B, V, Up;
-        Up[0] = 0.0; Up[1] = 0.0; Up[2] = 1.0;
+        Up[0] = 0.0;
+        Up[1] = 0.0;
+        Up[2] = 1.0;
         for (std::size_t i = 0; i < nsampling_axial; ++i)
         {
-            t = tmin + i*(tmax-tmin)/(nsampling_axial-1);
+            t = tmin + i * (tmax - tmin) / (nsampling_axial - 1);
 
-            P[0] = mcX + t*mdX*mLength;
-            P[1] = mcY + t*mdY*mLength;
-            P[2] = mcZ + t*mdZ*mLength;
+            P[0] = mcX + t * mdX * mLength;
+            P[1] = mcY + t * mdY * mLength;
+            P[2] = mcZ + t * mdZ * mLength;
             // KRATOS_WATCH(P)
 
             T[0] = mdX;
@@ -194,10 +183,10 @@ public:
             std::vector<PointType> radial_points(nsampling_radial);
             for (std::size_t j = 0; j < nsampling_radial; ++j)
             {
-                d = start_angle + j*small_angle;
-                noalias(V) = std::cos(d)*Up + std::sin(d)*B;
+                d = start_angle + j * small_angle;
+                noalias(V) = std::cos(d) * Up + std::sin(d) * B;
 
-                noalias(radial_points[j]) = P + mR*V;
+                noalias(radial_points[j]) = P + mR * V;
             }
 
             results.push_back(radial_points);
@@ -206,20 +195,18 @@ public:
         return results;
     }
 
-
     /// Generate the sampling points on the level set surface
     std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial) const
     {
-        return GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI, 0.0, 1.0);
+        return GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2 * PI, 0.0, 1.0);
     }
-
 
     /// Create the elements based on sampling points on the surface
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4ElementsClosedLoop(ModelPart& r_model_part,
-        const std::string& sample_element_name,
-        Properties::Pointer pProperties,
-        const std::size_t& nsampling_axial,
-        const std::size_t& nsampling_radial) const
+            const std::string& sample_element_name,
+            Properties::Pointer pProperties,
+            const std::size_t& nsampling_axial,
+            const std::size_t& nsampling_radial) const
     {
         // firstly create the sampling points on surface
         std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial);
@@ -230,18 +217,17 @@ public:
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 
-
     /// Create the elements based on sampling points on the surface
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4ElementsClosedLoop(ModelPart& r_model_part,
-        const std::string& sample_element_name,
-        Properties::Pointer pProperties,
-        const std::size_t& nsampling_axial,
-        const std::size_t& nsampling_radial,
-        const double& tmin,
-        const double& tmax) const
+            const std::string& sample_element_name,
+            Properties::Pointer pProperties,
+            const std::size_t& nsampling_axial,
+            const std::size_t& nsampling_radial,
+            const double& tmin,
+            const double& tmax) const
     {
         // firstly create the sampling points on surface
-        std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI, tmin, tmax);
+        std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2 * PI, tmin, tmax);
         int order = 1;
         int close_dir = 2;
         int activation_dir = 1;
@@ -249,15 +235,14 @@ public:
         return std::make_pair(std::get<0>(Info), std::get<1>(Info));
     }
 
-
     /// Create the elements based on sampling points on the surface
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4Elements(ModelPart& r_model_part,
-        const std::string& sample_element_name,
-        Properties::Pointer pProperties,
-        const std::size_t& nsampling_axial,
-        const std::size_t& nsampling_radial,
-        const double& start_radial_angle,
-        const double& end_radial_angle) const
+            const std::string& sample_element_name,
+            Properties::Pointer pProperties,
+            const std::size_t& nsampling_axial,
+            const std::size_t& nsampling_radial,
+            const double& start_radial_angle,
+            const double& end_radial_angle) const
     {
         // firstly create the sampling points on surface
         std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, start_radial_angle, end_radial_angle, 0.0, 1.0);
@@ -272,12 +257,14 @@ public:
     int ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
-        double pX = mcX + t*mdX;
-        double pY = mcY + t*mdY;
-        double pZ = mcZ + t*mdZ;
-        double vector_length = sqrt(pow(P(0)-pX, 2) + pow(P(1)-pY, 2) + pow(P(2)-pZ, 2));
+        double pX = mcX + t * mdX;
+        double pY = mcY + t * mdY;
+        double pZ = mcZ + t * mdZ;
+        double vector_length = sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2));
         if (vector_length == 0)
+        {
             KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the center line  ", "");
+        }
 
         Proj(0) = (P(0) - pX) * mR / vector_length + pX;
         Proj(1) = (P(1) - pY) * mR / vector_length + pY;
@@ -294,53 +281,56 @@ public:
     void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const final
     {
         if (Derivatives.size1() != 3 || Derivatives.size2() != 3)
+        {
             Derivatives.resize(3, 3, false);
+        }
 
         double t = (P(0) - mcX) * mdX + (P(1) - mcY) * mdY + (P(2) - mcZ) * mdZ;
-        double pX = mcX + t*mdX;
-        double pY = mcY + t*mdY;
-        double pZ = mcZ + t*mdZ;
-        double vector_length = sqrt(pow(P(0)-pX, 2) + pow(P(1)-pY, 2) + pow(P(2)-pZ, 2));
+        double pX = mcX + t * mdX;
+        double pY = mcY + t * mdY;
+        double pZ = mcZ + t * mdZ;
+        double vector_length = sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2));
         if (vector_length == 0)
+        {
             KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the center line  ", "");
+        }
 
         Vector dt(3);
-        dt(0) = mdX; dt(1) = mdY; dt(2) = mdZ;
+        dt(0) = mdX;
+        dt(1) = mdY;
+        dt(2) = mdZ;
 
         Vector dpX(3), dpY(3), dpZ(3);
 
-        noalias(dpX) = mdX*dt;
-        noalias(dpY) = mdY*dt;
-        noalias(dpZ) = mdZ*dt;
+        noalias(dpX) = mdX * dt;
+        noalias(dpY) = mdY * dt;
+        noalias(dpZ) = mdZ * dt;
 
         Vector dvector_length(3);
-        dvector_length(0) = ((P(0) - pX)*(1.0 - dpX(0)) + (P(1)-pY)*(-dpY(0)) + (P(2)-pZ)*(-dpZ(0))) / vector_length;
-        dvector_length(1) = ((P(0) - pX)*(-dpX(1)) + (P(1)-pY)*(1.0 - dpY(1)) + (P(2)-pZ)*(-dpZ(1))) / vector_length;
-        dvector_length(2) = ((P(0) - pX)*(-dpX(2)) + (P(1)-pY)*(-dpY(2)) + (P(2)-pZ)*(1.0 - dpZ(2))) / vector_length;
+        dvector_length(0) = ((P(0) - pX) * (1.0 - dpX(0)) + (P(1) - pY) * (-dpY(0)) + (P(2) - pZ) * (-dpZ(0))) / vector_length;
+        dvector_length(1) = ((P(0) - pX) * (-dpX(1)) + (P(1) - pY) * (1.0 - dpY(1)) + (P(2) - pZ) * (-dpZ(1))) / vector_length;
+        dvector_length(2) = ((P(0) - pX) * (-dpX(2)) + (P(1) - pY) * (-dpY(2)) + (P(2) - pZ) * (1.0 - dpZ(2))) / vector_length;
 
-        Derivatives(0, 0) = (1.0-dpX(0))*mR/vector_length + dpX(0) - (P(0)-pX)*mR*dvector_length(0)/pow(vector_length, 2);
-        Derivatives(0, 1) = (-dpX(1))*mR/vector_length + dpX(1) - (P(0)-pX)*mR*dvector_length(1)/pow(vector_length, 2);
-        Derivatives(0, 2) = (-dpX(2))*mR/vector_length + dpX(2) - (P(0)-pX)*mR*dvector_length(2)/pow(vector_length, 2);
+        Derivatives(0, 0) = (1.0 - dpX(0)) * mR / vector_length + dpX(0) - (P(0) - pX) * mR * dvector_length(0) / pow(vector_length, 2);
+        Derivatives(0, 1) = (-dpX(1)) * mR / vector_length + dpX(1) - (P(0) - pX) * mR * dvector_length(1) / pow(vector_length, 2);
+        Derivatives(0, 2) = (-dpX(2)) * mR / vector_length + dpX(2) - (P(0) - pX) * mR * dvector_length(2) / pow(vector_length, 2);
 
-        Derivatives(1, 0) = (-dpY(0))*mR/vector_length + dpY(0) - (P(1)-pY)*mR*dvector_length(0)/pow(vector_length, 2);
-        Derivatives(1, 1) = (1.0-dpY(1))*mR/vector_length + dpY(1) - (P(1)-pY)*mR*dvector_length(1)/pow(vector_length, 2);
-        Derivatives(1, 2) = (-dpY(2))*mR/vector_length + dpY(2) - (P(1)-pY)*mR*dvector_length(2)/pow(vector_length, 2);
+        Derivatives(1, 0) = (-dpY(0)) * mR / vector_length + dpY(0) - (P(1) - pY) * mR * dvector_length(0) / pow(vector_length, 2);
+        Derivatives(1, 1) = (1.0 - dpY(1)) * mR / vector_length + dpY(1) - (P(1) - pY) * mR * dvector_length(1) / pow(vector_length, 2);
+        Derivatives(1, 2) = (-dpY(2)) * mR / vector_length + dpY(2) - (P(1) - pY) * mR * dvector_length(2) / pow(vector_length, 2);
 
-        Derivatives(2, 0) = (-dpZ(0))*mR/vector_length + dpZ(0) - (P(2)-pZ)*mR*dvector_length(0)/pow(vector_length, 2);
-        Derivatives(2, 1) = (-dpZ(1))*mR/vector_length + dpZ(1) - (P(2)-pZ)*mR*dvector_length(1)/pow(vector_length, 2);
-        Derivatives(2, 2) = (1.0-dpZ(2))*mR/vector_length + dpZ(2) - (P(2)-pZ)*mR*dvector_length(2)/pow(vector_length, 2);
+        Derivatives(2, 0) = (-dpZ(0)) * mR / vector_length + dpZ(0) - (P(2) - pZ) * mR * dvector_length(0) / pow(vector_length, 2);
+        Derivatives(2, 1) = (-dpZ(1)) * mR / vector_length + dpZ(1) - (P(2) - pZ) * mR * dvector_length(1) / pow(vector_length, 2);
+        Derivatives(2, 2) = (1.0 - dpZ(2)) * mR / vector_length + dpZ(2) - (P(2) - pZ) * mR * dvector_length(2) / pow(vector_length, 2);
     }
-
 
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -360,18 +350,15 @@ public:
                  << ", R: " << mR;
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
 protected:
     ///@name Protected static Member Variables
     ///@{
-
 
     ///@}
     ///@name Protected member Variables
@@ -386,33 +373,27 @@ protected:
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -422,21 +403,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -454,20 +431,18 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
-                CylinderLevelSet& rThis)
+                                  CylinderLevelSet& rThis)
 {}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,
-                const CylinderLevelSet& rThis)
+                                  const CylinderLevelSet& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

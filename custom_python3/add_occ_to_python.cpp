@@ -13,7 +13,6 @@
 #include "custom_python/add_occ_to_python.h"
 #include "custom_utilities/occ_define.h"
 
-
 namespace Kratos
 {
 
@@ -39,4 +38,3 @@ void BRepApplication_AddOCCToPython(pybind11::module& m)
 }
 }  // namespace Python.
 }  // namespace Kratos.
-

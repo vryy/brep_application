@@ -11,19 +11,14 @@
 //  Date:            13 Mar 2017
 //
 
-
 #if !defined(KRATOS_BREP_H_INCLUDED )
 #define  KRATOS_BREP_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -31,7 +26,6 @@
 #include "includes/ublas_interface.h"
 #include "geometries/geometry_data.h"
 #include "section/section.h"
-
 
 namespace Kratos
 {
@@ -97,11 +91,9 @@ public:
     /// Destructor.
     virtual ~BRep();
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -150,11 +142,17 @@ public:
     bool IsInside(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords, const int& configuration) const
     {
         if (configuration == 0)
+        {
             return IsInside0(rGeometry, local_coords);
+        }
         else if (configuration == 1)
+        {
             return IsInside1(rGeometry, local_coords);
+        }
         else
+        {
             KRATOS_THROW_ERROR(std::logic_error, "Invalid configuration", configuration)
+        }
     }
 
     /// Check if a point is inside/outside of the BRep
@@ -197,8 +195,8 @@ public:
     /// 1: completely outside
     /// -1: the cell is cut by BRep
     virtual int CutStatus(const GeometryType& r_geom,
-        const std::vector<CoordinatesArrayType>& r_local_points,
-        const std::vector<PointType>& r_points) const;
+                          const std::vector<CoordinatesArrayType>& r_local_points,
+                          const std::vector<PointType>& r_points) const;
 
     /// return the string of the cut status
     static std::string CutStatusStr(const int& stat);
@@ -219,11 +217,17 @@ public:
     virtual int Bisect(PointType& P, const std::vector<PointType>& Points, const double& Tol) const
     {
         if (Points.size() == 2)
+        {
             return Bisect(P, Points[0], Points[1], Tol);
+        }
         else if (Points.size() == 3)
+        {
             return Bisect(P, Points[0], Points[1], Points[2], Tol);
+        }
         else
-            KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Invalid number of points")
+        {
+            KRATOS_ERROR << __FUNCTION__ << ": Invalid number of points";
+        }
         return -2;
     }
 
@@ -302,7 +306,6 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
@@ -312,20 +315,26 @@ public:
     {
         std::vector<std::size_t> in_list, out_list;
         bool check;
-        for(std::size_t v = 0; v < r_points.size(); ++v)
+        for (std::size_t v = 0; v < r_points.size(); ++v)
         {
             check = this->IsInside(r_points[v]);
-            if(check)
+            if (check)
+            {
                 in_list.push_back(v);
+            }
             else
+            {
                 out_list.push_back(v);
+            }
         }
 
         int stat;
-        if(in_list.size() == 0 && out_list.size() == 0)
+        if (in_list.size() == 0 && out_list.size() == 0)
         {
-            for(std::size_t v = 0; v < r_points.size(); ++v)
+            for (std::size_t v = 0; v < r_points.size(); ++v)
+            {
                 KRATOS_WATCH(r_points[v])
+            }
             KRATOS_WATCH(in_list.size())
             KRATOS_WATCH(out_list.size())
             KRATOS_WATCH(this->GetTolerance())
@@ -333,13 +342,13 @@ public:
         }
         else
         {
-            if(in_list.size() == 0)
+            if (in_list.size() == 0)
             {
                 stat = BRep::_OUT;
                 return stat;
             }
 
-            if(out_list.size() == 0)
+            if (out_list.size() == 0)
             {
                 stat = BRep::_IN;
                 return stat;
@@ -373,11 +382,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -385,43 +392,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -434,21 +433,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -466,11 +461,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, BRep& rThis)

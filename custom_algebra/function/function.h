@@ -11,26 +11,20 @@
 //  Date:            13 Feb 2017
 //
 
-
 #if !defined(KRATOS_FUNCTION_H_INCLUDED )
 #define  KRATOS_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <sstream>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "includes/element.h"
 #include "includes/serializer.h"
-
 
 namespace Kratos
 {
@@ -95,40 +89,33 @@ public:
     /// Destructor.
     virtual ~Function() {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     virtual Function::Pointer CloneFunction() const
     {
         return Function::Pointer(new Function(*this));
     }
 
-
     virtual inline const std::size_t InputSize() const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
     }
-
 
     virtual inline const std::size_t OutputSize() const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
     }
 
-
     virtual TOutputType GetValue(const TInputType& P) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
     }
-
 
     virtual TOutputType GetDerivative(const int& component, const TInputType& P) const
     {
@@ -136,70 +123,61 @@ public:
         return pDerivative->GetValue(P);
     }
 
-
     virtual TOutputType GetSecondDerivative(const int& component_1, const int& component_2, const TInputType& P) const
     {
         Function::Pointer pSecondDerivative = this->GetDiffFunction(component_1)->GetDiffFunction(component_2);
         return pSecondDerivative->GetValue(P);
     }
 
-
     virtual boost::numeric::ublas::vector<TOutputType> GetGradient(const TInputType& P) const
     {
         boost::numeric::ublas::vector<TOutputType> Result(this->InputSize());
-        for(std::size_t c = 0; c < this->InputSize(); ++c)
+        for (std::size_t c = 0; c < this->InputSize(); ++c)
         {
             Result(c) = this->GetDerivative(c, P);
         }
         return Result;
     }
 
-
     virtual std::string GetFormula(const std::string& Format) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
     }
-
 
     virtual Function::Pointer GetDiffFunction(const int& component) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
     }
 
-
     TOutputType Integrate(Element::Pointer& p_elem) const
     {
         return Integrate(p_elem->GetGeometry());
     }
 
-
     TOutputType Integrate(Element::Pointer& p_elem, const int integration_order) const
     {
         GeometryData::IntegrationMethod ThisIntegrationMethod
-                = GetIntegrationMethod(integration_order);
+            = GetIntegrationMethod(integration_order);
         return Integrate(p_elem->GetGeometry(), ThisIntegrationMethod);
     }
-
 
     TOutputType Integrate(GeometryType& r_geom) const
     {
         return Integrate(r_geom, r_geom.GetDefaultIntegrationMethod());
     }
 
-
     /// Integrate a function using the sample geometry and integration rule
     TOutputType Integrate(GeometryType& r_geom,
-            const GeometryData::IntegrationMethod ThisIntegrationMethod) const
+                          const GeometryData::IntegrationMethod ThisIntegrationMethod) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Integrate is not implemented", "")
     }
 
-
     /// Helper function to compute determinant of Jacobian of a geometry at an integration point
     static double ComputeDetJ(GeometryType& r_geom,
-            const GeometryType::IntegrationPointType& integration_point)
+                              const GeometryType::IntegrationPointType& integration_point)
     {
-        if(r_geom.WorkingSpaceDimension() == r_geom.LocalSpaceDimension())
+        if (r_geom.WorkingSpaceDimension() == r_geom.LocalSpaceDimension())
         {
             Matrix J;
 
@@ -219,19 +197,20 @@ public:
         return 0.0; // to silence the compiler
     }
 
-
     /// Helper function to compute determinant of Jacobian of a geometry at an array of integration points
     static void ComputeDetJ(std::vector<double>& DetJ,
-            GeometryType& r_geom, const GeometryType::IntegrationPointsArrayType& integration_points)
+                            GeometryType& r_geom, const GeometryType::IntegrationPointsArrayType& integration_points)
     {
-        if(DetJ.size() != integration_points.size())
+        if (DetJ.size() != integration_points.size())
+        {
             DetJ.resize(integration_points.size());
+        }
 
-        if(r_geom.WorkingSpaceDimension() == r_geom.LocalSpaceDimension())
+        if (r_geom.WorkingSpaceDimension() == r_geom.LocalSpaceDimension())
         {
             Matrix J;
 
-            for(std::size_t point = 0; point < integration_points.size(); ++point)
+            for (std::size_t point = 0; point < integration_points.size(); ++point)
             {
                 J = r_geom.Jacobian( J, integration_points[point] );
                 DetJ[point] = MathUtils<double>::Det(J);
@@ -241,7 +220,7 @@ public:
         {
             Matrix J, JtJ;
 
-            for(std::size_t point = 0; point < integration_points.size(); ++point)
+            for (std::size_t point = 0; point < integration_points.size(); ++point)
             {
                 J = r_geom.Jacobian( J, integration_points[point] );
                 JtJ = prod(trans(J), J);
@@ -250,11 +229,9 @@ public:
         }
     }
 
-
     ///@}
     ///@name Access
     ///@{
-
 
     ///@}
     ///@name Inquiry
@@ -267,28 +244,28 @@ public:
 
     static inline GeometryData::IntegrationMethod GetIntegrationMethod(const int& integration_order)
     {
-        if(integration_order > GetMaxIntegrationOrder())
+        if (integration_order > GetMaxIntegrationOrder())
             KRATOS_THROW_ERROR(std::logic_error, "Does not support for integration rule with order > ", GetMaxIntegrationOrder())
 
-        GeometryData::IntegrationMethod ThisIntegrationMethod;
+            GeometryData::IntegrationMethod ThisIntegrationMethod;
 
-        if(integration_order == 1)
+        if (integration_order == 1)
         {
             ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
         }
-        else if(integration_order == 2)
+        else if (integration_order == 2)
         {
             ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_2;
         }
-        else if(integration_order == 3)
+        else if (integration_order == 3)
         {
             ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_3;
         }
-        else if(integration_order == 4)
+        else if (integration_order == 4)
         {
             ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_4;
         }
-        else if(integration_order == 5)
+        else if (integration_order == 5)
         {
             ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_5;
         }
@@ -313,11 +290,12 @@ public:
 //            ThisIntegrationMethod = GeometryData::GI_GAUSS_10;
 //        }
         else
-            ThisIntegrationMethod = GeometryData::IntegrationMethod::NumberOfIntegrationMethods; // this will never be obtained, just to silence the compiler
+        {
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::NumberOfIntegrationMethods;    // this will never be obtained, just to silence the compiler
+        }
 
         return ThisIntegrationMethod;
     }
-
 
     ///@}
     ///@name Input and output
@@ -340,11 +318,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -352,36 +328,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -389,16 +358,13 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
-
     ///@}
     ///@name Private Operators
     ///@{
-
 
     ///@}
     ///@name Private Operations
@@ -418,11 +384,9 @@ private:
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -469,13 +433,12 @@ template<> inline const std::size_t FunctionR2R3::OutputSize() const {return 3;}
 template<> inline const std::size_t FunctionR2R1::InputSize() const {return 2;}
 template<> inline const std::size_t FunctionR2R1::OutputSize() const {return 1;}
 
-
 template<>
 inline double FunctionR3R1::Integrate(GeometryType& r_geom,
-        const GeometryData::IntegrationMethod ThisIntegrationMethod) const
+                                      const GeometryData::IntegrationMethod ThisIntegrationMethod) const
 {
     const GeometryType::IntegrationPointsArrayType& integration_points
-            = r_geom.IntegrationPoints( ThisIntegrationMethod );
+        = r_geom.IntegrationPoints( ThisIntegrationMethod );
 
     double Result = 0.0;
 
@@ -484,7 +447,7 @@ inline double FunctionR3R1::Integrate(GeometryType& r_geom,
 
     CoordinatesArrayType GlobalCoords;
 
-    for(std::size_t point = 0; point < integration_points.size(); ++point)
+    for (std::size_t point = 0; point < integration_points.size(); ++point)
     {
         r_geom.GlobalCoordinates(GlobalCoords, integration_points[point]);
         Result += GetValue(GlobalCoords) * DetJ[point] * integration_points[point].Weight();
@@ -493,16 +456,14 @@ inline double FunctionR3R1::Integrate(GeometryType& r_geom,
     return Result;
 }
 
-
 ///@}
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<typename TInputType, typename TOutputType>
 inline std::istream& operator >> (std::istream& rIStream,
-                Function<TInputType, TOutputType>& rThis)
+                                  Function<TInputType, TOutputType>& rThis)
 {
     return rIStream;
 }
@@ -510,7 +471,7 @@ inline std::istream& operator >> (std::istream& rIStream,
 /// output stream function
 template<typename TInputType, typename TOutputType>
 inline std::ostream& operator << (std::ostream& rOStream,
-                const Function<TInputType, TOutputType>& rThis)
+                                  const Function<TInputType, TOutputType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

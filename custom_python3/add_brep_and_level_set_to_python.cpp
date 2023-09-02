@@ -48,7 +48,6 @@
 #include "custom_algebra/surface/parametric_surface.h"
 #include "custom_algebra/volume/parametric_volume.h"
 
-
 namespace Kratos
 {
 
@@ -80,7 +79,7 @@ bool BRep_IsInside3(BRep& rDummy, const double& x, const double& y, const double
 }
 
 bool BRep_IsInside4Element(BRep& rDummy, Element::Pointer pElement,
-    const BRep::CoordinatesArrayType& local_coords, const int& configuration)
+                           const BRep::CoordinatesArrayType& local_coords, const int& configuration)
 {
     return rDummy.IsInside(pElement->GetGeometry(), local_coords, configuration);
 }
@@ -90,7 +89,9 @@ int BRep_CutStatusPoints(BRep& rDummy, pybind11::list& list_points)
     std::vector<BRep::PointType> points;
 
     for (std::size_t i = 0; i < pybind11::len(list_points); ++i)
+    {
         points.push_back(list_points[i].cast<BRep::PointType>());
+    }
 
     return rDummy.CutStatus(points);
 }
@@ -175,8 +176,8 @@ pybind11::list LevelSet_CreateQ4Elements(
     const double Pi = 3.1415926535897932384626433;
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
         = rDummy.CreateQ4Elements(r_model_part, sample_element_name, pProperties,
-            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial),
-            start_radial_angle/180.0*Pi, end_radial_angle/180*Pi);
+                                  static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial),
+                                  start_radial_angle / 180.0 * Pi, end_radial_angle / 180 * Pi);
     pybind11::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -194,7 +195,7 @@ pybind11::list LevelSet_CreateQ4ElementsClosedLoop(
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
         = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties,
-            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial));
+                                            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial));
     pybind11::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -214,7 +215,7 @@ pybind11::list LevelSet_CreateQ4ElementsClosedLoopWithRange(
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
         = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties,
-            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax);
+                                            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax);
     pybind11::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -235,7 +236,7 @@ pybind11::list LevelSet_CreateQ4ConditionsClosedLoopWithRange(
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
         = rDummy.CreateQ4ConditionsClosedLoop(r_model_part, sample_condition_name, pProperties,
-            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax, reverse);
+                static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax, reverse);
     pybind11::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -252,7 +253,7 @@ pybind11::list LinearLevelSet_CreateLineConditions(
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
         = rDummy.CreateLineConditions(r_model_part, sample_condition_name, pProperties,
-            StartPoint, EndPoint, type, nsampling);
+                                      StartPoint, EndPoint, type, nsampling);
     pybind11::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -260,13 +261,13 @@ pybind11::list LinearLevelSet_CreateLineConditions(
 }
 
 void NodalLevelSet_InitializeFromNodes(NodalLevelSet& dummy,
-    const ModelPart::NodesContainerType& rNodes, const int& configuration)
+                                       const ModelPart::NodesContainerType& rNodes, const int& configuration)
 {
     dummy.Initialize(rNodes, configuration);
 }
 
 void NodalLevelSet_InitializeFromElements(NodalLevelSet& dummy,
-    const ModelPart::ElementsContainerType& rElements, const int& configuration)
+        const ModelPart::ElementsContainerType& rElements, const int& configuration)
 {
     dummy.Initialize(rElements, configuration);
 }
@@ -301,7 +302,9 @@ pybind11::list Section_Triangulation(Section& rDummy)
 
     pybind11::list OutputP;
     for (std::size_t i = 0; i < Points.size(); ++i)
+    {
         OutputP.append(Points[i]);
+    }
     Output.append(OutputP);
 
     pybind11::list OutputC;
@@ -309,7 +312,9 @@ pybind11::list Section_Triangulation(Section& rDummy)
     {
         pybind11::list tri;
         for (std::size_t j = 0; j < Connectivities[i].size(); ++j)
+        {
             tri.append(Connectivities[i][j]);
+        }
         OutputC.append(tri);
     }
     Output.append(OutputC);
@@ -347,26 +352,26 @@ void BRepApplication_AddBRepAndLevelSetToPython(pybind11::module& m)
     int(BRep::*pointer_to_CutStatusBySamplingGeometry)(Element::GeometryType::Pointer, const std::size_t&, const int&) const = &BRep::CutStatusBySampling;
 
     auto pybrep = class_<BRep, BRep::Pointer>
-    ( m, "BRep" )
-    .def( init<>() )
-    .def_property("Name", &BRep::Name, &BRep::SetName)
-    .def_property("Tolerance", &BRep::GetTolerance, &BRep::SetTolerance)
-    .def("IsInside", &BRep_IsInside2)
-    .def("IsInside", &BRep_IsInside3)
-    .def("IsInside", pointer_to_IsInside)
-    .def("IsInside", &BRep_IsInside4Element)
-    .def("CutStatus", pointer_to_CutStatusElement)
-    .def("CutStatus", pointer_to_CutStatusGeometry)
-    .def("CutStatus", &BRep_CutStatusPoints)
-    .def("CutStatusBySampling", pointer_to_CutStatusBySamplingElement)
-    .def("CutStatusBySampling", pointer_to_CutStatusBySamplingGeometry)
-    .def("Bisect", &BRep_Bisect2)
-    .def("Bisect", &BRep_Bisect3)
-    .def("Intersect", &BRep_IntersectElement)
-    .def("ProjectOnSurface", &BRep_ProjectOnSurface)
-    .def("Clone", &BRep::CloneBRep)
-    .def("__str__", &PrintObject<BRep>)
-    ;
+                  ( m, "BRep" )
+                  .def( init<>() )
+                  .def_property("Name", &BRep::Name, &BRep::SetName)
+                  .def_property("Tolerance", &BRep::GetTolerance, &BRep::SetTolerance)
+                  .def("IsInside", &BRep_IsInside2)
+                  .def("IsInside", &BRep_IsInside3)
+                  .def("IsInside", pointer_to_IsInside)
+                  .def("IsInside", &BRep_IsInside4Element)
+                  .def("CutStatus", pointer_to_CutStatusElement)
+                  .def("CutStatus", pointer_to_CutStatusGeometry)
+                  .def("CutStatus", &BRep_CutStatusPoints)
+                  .def("CutStatusBySampling", pointer_to_CutStatusBySamplingElement)
+                  .def("CutStatusBySampling", pointer_to_CutStatusBySamplingGeometry)
+                  .def("Bisect", &BRep_Bisect2)
+                  .def("Bisect", &BRep_Bisect3)
+                  .def("Intersect", &BRep_IntersectElement)
+                  .def("ProjectOnSurface", &BRep_ProjectOnSurface)
+                  .def("Clone", &BRep::CloneBRep)
+                  .def("__str__", &PrintObject<BRep>)
+                  ;
     pybrep.attr("_CUT") = pybind11::int_(BRep::_CUT);
     pybrep.attr("_IN") = pybind11::int_(BRep::_IN);
     pybrep.attr("_OUT") = pybind11::int_(BRep::_OUT);
@@ -542,13 +547,13 @@ void BRepApplication_AddBRepAndLevelSetToPython(pybind11::module& m)
     .def(init<BRep::Pointer>() )
     ;
 
-    #ifdef BREP_APPLICATION_USE_OPENCASCADE
+#ifdef BREP_APPLICATION_USE_OPENCASCADE
     class_<OCCBRep, OCCBRep::Pointer, BRep>
     ( m, "OCCBRep" )
     .def(init<>() )
     .def("SetShape", &OCCBRep::SetShape)
     ;
-    #endif
+#endif
 
     class_<NATMArcBRep, NATMArcBRep::Pointer, BRep>
     ( m, "NATMArcBRep" )

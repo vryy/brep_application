@@ -11,13 +11,11 @@
 //  Date:            13 Mar 2017
 //
 
-
 // Project includes
 #include "custom_algebra/brep.h"
 #include "custom_algebra/section/polygonal_section.h"
 #include "custom_utilities/brep_utility.h"
 #include "custom_utilities/brep_mesh_utility.h"
-
 
 namespace Kratos
 {
@@ -58,7 +56,9 @@ int BRep::CutStatus(GeometryType& r_geom, const int& configuration) const
     {
         std::vector<PointType> points(r_geom.size());
         for (std::size_t i = 0; i < r_geom.size(); ++i)
+        {
             noalias(points[i]) = r_geom[i].GetInitialPosition();
+        }
         return this->CutStatusOfPoints(points);
     }
     else if (configuration == 1)
@@ -74,8 +74,8 @@ int BRep::CutStatus(const std::vector<PointType>& r_points) const
 }
 
 int BRep::CutStatus(const GeometryType& r_geom,
-        const std::vector<CoordinatesArrayType>& r_local_points,
-        const std::vector<PointType>& r_points) const
+                    const std::vector<CoordinatesArrayType>& r_local_points,
+                    const std::vector<PointType>& r_points) const
 {
     return this->CutStatusOfPoints(r_points);
 }
@@ -94,24 +94,38 @@ int BRep::CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling
 {
     std::vector<PointType> SamplingPoints;
     if (configuration == 0)
+    {
         BRepMeshUtility::GenerateSamplingPoints<0>(SamplingPoints, r_geom, nsampling);
+    }
     else if (configuration == 1)
+    {
         BRepMeshUtility::GenerateSamplingPoints<1>(SamplingPoints, r_geom, nsampling);
+    }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "Unknown configuration", configuration)
+    {
+        KRATOS_ERROR << "Unknown configuration " << configuration;
+    }
     return this->CutStatus(SamplingPoints);
 }
 
 std::string BRep::CutStatusStr(const int& stat)
 {
     if (stat == _CUT)
+    {
         return "CUT";
+    }
     else if (stat == _IN)
+    {
         return "IN";
+    }
     else if (stat == _OUT)
+    {
         return "OUT";
+    }
     else
+    {
         return "Undefined";
+    }
 }
 
 Section::Pointer BRep::Intersect(GeometryType& r_geom) const
@@ -129,15 +143,18 @@ Section::Pointer BRep::Intersect(GeometryType& r_geom) const
 
         std::vector<PointType> points(edge.size());
         for (std::size_t j = 0; j < edge.size(); ++j)
+        {
             points[j] = r_geom[edge[j]].GetInitialPosition();
+        }
 
         error_code = this->Bisect(P, points, this->Tolerance());
         if (error_code == 0)
+        {
             pSection->AddVertex(P);
+        }
     }
 
     return pSection;
 }
 
 }  // namespace Kratos.
-

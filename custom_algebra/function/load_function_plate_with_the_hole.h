@@ -11,25 +11,19 @@
 //  Date:            20 Feb 2017
 //
 
-
 #if !defined(KRATOS_LOAD_FUNCTION_PLATE_WITH_THE_HOLE_H_INCLUDED )
 #define  KRATOS_LOAD_FUNCTION_PLATE_WITH_THE_HOLE_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <sstream>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
-
 
 namespace Kratos
 {
@@ -74,61 +68,56 @@ public:
 
     typedef BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     LoadFunctionR3RnPlateWithTheHole(const double P, const double r)
-    : BaseType(), mP(P), mr(r)
+        : BaseType(), mP(P), mr(r)
     {}
 
     /// Copy constructor.
     LoadFunctionR3RnPlateWithTheHole(LoadFunctionR3RnPlateWithTheHole const& rOther)
-    : BaseType(rOther), mP(rOther.mP), mr(rOther.mr)
+        : BaseType(rOther), mP(rOther.mP), mr(rOther.mr)
     {}
 
     /// Destructor.
     virtual ~LoadFunctionR3RnPlateWithTheHole()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new LoadFunctionR3RnPlateWithTheHole(*this));
     }
 
-
     OutputType GetValue(const InputType& P) const final
     {
         double r = sqrt(pow(P[0], 2) + pow(P[1], 2));
-        double theta = acos(P[0]/r);
+        double theta = acos(P[0] / r);
 //        KRATOS_WATCH(P)
 
         /// REF: Liu et al, Mesh Free Methods: Moving Beyond the Finite Element Method, example 6.11
-        double o_xx = mP * (1.0 - pow(mr/r, 2) * (1.5*cos(2.0*theta) + cos(4.0*theta)) + 1.5*pow(mr/r, 4)*cos(4.0*theta));
-        double o_yy = mP * (-pow(mr/r, 2) * (0.5*cos(2.0*theta) - cos(4.0*theta)) - 1.5*pow(mr/r, 4)*cos(4.0*theta));
-        double o_xy = mP * (-pow(mr/r, 2) * (0.5*sin(2.0*theta) + sin(4.0*theta)) + 1.5*pow(mr/r, 4)*sin(4.0*theta)); // here the equation in the book is wrong, I have to manually fix this
+        double o_xx = mP * (1.0 - pow(mr / r, 2) * (1.5 * cos(2.0 * theta) + cos(4.0 * theta)) + 1.5 * pow(mr / r, 4) * cos(4.0 * theta));
+        double o_yy = mP * (-pow(mr / r, 2) * (0.5 * cos(2.0 * theta) - cos(4.0 * theta)) - 1.5 * pow(mr / r, 4) * cos(4.0 * theta));
+        double o_xy = mP * (-pow(mr / r, 2) * (0.5 * sin(2.0 * theta) + sin(4.0 * theta)) + 1.5 * pow(mr / r, 4) * sin(4.0 * theta)); // here the equation in the book is wrong, I have to manually fix this
 
         Vector Load(2);
         double nx, ny;
-        if(tload_side == 0)
+        if (tload_side == 0)
         {
             nx = 1.0;
             ny = 0.0;
         }
-        else if(tload_side == 1)
+        else if (tload_side == 1)
         {
             nx = 0.0;
             ny = 1.0;
@@ -139,16 +128,13 @@ public:
         return Load;
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -173,11 +159,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -185,43 +169,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -233,21 +209,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -265,11 +237,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream LoadFunctionR3RnPlateWithTheHole
 template<std::size_t tload_side>

@@ -11,19 +11,14 @@
 //  Date:            28 Mar 2017
 //
 
-
 #if !defined(KRATOS_PARAMETRIC_VOLUME_H_INCLUDED )
 #define  KRATOS_PARAMETRIC_VOLUME_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -32,7 +27,6 @@
 #include "containers/array_1d.h"
 #include "geometries/geometry_data.h"
 #include "custom_algebra/function/function.h"
-
 
 namespace Kratos
 {
@@ -82,38 +76,34 @@ public:
 
     /// Default constructor.
     ParametricVolume(const FunctionR3R1::Pointer p_func_x,
-        const FunctionR3R1::Pointer p_func_y, const FunctionR3R1::Pointer p_func_z)
-    : BaseType(), mp_func_x(p_func_x), mp_func_y(p_func_y), mp_func_z(p_func_z)
+                     const FunctionR3R1::Pointer p_func_y, const FunctionR3R1::Pointer p_func_z)
+        : BaseType(), mp_func_x(p_func_x), mp_func_y(p_func_y), mp_func_z(p_func_z)
     {}
 
     /// Copy constructor.
     ParametricVolume(ParametricVolume const& rOther)
-    : BaseType(rOther)
-    , mp_func_x(rOther.mp_func_x->CloneFunction())
-    , mp_func_y(rOther.mp_func_y->CloneFunction())
-    , mp_func_z(rOther.mp_func_z->CloneFunction())
+        : BaseType(rOther)
+        , mp_func_x(rOther.mp_func_x->CloneFunction())
+        , mp_func_y(rOther.mp_func_y->CloneFunction())
+        , mp_func_z(rOther.mp_func_z->CloneFunction())
     {}
 
     /// Destructor.
     virtual ~ParametricVolume() {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     /// inherit from Function
     BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new ParametricVolume(*this));
     }
-
 
     /// inherit from Function
     OutputType GetValue(const InputType& T) const final
@@ -127,29 +117,25 @@ public:
         return P;
     }
 
-
     /// inherit from Function
     BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return BaseType::Pointer(
-                    new ParametricVolume(
-                        mp_func_x->GetDiffFunction(component),
-                        mp_func_y->GetDiffFunction(component),
-                        mp_func_z->GetDiffFunction(component)
-                    )
-                );
+                   new ParametricVolume(
+                       mp_func_x->GetDiffFunction(component),
+                       mp_func_y->GetDiffFunction(component),
+                       mp_func_z->GetDiffFunction(component)
+                   )
+               );
     }
-
 
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -172,11 +158,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -184,43 +168,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -234,21 +210,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -266,11 +238,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, ParametricVolume& rThis)

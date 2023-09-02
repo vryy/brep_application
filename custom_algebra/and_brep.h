@@ -11,24 +11,18 @@
 //  Date:            9 Sep 2017
 //
 
-
 #if !defined(KRATOS_AND_BREP_H_INCLUDED )
 #define  KRATOS_AND_BREP_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 #include <sstream>
 
-
 // External includes
-
 
 // Project includes
 #include "custom_algebra/brep.h"
-
 
 namespace Kratos
 {
@@ -80,24 +74,22 @@ public:
 
     /// Default constructor.
     AndBRep(BRep::Pointer pBRep1, BRep::Pointer pBRep2)
-    : mpBRep1(pBRep1), mpBRep2(pBRep2), BaseType()
+        : mpBRep1(pBRep1), mpBRep2(pBRep2), BaseType()
     {}
 
     /// Copy constructor.
     AndBRep(AndBRep const& rOther)
-    : BaseType(rOther)
-    , mpBRep1(rOther.mpBRep1->CloneBRep())
-    , mpBRep2(rOther.mpBRep2->CloneBRep())
+        : BaseType(rOther)
+        , mpBRep1(rOther.mpBRep1->CloneBRep())
+        , mpBRep2(rOther.mpBRep2->CloneBRep())
     {}
 
     /// Destructor.
     virtual ~AndBRep() {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -110,16 +102,16 @@ public:
 
     std::size_t WorkingSpaceDimension() const final
     {
-        if(mpBRep1->WorkingSpaceDimension() != mpBRep2->WorkingSpaceDimension())
+        if (mpBRep1->WorkingSpaceDimension() != mpBRep2->WorkingSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error, "The working space dimension is not compatible", "")
-        return mpBRep1->WorkingSpaceDimension();
+            return mpBRep1->WorkingSpaceDimension();
     }
 
     std::size_t LocalSpaceDimension() const final
     {
-        if(mpBRep1->LocalSpaceDimension() != mpBRep2->LocalSpaceDimension())
+        if (mpBRep1->LocalSpaceDimension() != mpBRep2->LocalSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error, "The local space dimension is not compatible", "")
-        return mpBRep1->LocalSpaceDimension();
+            return mpBRep1->LocalSpaceDimension();
     }
 
     /// Check if a point is inside/outside of the BRep
@@ -134,7 +126,7 @@ public:
     bool IsInside0(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
     {
         return (mpBRep1->IsInside0(rGeometry, local_coords)
-             && mpBRep2->IsInside0(rGeometry, local_coords));
+                && mpBRep2->IsInside0(rGeometry, local_coords));
     }
 
     /// Check if a point is inside/outside of the BRep
@@ -142,7 +134,7 @@ public:
     bool IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
     {
         return (mpBRep1->IsInside1(rGeometry, local_coords)
-             && mpBRep2->IsInside1(rGeometry, local_coords));
+                && mpBRep2->IsInside1(rGeometry, local_coords));
     }
 
     /// Check if a geometry is cut by the level set
@@ -174,8 +166,8 @@ public:
     /// 1: completely outside
     /// -1: the cell is cut by BRep
     int CutStatus(const GeometryType& r_geom,
-        const std::vector<CoordinatesArrayType>& r_local_points,
-        const std::vector<PointType>& r_points) const final
+                  const std::vector<CoordinatesArrayType>& r_local_points,
+                  const std::vector<PointType>& r_points) const final
     {
         int stat1 = mpBRep1->CutStatus(r_geom, r_local_points, r_points);
         int stat2 = mpBRep2->CutStatus(r_geom, r_local_points, r_points);
@@ -197,11 +189,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -229,11 +219,9 @@ public:
         mpBRep2->PrintData(rOStream);
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -241,43 +229,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -290,7 +270,6 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
@@ -298,13 +277,13 @@ private:
     /// AND the 2 cut statuses
     int AndCutStatus(const int& stat1, const int& stat2) const
     {
-        if(stat1 == _OUT || stat2 == _OUT)
+        if (stat1 == _OUT || stat2 == _OUT)
         {
             return _OUT;
         }
         else
         {
-            if(stat1 == _IN && stat2 == _IN)
+            if (stat1 == _IN && stat2 == _IN)
             {
                 return _IN;
             }
@@ -319,11 +298,9 @@ private:
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -341,11 +318,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, AndBRep& rThis)

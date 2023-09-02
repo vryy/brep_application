@@ -11,25 +11,19 @@
 //  Date:            23 Aug 2019
 //
 
-
 #if !defined(KRATOS_OPENCASCADE_UTILITY_H_INCLUDED )
 #define  KRATOS_OPENCASCADE_UTILITY_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
 #include <TopoDS_Shape.hxx>
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/occ_define.h"
-
 
 namespace Kratos
 {
@@ -68,7 +62,6 @@ public:
     /// Pointer definition of OCCUtility
     KRATOS_CLASS_POINTER_DEFINITION(OCCUtility);
 
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -79,11 +72,9 @@ public:
     /// Destructor.
     virtual ~OCCUtility() {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -122,11 +113,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -149,11 +138,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -161,36 +148,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -199,31 +179,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -244,11 +218,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, OCCUtility& rThis)
@@ -270,6 +242,5 @@ inline std::ostream& operator << (std::ostream& rOStream, const OCCUtility& rThi
 ///@} addtogroup block
 
 }  // namespace Kratos.
-
 
 #endif // KRATOS_OPENCASCADE_UTILITY_H_INCLUDED  defined

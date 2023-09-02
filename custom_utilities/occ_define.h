@@ -43,10 +43,10 @@ void DumpObject(std::ostream& rOStream, const T& rObject)
 }
 
 shared_ptr<TopoDS_Shape> MakeBottle(const Standard_Real myWidth,
-    const Standard_Real myHeight, const Standard_Real myThickness);
+                                    const Standard_Real myHeight, const Standard_Real myThickness);
 
 shared_ptr<TopoDS_Shape> MakeSphere(const Standard_Real cx, const Standard_Real cy,
-    const Standard_Real cz, const Standard_Real r);
+                                    const Standard_Real cz, const Standard_Real r);
 
 shared_ptr<TopoDS_Shape> ReadSTEP(const Standard_CString filename);
 

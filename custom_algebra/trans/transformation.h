@@ -21,7 +21,6 @@
 #include "includes/define.h"
 #include "utilities/math_utils.h"
 
-
 namespace Kratos
 {
 
@@ -82,7 +81,7 @@ public:
     Transformation(const VectorType& B, const VectorType& T, const VectorType& P)
     {
         VectorType N = MathUtils<TDataType>::CrossProduct(T, B);
-        N *= 1.0/norm_2(N);
+        N *= 1.0 / norm_2(N);
 
         mTransMat.resize(4, 4, false);
         noalias(column(mTransMat, 0)) = B;
@@ -99,7 +98,7 @@ public:
     Transformation(const array_1d<TDataType, 3>& B, const array_1d<TDataType, 3>& T, const array_1d<TDataType, 3>& P)
     {
         array_1d<TDataType, 3> N = MathUtils<TDataType>::CrossProduct(T, B);
-        N *= 1.0/norm_2(N);
+        N *= 1.0 / norm_2(N);
 
         mTransMat.resize(4, 4);
         noalias(column(mTransMat, 0)) = B;
@@ -114,7 +113,7 @@ public:
 
     /// Copy constructor
     Transformation(const Transformation& rOther)
-    : mTransMat(rOther.mTransMat)
+        : mTransMat(rOther.mTransMat)
     {}
 
     /// Destructor
@@ -151,11 +150,15 @@ public:
         {
             new_value[i] = 0.0;
             for (std::size_t j = 0; j < 3; ++j)
+            {
                 new_value[i] += mTransMat(i, j) * value[j];
+            }
             new_value[i] += mTransMat(i, 3);
         }
         for (std::size_t i = 0; i < 3; ++i)
+        {
             value[i] = new_value[i];
+        }
     }
 
     /// Compute the inverse of the transformation matrix
@@ -172,7 +175,9 @@ public:
 
         for (std::size_t i = 0; i < 3; ++i)
             for (std::size_t j = 0; j < 3; ++j)
+            {
                 trans(i, j) = mTransMat(j, i);
+            }
         trans(0, 3) = -inner_prod(s, r);
         trans(1, 3) = -inner_prod(n, r);
         trans(2, 3) = -inner_prod(a, r);
@@ -285,4 +290,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Transformation<TD
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TRANSFORMATION_H_INCLUDED
-

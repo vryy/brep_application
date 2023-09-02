@@ -11,19 +11,14 @@
 //  Date:            15 Feb 2017
 //
 
-
 #if !defined(KRATOS_TRIGONOMETRIC_FUNCTION_H_INCLUDED )
 #define  KRATOS_TRIGONOMETRIC_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -76,53 +71,46 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     CosFunction(const typename BaseType::Pointer p_func)
-    : BaseType(), mp_func(p_func)
+        : BaseType(), mp_func(p_func)
     {}
 
     /// Copy constructor.
     CosFunction(CosFunction const& rOther)
-    : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction())
+        : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction())
     {}
 
     /// Destructor.
     virtual ~CosFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new CosFunction(*this));
     }
 
-
     double GetValue(const InputType& P) const final
     {
         return cos(mp_func->GetValue(P));
     }
 
-
     std::string GetFormula(const std::string& Format) const final
     {
         return "cos(" + mp_func->GetFormula(Format) + ")";
     }
-
 
     typename BaseType::Pointer GetDiffFunction(const int& component) const final;
 
@@ -130,11 +118,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -157,11 +143,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -169,36 +153,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -206,34 +183,27 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
-
     const typename BaseType::Pointer mp_func;
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -264,66 +234,56 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     SinFunction(const typename BaseType::Pointer p_func)
-    : BaseType(), mp_func(p_func)
+        : BaseType(), mp_func(p_func)
     {}
 
     /// Copy constructor.
     SinFunction(SinFunction const& rOther)
-    : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction())
+        : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction())
     {}
 
     /// Destructor.
     virtual ~SinFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new SinFunction(*this));
     }
 
-
     double GetValue(const InputType& P) const final
     {
         return sin(mp_func->GetValue(P));
     }
-
 
     std::string GetFormula(const std::string& Format) const final
     {
         return "sin(" + mp_func->GetFormula(Format) + ")";
     }
 
-
     typename BaseType::Pointer GetDiffFunction(const int& component) const final;
-
 
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -346,11 +306,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -358,36 +316,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -395,34 +346,27 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
-
     const typename BaseType::Pointer mp_func;
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -453,66 +397,56 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     AcosFunction(const typename BaseType::Pointer p_func)
-    : BaseType(), mp_func(p_func)
+        : BaseType(), mp_func(p_func)
     {}
 
     /// Copy constructor.
     AcosFunction(AcosFunction const& rOther)
-    : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction())
+        : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction())
     {}
 
     /// Destructor.
     virtual ~AcosFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new AcosFunction(*this));
     }
 
-
     double GetValue(const InputType& P) const final
     {
         return acos(mp_func->GetValue(P));
     }
-
 
     std::string GetFormula(const std::string& Format) const final
     {
         return "acos(" + mp_func->GetFormula(Format) + ")";
     }
 
-
     typename BaseType::Pointer GetDiffFunction(const int& component) const final;
-
 
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -535,11 +469,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -547,36 +479,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -584,34 +509,27 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
-
     const typename BaseType::Pointer mp_func;
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -629,11 +547,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream SinFunction
 template<class TFunction>
@@ -690,55 +606,55 @@ template<class TFunction>
 typename CosFunction<TFunction>::BaseType::Pointer CosFunction<TFunction>::GetDiffFunction(const int& component) const
 {
     return typename BaseType::Pointer(
-                new NegateFunction<TFunction>(
-                    typename BaseType::Pointer(
-                        new ProductFunction<TFunction>(
-                            typename BaseType::Pointer(new SinFunction<TFunction>(mp_func)),
-                            mp_func->GetDiffFunction(component)
-                        )
-                    )
-                )
-            );
+               new NegateFunction<TFunction>(
+                   typename BaseType::Pointer(
+                       new ProductFunction<TFunction>(
+                           typename BaseType::Pointer(new SinFunction<TFunction>(mp_func)),
+                           mp_func->GetDiffFunction(component)
+                       )
+                   )
+               )
+           );
 }
 
 template<class TFunction>
 typename SinFunction<TFunction>::BaseType::Pointer SinFunction<TFunction>::GetDiffFunction(const int& component) const
 {
     return typename BaseType::Pointer(
-                new ProductFunction<TFunction>(
-                    typename BaseType::Pointer(new CosFunction<TFunction>(mp_func)),
-                    mp_func->GetDiffFunction(component)
-                )
-            );
+               new ProductFunction<TFunction>(
+                   typename BaseType::Pointer(new CosFunction<TFunction>(mp_func)),
+                   mp_func->GetDiffFunction(component)
+               )
+           );
 }
 
 template<class TFunction>
 typename AcosFunction<TFunction>::BaseType::Pointer AcosFunction<TFunction>::GetDiffFunction(const int& component) const
 {
     return typename BaseType::Pointer(
-                new NegateFunction<TFunction>(
-                    typename BaseType::Pointer(
-                        new ProductFunction<TFunction>(
-                            mp_func->GetDiffFunction(component),
-                            typename BaseType::Pointer(
-                                new PowFunction<TFunction>(
-                                    -0.5,
-                                    typename BaseType::Pointer(
-                                        new SumFunction<TFunction>(
-                                            typename BaseType::Pointer( new ScalarFunction<TFunction>(1.0) ),
-                                            typename BaseType::Pointer(
-                                                new NegateFunction<TFunction>(
-                                                    typename BaseType::Pointer( new PowFunction<TFunction>(2.0, mp_func) )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            );
+               new NegateFunction<TFunction>(
+                   typename BaseType::Pointer(
+                       new ProductFunction<TFunction>(
+                           mp_func->GetDiffFunction(component),
+                           typename BaseType::Pointer(
+                               new PowFunction<TFunction>(
+                                   -0.5,
+                                   typename BaseType::Pointer(
+                                       new SumFunction<TFunction>(
+                                           typename BaseType::Pointer( new ScalarFunction<TFunction>(1.0) ),
+                                           typename BaseType::Pointer(
+                                                   new NegateFunction<TFunction>(
+                                                           typename BaseType::Pointer( new PowFunction<TFunction>(2.0, mp_func) )
+                                                   )
+                                           )
+                                       )
+                                   )
+                               )
+                           )
+                       )
+                   )
+               )
+           );
 }
 
 }  // namespace Kratos.

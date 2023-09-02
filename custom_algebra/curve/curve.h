@@ -11,20 +11,15 @@
 //  Date:            10 Feb 2020
 //
 
-
 #if !defined(KRATOS_CURVE_H_INCLUDED )
 #define  KRATOS_CURVE_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 #include <iomanip>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -35,7 +30,6 @@
 #include "custom_algebra/function/function.h"
 #include "custom_algebra/level_set/level_set.h"
 #include "brep_application_variables.h"
-
 
 namespace Kratos
 {
@@ -98,11 +92,9 @@ public:
     /// Destructor.
     virtual ~Curve() {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -114,13 +106,11 @@ public:
         return BaseType::Pointer(new Curve(*this));
     }
 
-
     /// Curve cloning
     virtual Curve::Pointer Clone() const
     {
         return Curve::Pointer(new Curve(*this));
     }
-
 
     /// inherit from Function
     OutputType GetValue(const InputType& t) const override
@@ -128,20 +118,17 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
     }
 
-
     /// inherit from Function
     OutputType GetDerivative(const int& component, const InputType& t) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
     }
 
-
     /// inherit from Function
     OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
     }
-
 
     /// inherit from Function
     BaseType::Pointer GetDiffFunction(const int& component) const override
@@ -232,11 +219,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -259,11 +244,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -271,36 +254,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -308,16 +284,13 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
-
     ///@}
     ///@name Private Operators
     ///@{
-
 
     ///@}
     ///@name Private Operations
@@ -341,11 +314,11 @@ private:
             noalias(dProj) = this->GetDerivative(0, t);
             noalias(ddProj) = this->GetSecondDerivative(0, 0, t);
             rhs = inner_prod(dProj, P - Proj);
-            if (fabs(rhs) < tol) break;
+            if (fabs(rhs) < tol) { break; }
             drhs = inner_prod(ddProj, P - Proj) - inner_prod(dProj, dProj);
-            t -= rhs/drhs;
+            t -= rhs / drhs;
             ++iter;
-            if (iter > max_iters) break;
+            if (iter > max_iters) { break; }
         }
         while (fabs(rhs) > tol);
 
@@ -391,7 +364,7 @@ private:
             {
                 // project on to the line created by First and dFirst
                 double a = inner_prod(P - First, dFirst) / inner_prod(dFirst, dFirst);
-                noalias(Proj) = First + a*dFirst;
+                noalias(Proj) = First + a * dFirst;
             }
             else if ((test1 > 0.0) &&  (test2 < 0.0)) // the point is in between
             {
@@ -408,23 +381,27 @@ private:
             {
                 // project on to the line created by Last and dLast
                 double a = inner_prod(P - Last, dLast) / inner_prod(dLast, dLast);
-                noalias(Proj) = Last + a*dLast;
+                noalias(Proj) = Last + a * dLast;
             }
             else if ((test1 < 0.0) &&  (test2 > 0.0)) // this can happen if the curve has U-shape
             {
                 // project to closer line
                 double a = inner_prod(P - First, dFirst) / inner_prod(dFirst, dFirst);
-                noalias(Proj) = First + a*dFirst;
+                noalias(Proj) = First + a * dFirst;
                 double d1 = norm_2(P - Proj);
 
                 double b = inner_prod(P - Last, dLast) / inner_prod(dLast, dLast);
-                noalias(Proj) = Last + b*dLast;
+                noalias(Proj) = Last + b * dLast;
                 double d2 = norm_2(P - Proj);
 
                 if (d1 < d2)
-                    noalias(Proj) = First + a*dFirst;
+                {
+                    noalias(Proj) = First + a * dFirst;
+                }
                 else
-                    noalias(Proj) = Last + b*dLast;
+                {
+                    noalias(Proj) = Last + b * dLast;
+                }
             }
         }
 
@@ -444,9 +421,9 @@ private:
         // firstly do the sampling
         std::vector<double> f(nsampling);
         PointType dProj;
-        for (std::size_t i = 0; i < nsampling+1; ++i)
+        for (std::size_t i = 0; i < nsampling + 1; ++i)
         {
-            t = tmin + i*(tmax-tmin)/nsampling;
+            t = tmin + i * (tmax - tmin) / nsampling;
             noalias(Proj) = this->GetValue(t);
             noalias(dProj) = this->GetDerivative(0, t);
             f[i] = inner_prod(dProj, P - Proj);
@@ -459,28 +436,30 @@ private:
             if (fabs(f[i]) < tol)
             {
                 stat = 0;
-                t = tmin + i*(tmax-tmin)/nsampling;
+                t = tmin + i * (tmax - tmin) / nsampling;
                 noalias(Proj) = this->GetValue(t);
                 break;
             }
 
-            if (f[i]*f[i+1] < 0.0)
+            if (f[i]*f[i + 1] < 0.0)
             {
                 // found the segment, do the bisection
-                double left = tmin + i*(tmax-tmin)/nsampling;
-                double right = tmin + (i+1)*(tmax-tmin)/nsampling;
+                double left = tmin + i * (tmax - tmin) / nsampling;
+                double right = tmin + (i + 1) * (tmax - tmin) / nsampling;
                 double mid;
-                double fleft = f[i], fright = f[i+1], fmid;
+                double fleft = f[i], fright = f[i + 1], fmid;
                 while ((right - left) > tol)
                 {
-                    mid = 0.5*(left + right);
+                    mid = 0.5 * (left + right);
 
                     noalias(Proj) = this->GetValue(mid);
                     noalias(dProj) = this->GetDerivative(0, mid);
                     fmid = inner_prod(dProj, P - Proj);
 
                     if (fabs(fmid) < tol)
+                    {
                         break;
+                    }
 
                     if (fmid * fleft > 0.0)
                     {
@@ -513,7 +492,7 @@ private:
                 noalias(Proj) = this->GetValue(t);
                 stat = 1;
             }
-            if (f[nsampling-1] > tol)
+            if (f[nsampling - 1] > tol)
             {
                 t = tmax; // set default value to t
                 noalias(Proj) = this->GetValue(t);
@@ -548,9 +527,9 @@ private:
 
         // firstly do the sampling
         std::vector<double> f(nsampling);
-        for (std::size_t i = 0; i < nsampling+1; ++i)
+        for (std::size_t i = 0; i < nsampling + 1; ++i)
         {
-            t = tmin + i*(tmax-tmin)/nsampling;
+            t = tmin + i * (tmax - tmin) / nsampling;
             noalias(IntPoint) = this->GetValue(t);
             f[i] = rLevelSet.GetValue(IntPoint);
         }
@@ -562,27 +541,29 @@ private:
             if (fabs(f[i]) < tol)
             {
                 stat = 0;
-                t = tmin + i*(tmax-tmin)/nsampling;
+                t = tmin + i * (tmax - tmin) / nsampling;
                 noalias(IntPoint) = this->GetValue(t);
                 break;
             }
 
-            if (f[i]*f[i+1] < 0.0)
+            if (f[i]*f[i + 1] < 0.0)
             {
                 // found the segment, do the bisection
-                double left = tmin + i*(tmax-tmin)/nsampling;
-                double right = tmin + (i+1)*(tmax-tmin)/nsampling;
+                double left = tmin + i * (tmax - tmin) / nsampling;
+                double right = tmin + (i + 1) * (tmax - tmin) / nsampling;
                 double mid;
-                double fleft = f[i], fright = f[i+1], fmid;
+                double fleft = f[i], fright = f[i + 1], fmid;
                 while ((right - left) > tol)
                 {
-                    mid = 0.5*(left + right);
+                    mid = 0.5 * (left + right);
 
                     noalias(IntPoint) = this->GetValue(mid);
                     fmid = rLevelSet.GetValue(IntPoint);
 
                     if (fabs(fmid) < tol)
+                    {
                         break;
+                    }
 
                     if (fmid * fleft > 0.0)
                     {
@@ -613,7 +594,7 @@ private:
                 noalias(IntPoint) = this->GetValue(t);
                 stat = 1;
             }
-            if (f[nsampling-1] > tol)
+            if (f[nsampling - 1] > tol)
             {
                 t = tmax; // set default value to t
                 noalias(IntPoint) = this->GetValue(t);
@@ -641,11 +622,9 @@ private:
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -663,11 +642,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, Curve& rThis)

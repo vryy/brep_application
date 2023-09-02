@@ -75,14 +75,16 @@ public:
 
         VectorType c = MathUtils<TDataType>::CrossProduct(ua, ub);
         double normc = norm_2(c);
-        if (normc < 1.0e-10) return T;
+        if (normc < 1.0e-10) { return T; }
         MatrixType ssc = SkewSymmetric(c);
 
         noalias(M) += ssc + prod(ssc, ssc) * (1.0 - inner_prod(ua, ub)) / pow(normc, 2);
 
         for (int i = 0; i < 3; ++i)
             for (int j = 0; j < 3; ++j)
+            {
                 T(i, j) = M(i, j);
+            }
 
         return T;
     }
@@ -111,4 +113,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TransformationUti
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TRANSFORMATION_UTILITY_H_INCLUDED defined
-

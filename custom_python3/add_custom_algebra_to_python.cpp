@@ -33,7 +33,6 @@
 #include "custom_algebra/function/load_function_plate_with_the_hole.h"
 #include "custom_algebra/function/hydrostatic_pressure_function_on_surface.h"
 
-
 namespace Kratos
 {
 
@@ -43,7 +42,7 @@ namespace Python
 using namespace pybind11;
 
 double Helper_FunctionR3R1_GetValue_1(FunctionR3R1& rDummy,
-        const double& x, const double& y)
+                                      const double& x, const double& y)
 {
     FunctionR3R1::InputType P;
     P[0] = x;
@@ -52,7 +51,7 @@ double Helper_FunctionR3R1_GetValue_1(FunctionR3R1& rDummy,
 }
 
 double Helper_FunctionR3R1_GetValue_2(FunctionR3R1& rDummy,
-        const double& x, const double& y, const double& z)
+                                      const double& x, const double& y, const double& z)
 {
     FunctionR3R1::InputType P;
     P[0] = x;
@@ -75,7 +74,7 @@ double Helper_FunctionR1R1_GetSecondDerivative(FunctionR1R1& rDummy,
 
 template<int TDerivDegree>
 void CubicSplineFunction_SetPoints(CubicSplineFunction<TDerivDegree>& rDummy, pybind11::list list_t,
-    pybind11::list list_x)
+                                   pybind11::list list_x)
 {
     std::vector<double> t;
     std::vector<double> x;
@@ -1756,12 +1755,12 @@ void BRepApplication_AddFunctionsToPython(pybind11::module& m)
     (m, "MonomialFunctionR3R1X6Y6Z6").def(init<>())
     ;
 
-    #ifdef BREP_APPLICATION_USE_MASHPRESSO
+#ifdef BREP_APPLICATION_USE_MASHPRESSO
     class_<MathPressoFunctionR3R1, MathPressoFunctionR3R1::Pointer, FunctionR3R1>
     (m, "MathPressoFunctionR3R1").def(init<const std::string&>())
     .def("__str__", &PrintObject<MathPressoFunctionR3R1>)
     ;
-    #endif
+#endif
 
     /**************************************************************/
     /************* EXPORT INTERFACE FOR FUNCTIONR3R3 **************/
@@ -1816,4 +1815,3 @@ void BRepApplication_AddFunctionsToPython(pybind11::module& m)
 }
 }  // namespace Python.
 }  // namespace Kratos.
-

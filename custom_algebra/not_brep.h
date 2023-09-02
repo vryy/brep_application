@@ -11,24 +11,18 @@
 //  Date:            9 Sep 2017
 //
 
-
 #if !defined(KRATOS_NOT_BREP_H_INCLUDED )
 #define  KRATOS_NOT_BREP_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 #include <sstream>
 
-
 // External includes
-
 
 // Project includes
 #include "custom_algebra/brep.h"
-
 
 namespace Kratos
 {
@@ -80,23 +74,21 @@ public:
 
     /// Default constructor.
     NotBRep(BRep::Pointer pBRep)
-    : mpBRep(pBRep), BaseType()
+        : mpBRep(pBRep), BaseType()
     {}
 
     /// Copy constructor.
     NotBRep(NotBRep const& rOther)
-    : BaseType(rOther)
-    , mpBRep(rOther.mpBRep->CloneBRep())
+        : BaseType(rOther)
+        , mpBRep(rOther.mpBRep->CloneBRep())
     {}
 
     /// Destructor.
     virtual ~NotBRep() {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -165,8 +157,8 @@ public:
     /// 1: completely outside
     /// -1: the cell is cut by BRep
     int CutStatus(const GeometryType& r_geom,
-        const std::vector<CoordinatesArrayType>& r_local_points,
-        const std::vector<PointType>& r_points) const final
+                  const std::vector<CoordinatesArrayType>& r_local_points,
+                  const std::vector<PointType>& r_points) const final
     {
         int stat = mpBRep->CutStatus(r_geom, r_local_points, r_points);
         return this->NotCutStatus(stat);
@@ -186,11 +178,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -216,11 +206,9 @@ public:
         mpBRep->PrintData(rOStream);
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -228,43 +216,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -276,7 +256,6 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
@@ -284,11 +263,11 @@ private:
     /// Reverse the cut status
     int NotCutStatus(const int& stat) const
     {
-        if(stat == _OUT)
+        if (stat == _OUT)
         {
             return _IN;
         }
-        else if(stat == _IN)
+        else if (stat == _IN)
         {
             return _OUT;
         }
@@ -302,11 +281,9 @@ private:
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -324,11 +301,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, NotBRep& rThis)

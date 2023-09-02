@@ -11,25 +11,19 @@
 //  Date:            12 Apr 2017
 //
 
-
 #if !defined(KRATOS_MATHPRESSO_FUNCTION_H_INCLUDED )
 #define  KRATOS_MATHPRESSO_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
 #include "mathpresso/mathpresso.h"
-
 
 namespace Kratos
 {
@@ -73,21 +67,20 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     MathPressoFunctionR3R1(const std::string& expression)
-    : mStr(expression)
+        : mStr(expression)
     {
         this->Initialize(expression);
     }
 
     /// Copy constructor.
     MathPressoFunctionR3R1(MathPressoFunctionR3R1 const& rOther)
-    : BaseType(rOther), mStr(rOther.mStr)
+        : BaseType(rOther), mStr(rOther.mStr)
     {
         this->Initialize(rOther.mStr);
     }
@@ -96,16 +89,13 @@ public:
     virtual ~MathPressoFunctionR3R1()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     void Initialize(const std::string& expression)
     {
@@ -138,12 +128,10 @@ public:
         }
     }
 
-
     BaseType::Pointer CloneFunction() const final
     {
         return BaseType::Pointer(new MathPressoFunctionR3R1(*this));
     }
-
 
     double GetValue(const InputType& P) const final
     {
@@ -154,28 +142,23 @@ public:
         return mExp.evaluate(data);
     }
 
-
     std::string GetFormula(const std::string& Format) const final
     {
         return mStr;
     }
-
 
 //    virtual typename BaseType::Pointer GetDiffFunction(const int& component) const
 //    {
 //        return typename BaseType::Pointer(new ZeroFunction<BaseType>());
 //    }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -199,11 +182,9 @@ public:
         rOStream << mStr;
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -211,43 +192,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -261,21 +234,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -293,11 +262,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream MathPressoFunctionR3R1
 inline std::istream& operator >> (std::istream& rIStream, MathPressoFunctionR3R1& rThis)

@@ -11,24 +11,18 @@
 //  Date:            14 Feb 2017
 //
 
-
 #if !defined(KRATOS_SCALAR_FUNCTION_H_INCLUDED )
 #define  KRATOS_SCALAR_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
-
 
 namespace Kratos
 {
@@ -73,14 +67,13 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     ScalarFunction(const double& S)
-    : BaseType(), mS(S)
+        : BaseType(), mS(S)
     {}
 
     /// Copy constructor.
@@ -91,34 +84,28 @@ public:
     virtual ~ScalarFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     static typename BaseType::Pointer Create(const double& S)
     {
         return typename BaseType::Pointer(new ScalarFunction(S));
     }
 
-
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new ScalarFunction(*this));
     }
 
-
     double GetValue(const InputType& P) const final
     {
         return mS;
     }
-
 
     std::string GetFormula(const std::string& Format) const final
     {
@@ -127,22 +114,18 @@ public:
         return ss.str();
     }
 
-
     typename BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return typename BaseType::Pointer(new ZeroFunction<BaseType>());
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -165,11 +148,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -177,43 +158,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -225,21 +198,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -257,11 +226,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream ScalarFunction
 template<class TFunction>

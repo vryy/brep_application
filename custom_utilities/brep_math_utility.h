@@ -11,21 +11,15 @@
 //  Date:            22 Jun 2020
 //
 
-
 #if !defined(KRATOS_BREP_MATH_UTILITY_H_INCLUDED )
 #define  KRATOS_BREP_MATH_UTILITY_H_INCLUDED
 
-
-
 // System includes
-
 
 // External includes
 
-
 // Project includes
 #include "includes/define.h"
-
 
 namespace Kratos
 {
@@ -81,11 +75,9 @@ public:
     /// Destructor.
     virtual ~BRepMathUtility() {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -96,7 +88,7 @@ public:
      *       a2 * x + b2 * y = c2
      */
     static void Solve(const double& a1, const double& b1, const double& c1,
-        const double& a2, const double& b2, const double& c2, double& x, double& y)
+                      const double& a2, const double& b2, const double& c2, double& x, double& y)
     {
         x = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1);
         y = (c2 * a1 - c1 * a2) / (a1 * b2 - a2 * b1);
@@ -114,27 +106,27 @@ public:
         double delta = b2 * b2 - a * c;
         std::vector<double> x;
 
-        if(delta < 0.0)
+        if (delta < 0.0)
         {
             return x; // no solution
         }
-        else if(delta == 0.00)
+        else if (delta == 0.00)
         {
-            if(a == 0.0)
+            if (a == 0.0)
             {
                 return x; // no solution
             }
             else
             {
-                x.push_back(-b2/a); // one solution
+                x.push_back(-b2 / a); // one solution
                 return x;
             }
         }
         else
         {
-            if(a == 0.0)
+            if (a == 0.0)
             {
-                x.push_back(-c/b); // one solution
+                x.push_back(-c / b); // one solution
                 return x;
             }
             else
@@ -153,51 +145,51 @@ public:
      * The input shall exclude the special sitation, e.g. a=b=0 or R=0
      */
     static std::vector<double> Intersect(const double& a, const double& b, const double& c,
-            const double& xc, const double& yc, const double& R)
+                                         const double& xc, const double& yc, const double& R)
     {
         std::vector<double> Output;
         if (a == 0.0)
         {
-            double y = -c/b;
+            double y = -c / b;
 
-            if (R >= abs(y-yc))
+            if (R >= abs(y - yc))
             {
-                Output.push_back(xc - sqrt(pow(R, 2) - pow(y-yc, 2)));
+                Output.push_back(xc - sqrt(pow(R, 2) - pow(y - yc, 2)));
                 Output.push_back(y);
-                Output.push_back(xc + sqrt(pow(R, 2) - pow(y-yc, 2)));
+                Output.push_back(xc + sqrt(pow(R, 2) - pow(y - yc, 2)));
                 Output.push_back(y);
             }
         }
         else if (b == 0.0)
         {
-            double x = -c/a;
+            double x = -c / a;
 
-            if (R >= abs(x-xc))
+            if (R >= abs(x - xc))
             {
                 Output.push_back(x);
-                Output.push_back(yc - sqrt(pow(R, 2) - pow(x-xc, 2)));
+                Output.push_back(yc - sqrt(pow(R, 2) - pow(x - xc, 2)));
                 Output.push_back(x);
-                Output.push_back(yc + sqrt(pow(R, 2) - pow(x-xc, 2)));
+                Output.push_back(yc + sqrt(pow(R, 2) - pow(x - xc, 2)));
             }
         }
         else
         {
-            double A = 1.0 + pow(a/b, 2);
-            double B = 2.0*(-xc + a/b*(c/b+yc));
-            double C = pow(xc, 2) + pow(c/b+yc, 2) - pow(R, 2);
+            double A = 1.0 + pow(a / b, 2);
+            double B = 2.0 * (-xc + a / b * (c / b + yc));
+            double C = pow(xc, 2) + pow(c / b + yc, 2) - pow(R, 2);
 
             std::vector<double> x = SolveQuadratic(A, B, C);
             if (x.size() == 1)
             {
                 Output.push_back(x[0]);
-                Output.push_back(-(a*x[0]+c)/b);
+                Output.push_back(-(a * x[0] + c) / b);
             }
             else if (x.size() == 2)
             {
                 Output.push_back(x[0]);
-                Output.push_back(-(a*x[0]+c)/b);
+                Output.push_back(-(a * x[0] + c) / b);
                 Output.push_back(x[1]);
-                Output.push_back(-(a*x[1]+c)/b);
+                Output.push_back(-(a * x[1] + c) / b);
             }
         }
 
@@ -208,11 +200,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -235,11 +225,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -247,36 +235,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -285,31 +266,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -330,11 +305,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, BRepMathUtility& rThis)
@@ -356,6 +329,5 @@ inline std::ostream& operator << (std::ostream& rOStream, const BRepMathUtility&
 ///@} addtogroup block
 
 }  // namespace Kratos.
-
 
 #endif // KRATOS_BREP_MATH_UTILITY_H_INCLUDED  defined

@@ -11,24 +11,18 @@
 //  Date:            22 Feb 2017
 //
 
-
 #if !defined(KRATOS_POW_FUNCTION_H_INCLUDED )
 #define  KRATOS_POW_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
-
 
 namespace Kratos
 {
@@ -73,97 +67,97 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     PowFunction(const double a, const typename BaseType::Pointer p_func)
-    : BaseType(), ma(a), mp_func(p_func)
+        : BaseType(), ma(a), mp_func(p_func)
     {}
 
     PowFunction(const typename BaseType::Pointer p_func, const double a)
-    : BaseType(), ma(a), mp_func(p_func)
+        : BaseType(), ma(a), mp_func(p_func)
     {}
 
     /// Copy constructor.
     PowFunction(PowFunction const& rOther)
-    : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction()), ma(rOther.ma)
+        : BaseType(rOther), mp_func(rOther.mp_func->CloneFunction()), ma(rOther.ma)
     {}
 
     /// Destructor.
     virtual ~PowFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new PowFunction(*this));
     }
 
-
     double GetValue(const InputType& P) const final
     {
         return pow(mp_func->GetValue(P), ma);
     }
 
-
     std::string GetFormula(const std::string& Format) const final
     {
         std::stringstream ss;
-        if(Format == "matlab")
+        if (Format == "matlab")
         {
-            if(ma == 1.0)
+            if (ma == 1.0)
+            {
                 ss << mp_func->GetFormula(Format);
-            else if(ma == 0.0)
+            }
+            else if (ma == 0.0)
+            {
                 ss << "1.0";
+            }
             else
+            {
                 ss << "(" << mp_func->GetFormula(Format) << ")^" << ma;
+            }
         }
         return ss.str();
     }
 
-
     typename BaseType::Pointer GetDiffFunction(const int& component) const final
     {
-        if(ma == 1.0)
+        if (ma == 1.0)
+        {
             return mp_func->GetDiffFunction(component);
-        else if(ma == 0.0)
+        }
+        else if (ma == 0.0)
+        {
             return typename BaseType::Pointer(new ZeroFunction<TFunction>());
+        }
         else
             return typename BaseType::Pointer(
-                        new ProductFunction<TFunction>(
-                            typename BaseType::Pointer(
-                                new ScaleFunction<TFunction>(ma,
-                                    typename BaseType::Pointer(new PowFunction(ma-1, mp_func))
-                                )
-                            ),
-                            mp_func->GetDiffFunction(component)
-                        )
-                    );
+                       new ProductFunction<TFunction>(
+                           typename BaseType::Pointer(
+                               new ScaleFunction<TFunction>(ma,
+                                       typename BaseType::Pointer(new PowFunction(ma - 1, mp_func))
+                                                           )
+                           ),
+                           mp_func->GetDiffFunction(component)
+                       )
+                   );
     }
-
 
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -186,11 +180,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -198,43 +190,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -247,21 +231,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -279,11 +259,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream PowFunction
 template<class TFunction>

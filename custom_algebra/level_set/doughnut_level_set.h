@@ -11,24 +11,18 @@
 //  Date:            5 Jan 2018
 //
 
-
 #if !defined(KRATOS_DOUGHNUT_LEVEL_SET_H_INCLUDED )
 #define  KRATOS_DOUGHNUT_LEVEL_SET_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/level_set/level_set.h"
-
 
 namespace Kratos
 {
@@ -75,46 +69,40 @@ public:
 
     /// Default constructor.
     DoughnutLevelSet(const double& R, const double& r)
-    : BaseType(), mR(R), mr(r)
+        : BaseType(), mR(R), mr(r)
     {
     }
 
     /// Copy constructor.
     DoughnutLevelSet(DoughnutLevelSet const& rOther)
-    : BaseType(rOther), mR(rOther.mR), mr(rOther.mr)
+        : BaseType(rOther), mR(rOther.mR), mr(rOther.mr)
     {}
 
     /// Destructor.
     virtual ~DoughnutLevelSet() {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new DoughnutLevelSet(*this));
     }
 
-
     std::size_t WorkingSpaceDimension() const final
     {
         return 3;
     }
 
-
     double GetValue(const PointType& P) const final
     {
         return pow(mR - sqrt(pow(P(0), 2) + pow(P(1), 2)), 2) + pow(P(2), 2) - pow(mr, 2);
     }
-
 
     Vector GetGradient(const PointType& P) const final
     {
@@ -126,16 +114,13 @@ public:
         return grad;
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -153,11 +138,9 @@ public:
         rOStream << ", R: " << mR << ", r: " << mr;
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -165,36 +148,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -202,34 +178,27 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
-
     double mR, mr;
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -247,20 +216,18 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
-                DoughnutLevelSet& rThis)
+                                  DoughnutLevelSet& rThis)
 {}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,
-                const DoughnutLevelSet& rThis)
+                                  const DoughnutLevelSet& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

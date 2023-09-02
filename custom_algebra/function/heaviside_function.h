@@ -11,26 +11,20 @@
 //  Date:            14 Feb 2017
 //
 
-
 #if !defined(KRATOS_HEAVISIDE_FUNCTION_H_INCLUDED )
 #define  KRATOS_HEAVISIDE_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
 #include "custom_algebra/function/zero_function.h"
 #include "custom_algebra/brep.h"
-
 
 namespace Kratos
 {
@@ -81,69 +75,64 @@ public:
 
     /// Default constructor.
     HeavisideFunction(const BRep& r_brep)
-    : BaseType(), mr_brep(r_brep)
+        : BaseType(), mr_brep(r_brep)
     {}
 
     HeavisideFunction(const BRep::Pointer p_brep)
-    : BaseType(), mr_brep(*p_brep)
+        : BaseType(), mr_brep(*p_brep)
     {}
 
     /// Copy constructor.
     HeavisideFunction(HeavisideFunction const& rOther)
-    : BaseType(rOther), mr_brep(rOther.mr_brep)
+        : BaseType(rOther), mr_brep(rOther.mr_brep)
     {}
 
     /// Destructor.
     virtual ~HeavisideFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new HeavisideFunction(*this));
     }
 
-
     double GetValue(const InputType& P) const final
     {
-        if(mr_brep.IsInside(static_cast<BRep::PointType>(P)))
+        if (mr_brep.IsInside(static_cast<BRep::PointType>(P)))
+        {
             return 1.0;
+        }
         else
+        {
             return 0.0;
+        }
     }
-
 
     std::string GetFormula(const std::string& Format) const final
     {
         return "H(L)";
     }
 
-
     typename BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return typename BaseType::Pointer(new ZeroFunction<TFunction>());
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -166,11 +155,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -178,43 +165,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -226,21 +205,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -258,11 +233,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream HeavisideFunction
 template<class TFunction>

@@ -11,26 +11,20 @@
 //  Date:            14 Feb 2017
 //
 
-
 #if !defined(KRATOS_PRODUCT_FUNCTION_H_INCLUDED )
 #define  KRATOS_PRODUCT_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
 #include "custom_algebra/function/sum_function.h"
 #include "custom_algebra/function/product_function.h"
-
 
 namespace Kratos
 {
@@ -75,86 +69,76 @@ public:
 
     typedef typename BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     ProductFunction(const typename BaseType::Pointer p_func_1, const typename BaseType::Pointer p_func_2)
-    : BaseType(), mp_func_1(p_func_1), mp_func_2(p_func_2)
+        : BaseType(), mp_func_1(p_func_1), mp_func_2(p_func_2)
     {}
 
     /// Copy constructor.
     ProductFunction(ProductFunction const& rOther)
-    : BaseType(rOther)
-    , mp_func_1(rOther.mp_func_1->CloneFunction())
-    , mp_func_2(rOther.mp_func_2->CloneFunction())
+        : BaseType(rOther)
+        , mp_func_1(rOther.mp_func_1->CloneFunction())
+        , mp_func_2(rOther.mp_func_2->CloneFunction())
     {}
 
     /// Destructor.
     virtual ~ProductFunction()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     typename BaseType::Pointer CloneFunction() const final
     {
         return typename BaseType::Pointer(new ProductFunction(*this));
     }
 
-
     double GetValue(const InputType& P) const final
     {
         return mp_func_1->GetValue(P) * mp_func_2->GetValue(P);
     }
-
 
     std::string GetFormula(const std::string& Format) const final
     {
         return mp_func_1->GetFormula(Format) + "*" + mp_func_2->GetFormula(Format);
     }
 
-
     typename BaseType::Pointer GetDiffFunction(const int& component) const final
     {
         return typename BaseType::Pointer(
-                    new SumFunction<BaseType>(
-                        typename BaseType::Pointer(
-                            new ProductFunction(
-                                mp_func_1->GetDiffFunction(component),
-                                mp_func_2
-                            )
-                        ),
-                        typename BaseType::Pointer(
-                            new ProductFunction(
-                                mp_func_1,
-                                mp_func_2->GetDiffFunction(component)
-                            )
-                        )
-                    )
-                );
+                   new SumFunction<BaseType>(
+                       typename BaseType::Pointer(
+                           new ProductFunction(
+                               mp_func_1->GetDiffFunction(component),
+                               mp_func_2
+                           )
+                       ),
+                       typename BaseType::Pointer(
+                           new ProductFunction(
+                               mp_func_1,
+                               mp_func_2->GetDiffFunction(component)
+                           )
+                       )
+                   )
+               );
     }
-
 
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -177,11 +161,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -189,43 +171,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -238,21 +212,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -270,11 +240,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream ProductFunction
 template<class TFunction>

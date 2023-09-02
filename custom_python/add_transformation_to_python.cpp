@@ -10,7 +10,6 @@ LICENSE: see brep_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -31,7 +30,6 @@ LICENSE: see brep_application/LICENSE.txt
 #include "custom_algebra/trans/transformation_utility.h"
 #include "custom_python/add_transformation_to_python.h"
 
-
 namespace Kratos
 {
 
@@ -44,7 +42,7 @@ using namespace boost::python;
 
 template<typename TDataType>
 Transformation<TDataType> TransformationUtility_CreateAlignTransformation(TransformationUtility<TDataType>& rDummy,
-    const typename Transformation<TDataType>::VectorType& a, const typename Transformation<TDataType>::VectorType& b)
+        const typename Transformation<TDataType>::VectorType& a, const typename Transformation<TDataType>::VectorType& b)
 {
     Transformation<TDataType> T;
     T = rDummy.CreateAlignTransformation(a, b);
@@ -76,14 +74,16 @@ boost::python::list Transformation_Apply2(Transformation<TDataType>& rDummy, boo
 {
     std::vector<TDataType> newv;
     typedef boost::python::stl_input_iterator<TDataType> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& d, std::make_pair(iterator_value_type(v), iterator_value_type() ) )
-        newv.push_back(d);
+    BOOST_FOREACH(const typename iterator_value_type::value_type & d, std::make_pair(iterator_value_type(v), iterator_value_type() ) )
+    newv.push_back(d);
 
     rDummy.template ApplyTransformation<std::vector<TDataType> >(newv);
 
     boost::python::list res;
     for (std::size_t i = 0; i < newv.size(); ++i)
+    {
         res.append(newv[i]);
+    }
 
     return res;
 }
@@ -187,4 +187,3 @@ void BRepApplication_AddTransformationToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

@@ -7,20 +7,15 @@
 //
 //
 
-
 #if !defined(KRATOS_BREP_APPLICATION_ADD_UTILITIES_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_BREP_APPLICATION_ADD_UTILITIES_TO_PYTHON_H_INCLUDED
 
-
 // System includes
-
 
 // External includes
 
-
 // Project includes
 #include "includes/define_python.h"
-
 
 namespace Kratos
 {

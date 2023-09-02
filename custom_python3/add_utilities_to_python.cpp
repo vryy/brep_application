@@ -56,13 +56,17 @@ pybind11::list BRepUtility_Swap(BRepUtility& rDummy, pybind11::list list_entitie
 
     input.resize(pybind11::len(list_entities));
     for (std::size_t i = 0; i < pybind11::len(list_entities); ++i)
+    {
         input[i] = list_entities[i].cast<typename TConnectivityType::value_type>();
+    }
 
     rDummy.SwapConnectivity<TDim, TConnectivityType>(input, output);
 
     pybind11::list list_output;
     for (std::size_t i = 0; i < pybind11::len(list_entities); ++i)
+    {
         list_output.append(output[i]);
+    }
 
     return list_output;
 }
@@ -83,21 +87,21 @@ Condition::GeometryType::PointType::PointType BRepUtility_ComputerCenterConditio
 }
 
 pybind11::list BRepMeshUtility_CreateTriangleConditions1(BRepMeshUtility& rDummy,
-    ModelPart& r_model_part,
-    const std::string& sample_condition_name,
-    const int& type, // if 1: generate T3 elements; 2: T6 elements;
-    const array_1d<double, 3>& rCenter,
-    const array_1d<double, 3>& rNormal,
-    const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-    const int& activation_level,
-    Properties::Pointer pProperties)
+        ModelPart& r_model_part,
+        const std::string& sample_condition_name,
+        const int& type, // if 1: generate T3 elements; 2: T6 elements;
+        const array_1d<double, 3>& rCenter,
+        const array_1d<double, 3>& rNormal,
+        const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
+        const int& activation_level,
+        Properties::Pointer pProperties)
 {
     Element::GeometryType::PointType::PointType C, N;
     noalias(C) = rCenter;
     noalias(N) = rNormal;
     BRepMeshUtility::ConditionMeshInfoSimpleType Results = rDummy.CreateTriangleConditions(r_model_part,
-        sample_condition_name, type, C, N, radius, nsampling_axial, nsampling_radial,
-        activation_level, pProperties);
+            sample_condition_name, type, C, N, radius, nsampling_axial, nsampling_radial,
+            activation_level, pProperties);
 
     pybind11::list Output;
     Output.append(std::get<0>(Results));
@@ -106,13 +110,13 @@ pybind11::list BRepMeshUtility_CreateTriangleConditions1(BRepMeshUtility& rDummy
 }
 
 pybind11::list BRepMeshUtility_CreateTriangleConditions2(BRepMeshUtility& rDummy,
-    ModelPart& r_model_part,
-    const Section& rSection,
-    const std::string& sample_condition_name,
-    Properties::Pointer pProperties)
+        ModelPart& r_model_part,
+        const Section& rSection,
+        const std::string& sample_condition_name,
+        Properties::Pointer pProperties)
 {
     BRepMeshUtility::ConditionMeshInfoSimpleType Results = rDummy.CreateTriangleConditions(r_model_part,
-        rSection, sample_condition_name, pProperties);
+            rSection, sample_condition_name, pProperties);
 
     pybind11::list Output;
     Output.append(std::get<0>(Results));
@@ -121,10 +125,10 @@ pybind11::list BRepMeshUtility_CreateTriangleConditions2(BRepMeshUtility& rDummy
 }
 
 ModelPart::ConditionsContainerType BRepMeshUtility_CreateConditionsOnSurface(BRepMeshUtility& rDummy,
-    ModelPart& r_model_part,
-    const ModelPart::ConditionsContainerType& rConditions, const BRep& r_brep,
-    const std::string& sample_condition_name, Properties::Pointer pProperties,
-    const bool& add_to_model_part)
+        ModelPart& r_model_part,
+        const ModelPart::ConditionsContainerType& rConditions, const BRep& r_brep,
+        const std::string& sample_condition_name, Properties::Pointer pProperties,
+        const bool& add_to_model_part)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
     std::size_t last_cond_id = BRepUtility::GetLastConditionId(r_model_part);
@@ -132,17 +136,17 @@ ModelPart::ConditionsContainerType BRepMeshUtility_CreateConditionsOnSurface(BRe
     Condition const& rCloneCondition = KratosComponents<Condition>::Get(sample_condition_name);
 
     return BRepMeshUtility::CreateConditionsOnSurface(r_model_part, rConditions, r_brep,
-        last_node_id, last_cond_id, rCloneCondition, pProperties, add_to_model_part);
+            last_node_id, last_cond_id, rCloneCondition, pProperties, add_to_model_part);
 }
 
 pybind11::list BRepMeshUtility_CreateElementsByProjectingOnSurface(BRepMeshUtility& rDummy,
-    ModelPart& r_model_part,
-    const ModelPart::ConditionsContainerType& rConditions, const BRep& r_brep,
-    const std::string& sample_condition_name,
-    const std::string& sample_element_name,
-    Properties::Pointer pProperties,
-    const bool& create_condition,
-    const bool& add_to_model_part)
+        ModelPart& r_model_part,
+        const ModelPart::ConditionsContainerType& rConditions, const BRep& r_brep,
+        const std::string& sample_condition_name,
+        const std::string& sample_element_name,
+        Properties::Pointer pProperties,
+        const bool& create_condition,
+        const bool& add_to_model_part)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
     std::size_t last_condition_id = BRepUtility::GetLastConditionId(r_model_part);
@@ -152,8 +156,8 @@ pybind11::list BRepMeshUtility_CreateElementsByProjectingOnSurface(BRepMeshUtili
     Element const& rCloneElement = KratosComponents<Element>::Get(sample_element_name);
 
     auto Output = BRepMeshUtility::CreateElementsByProjectingOnSurface(r_model_part, rConditions, r_brep,
-        last_node_id, last_condition_id, last_element_id, rCloneCondition, rCloneElement, pProperties,
-        create_condition, add_to_model_part);
+                  last_node_id, last_condition_id, last_element_id, rCloneCondition, rCloneElement, pProperties,
+                  create_condition, add_to_model_part);
 
     pybind11::list list_output;
     list_output.append(Output.first);
@@ -165,7 +169,9 @@ pybind11::list TubeMesher_GetPoints(TubeMesher& dummy)
 {
     pybind11::list point_list;
     for (std::size_t i = 0; i < dummy.GetPoints().size(); ++i)
+    {
         point_list.append(dummy.GetPoints()[i]);
+    }
     return point_list;
 }
 
@@ -185,7 +191,9 @@ pybind11::list TubeMesher_GetElements(TubeMesher& dummy)
                 {
                     pybind11::list tmp4;
                     for (std::size_t m = 0; m < dummy.GetElements()[i][j][k][l].size(); ++m)
+                    {
                         tmp4.append(dummy.GetElements()[i][j][k][l][m]);
+                    }
                     tmp3.append(tmp4);
                 }
                 tmp2.append(tmp3);
@@ -210,7 +218,9 @@ pybind11::list TubeMesher_GetConditions(TubeMesher& dummy)
             {
                 pybind11::list tmp3;
                 for (std::size_t l = 0; l < dummy.GetConditions()[i][j][k].size(); ++l)
+                {
                     tmp3.append(dummy.GetConditions()[i][j][k][l]);
+                }
                 tmp2.append(tmp3);
             }
             tmp1.append(tmp2);
@@ -221,7 +231,7 @@ pybind11::list TubeMesher_GetConditions(TubeMesher& dummy)
 }
 
 pybind11::list TubeMesher_GetSlice1(TubeMesher& dummy, const std::size_t& slice,
-        const std::size_t& layer, const std::size_t& sub_layer)
+                                    const std::size_t& layer, const std::size_t& sub_layer)
 {
     std::vector<std::vector<std::size_t> > conditions;
     dummy.GetSlice(conditions, slice, layer, sub_layer);
@@ -231,14 +241,16 @@ pybind11::list TubeMesher_GetSlice1(TubeMesher& dummy, const std::size_t& slice,
     {
         pybind11::list tmp1;
         for (std::size_t j = 0; j < conditions[i].size(); ++j)
+        {
             tmp1.append(conditions[i][j]);
+        }
         condition_list.append(tmp1);
     }
     return condition_list;
 }
 
 pybind11::list TubeMesher_GetSlice2(TubeMesher& dummy, const std::size_t& slice,
-        const std::size_t& layer)
+                                    const std::size_t& layer)
 {
     std::vector<std::vector<std::vector<std::size_t> > > conditions;
     dummy.GetSlice(conditions, slice, layer);
@@ -251,7 +263,9 @@ pybind11::list TubeMesher_GetSlice2(TubeMesher& dummy, const std::size_t& slice,
         {
             pybind11::list tmp2;
             for (std::size_t k = 0; k < conditions[i][j].size(); ++k)
+            {
                 tmp2.append(conditions[i][j][k]);
+            }
             tmp1.append(tmp2);
         }
         condition_list.append(tmp1);
@@ -260,7 +274,7 @@ pybind11::list TubeMesher_GetSlice2(TubeMesher& dummy, const std::size_t& slice,
 }
 
 pybind11::list TubeMesher_GetRing(TubeMesher& dummy, const std::size_t& ring,
-        const std::size_t& layer)
+                                  const std::size_t& layer)
 {
     std::vector<std::vector<std::vector<std::size_t> > > elements;
     dummy.GetRing(elements, ring, layer);
@@ -273,7 +287,9 @@ pybind11::list TubeMesher_GetRing(TubeMesher& dummy, const std::size_t& ring,
         {
             pybind11::list tmp2;
             for (std::size_t k = 0; k < elements[i][j].size(); ++k)
+            {
                 tmp2.append(elements[i][j][k]);
+            }
             tmp1.append(tmp2);
         }
         element_list.append(tmp1);
@@ -286,22 +302,26 @@ class TubeMesherWrapper
 public:
 
     static TubeMesher::Pointer initWrapper(const Curve::Pointer pCurve, pybind11::list r_list,
-        pybind11::list nsamping_layers,
-        const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-        const double& rotate_angle, const double& start_angle, const double& end_angle,
-        const double& tmin, const double& tmax,
-        const int& type, const std::size_t& last_node_id)
+                                           pybind11::list nsamping_layers,
+                                           const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
+                                           const double& rotate_angle, const double& start_angle, const double& end_angle,
+                                           const double& tmin, const double& tmax,
+                                           const int& type, const std::size_t& last_node_id)
     {
         std::vector<double> r_vec;
         for (int i = 0; i < pybind11::len(r_list); ++i)
+        {
             r_vec.push_back(r_list[i].cast<double>());
+        }
 
         std::vector<std::size_t> nsamping_layers_vec;
         for (int i = 0; i < pybind11::len(nsamping_layers); ++i)
+        {
             nsamping_layers_vec.push_back(static_cast<std::size_t>(nsamping_layers[i].cast<int>()));
+        }
 
         return TubeMesher::Pointer(new TubeMesher(pCurve, r_vec, nsamping_layers_vec, nsampling_axial, nsampling_radial,
-            rotate_angle, start_angle, end_angle, tmin, tmax, type, last_node_id));
+                                   rotate_angle, start_angle, end_angle, tmin, tmax, type, last_node_id));
     }
 };
 
@@ -313,7 +333,9 @@ pybind11::list BRepIntersectionUtility_Intersect(BRepIntersectionUtility& rDummy
 
     pybind11::list Output;
     for (std::size_t i = 0; i < Points.size(); ++i)
+    {
         Output.append(Points[i]);
+    }
 
     return Output;
 }
@@ -321,7 +343,7 @@ pybind11::list BRepIntersectionUtility_Intersect(BRepIntersectionUtility& rDummy
 void BRepApplication_AddUtilitiesToPython(pybind11::module& m)
 {
 
-    #ifdef BREP_APPLICATION_USE_OPENCASCADE
+#ifdef BREP_APPLICATION_USE_OPENCASCADE
     class_<OCCUtility, OCCUtility::Pointer>
     ( m, "OCCUtility" )
     .def( init<>() )
@@ -331,7 +353,7 @@ void BRepApplication_AddUtilitiesToPython(pybind11::module& m)
     .def("WriteSTEP", &OCCUtility::WriteSTEP)
     .def("__str__", &PrintObject<OCCUtility>)
     ;
-    #endif
+#endif
 
     class_<BRepUtility, BRepUtility::Pointer>
     (m, "BRepUtility")
@@ -388,4 +410,3 @@ void BRepApplication_AddUtilitiesToPython(pybind11::module& m)
 }
 }  // namespace Python.
 }  // namespace Kratos.
-

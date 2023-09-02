@@ -14,7 +14,6 @@
 #include "custom_python/add_occ_to_python.h"
 #include "custom_utilities/occ_define.h"
 
-
 namespace Kratos
 {
 
@@ -41,4 +40,3 @@ void BRepApplication_AddOCCToPython()
 }
 }  // namespace Python.
 }  // namespace Kratos.
-

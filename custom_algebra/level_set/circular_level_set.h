@@ -11,25 +11,19 @@
 //  Date:            10 Feb 2017
 //
 
-
 #if !defined(KRATOS_CIRCULAR_LEVEL_SET_H_INCLUDED )
 #define  KRATOS_CIRCULAR_LEVEL_SET_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/level_set/level_set.h"
 #include "custom_utilities/brep_mesh_utility.h"
-
 
 namespace Kratos
 {
@@ -71,13 +65,13 @@ public:
 
     typedef LevelSet BaseType;
 
-    #if defined(__clang__) || defined(__INTEL_COMPILER)
+#if defined(__clang__) || defined(__INTEL_COMPILER)
     static constexpr double PI = 3.1415926535897932384626433832795028841971693;
-    #elif defined(__GNUC__) || defined(__GNUG__)
-    static constexpr double PI = std::atan(1.0)*4;
-    #else
-    static constexpr double PI = std::atan(1.0)*4;
-    #endif
+#elif defined(__GNUC__) || defined(__GNUG__)
+    static constexpr double PI = std::atan(1.0) * 4;
+#else
+    static constexpr double PI = std::atan(1.0) * 4;
+#endif
 
     ///@}
     ///@name Life Cycle
@@ -85,45 +79,39 @@ public:
 
     /// Default constructor.
     CircularLevelSet(const double& cX, const double& cY, const double& R)
-    : BaseType(), mcX(cX), mcY(cY), mR(R)
+        : BaseType(), mcX(cX), mcY(cY), mR(R)
     {}
 
     /// Copy constructor.
     CircularLevelSet(CircularLevelSet const& rOther)
-    : BaseType(rOther), mcX(rOther.mcX), mcY(rOther.mcY), mR(rOther.mR)
+        : BaseType(rOther), mcX(rOther.mcX), mcY(rOther.mcY), mR(rOther.mR)
     {}
 
     /// Destructor.
     virtual ~CircularLevelSet() {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     LevelSet::Pointer CloneLevelSet() const override
     {
         return LevelSet::Pointer(new CircularLevelSet(*this));
     }
 
-
     std::size_t WorkingSpaceDimension() const final
     {
         return 2;
     }
 
-
     double GetValue(const PointType& P) const override
     {
         return sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2)) - mR;
     }
-
 
     Vector GetGradient(const PointType& P) const override
     {
@@ -135,7 +123,6 @@ public:
         return grad;
     }
 
-
     Matrix GetGradientDerivatives(const PointType& P) const override
     {
         Matrix Jac(3, 3);
@@ -143,22 +130,23 @@ public:
 
         double aux = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2));
 
-        Jac(0, 0) = 1.0/aux - pow(P(0) - mcX, 2) / pow(aux, 3);
-        Jac(0, 1) = -(P(0) - mcX)*(P(1) - mcY) / pow(aux, 3);
+        Jac(0, 0) = 1.0 / aux - pow(P(0) - mcX, 2) / pow(aux, 3);
+        Jac(0, 1) = -(P(0) - mcX) * (P(1) - mcY) / pow(aux, 3);
 
         Jac(1, 0) = Jac(0, 1);
-        Jac(1, 1) = 1.0/aux - pow(P(1) - mcY, 2) / pow(aux, 3);
+        Jac(1, 1) = 1.0 / aux - pow(P(1) - mcY, 2) / pow(aux, 3);
 
         return Jac;
     }
 
-
     /// projects a point on the surface of level_set
     int ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
-        double vector_length = sqrt(pow(P(0)-mcX, 2) + pow(P(1)-mcY, 2));
+        double vector_length = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2));
         if (vector_length == 0)
+        {
             KRATOS_THROW_ERROR(std::invalid_argument, "trying to project node that's in the center of Brep circle", "");
+        }
 
         Proj(0) = (P(0) - mcX) * mR / vector_length + mcX;
         Proj(1) = (P(1) - mcY) * mR / vector_length + mcY;
@@ -167,38 +155,39 @@ public:
         return 0;
     }
 
-
     /// compute the derivatives of the projection point w.r.t to the original point.
     void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const final
     {
         if (Derivatives.size1() != 3 || Derivatives.size2() != 3)
+        {
             Derivatives.resize(3, 3, false);
+        }
 
-        double vector_length = sqrt(pow(P(0)-mcX, 2) + pow(P(1)-mcY, 2));
+        double vector_length = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2));
         if (vector_length == 0)
+        {
             KRATOS_THROW_ERROR(std::invalid_argument, "trying to project node that's in the center of Brep circle", "");
+        }
 
         noalias(Derivatives) = ZeroMatrix(3, 3);
 
         Vector dvector_length(2);
-        dvector_length(0) = 2.0*(P(0) - mcX);
-        dvector_length(1) = 2.0*(P(1) - mcY);
+        dvector_length(0) = 2.0 * (P(0) - mcX);
+        dvector_length(1) = 2.0 * (P(1) - mcY);
 
-        Derivatives(0, 0) = mR/vector_length - (P(0)-mcX)*mR*dvector_length(0)/pow(vector_length, 2);
-        Derivatives(0, 1) = -(P(0)-mcX)*mR*dvector_length(1)/pow(vector_length, 2);
+        Derivatives(0, 0) = mR / vector_length - (P(0) - mcX) * mR * dvector_length(0) / pow(vector_length, 2);
+        Derivatives(0, 1) = -(P(0) - mcX) * mR * dvector_length(1) / pow(vector_length, 2);
 
-        Derivatives(1, 0) = -(P(1)-mcY)*mR*dvector_length(0)/pow(vector_length, 2);
-        Derivatives(1, 1) = mR/vector_length - (P(1)-mcY)*mR*dvector_length(1)/pow(vector_length, 2);
+        Derivatives(1, 0) = -(P(1) - mcY) * mR * dvector_length(0) / pow(vector_length, 2);
+        Derivatives(1, 1) = mR / vector_length - (P(1) - mcY) * mR * dvector_length(1) / pow(vector_length, 2);
     }
-
 
     /***********EXCLUSIVE INTERFACE****************/
 
-
     /// Generate the sampling points on the level set surface
     void GeneratePoints(std::vector<PointType>& radial_points,
-        const double& start_angle, const double& end_angle,
-        const std::size_t& nsampling_radial) const
+                        const double& start_angle, const double& end_angle,
+                        const std::size_t& nsampling_radial) const
     {
         radial_points.resize(nsampling_radial);
         double small_angle = (end_angle - start_angle) / nsampling_radial;
@@ -208,30 +197,28 @@ public:
         double d;
         for (std::size_t j = 0; j < nsampling_radial; ++j)
         {
-            d = start_angle + j*small_angle;
-            V[0] = mcX + mR*std::cos(d);
-            V[1] = mcY + mR*std::sin(d);
+            d = start_angle + j * small_angle;
+            V[0] = mcX + mR * std::cos(d);
+            V[1] = mcY + mR * std::sin(d);
             noalias(radial_points[j]) = V;
         }
     }
 
-
     /// Generate the sampling points on the level set surface
     void GeneratePoints(std::vector<PointType>& radial_points,
-        const std::size_t& nsampling_radial) const
+                        const std::size_t& nsampling_radial) const
     {
-        this->GeneratePoints(radial_points, 0.0, 2*PI, nsampling_radial);
+        this->GeneratePoints(radial_points, 0.0, 2 * PI, nsampling_radial);
     }
-
 
     /// Create the elements based on sampling points on the line
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateLineElements(ModelPart& r_model_part,
-        const std::string& sample_element_name,
-        Properties::Pointer pProperties,
-        const double& start_angle,
-        const double& end_angle,
-        const std::size_t& nsampling_radial,
-        const bool close = false) const
+            const std::string& sample_element_name,
+            Properties::Pointer pProperties,
+            const double& start_angle,
+            const double& end_angle,
+            const std::size_t& nsampling_radial,
+            const bool close = false) const
     {
         // firstly create the sampling points on surface
         std::vector<PointType> sampling_points;
@@ -245,11 +232,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -267,18 +252,15 @@ public:
         rOStream << "cX: " << mcX << ", cY: " << mcY << ", R: " << mR;
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
 protected:
     ///@name Protected static Member Variables
     ///@{
-
 
     ///@}
     ///@name Protected member Variables
@@ -290,26 +272,21 @@ protected:
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -317,31 +294,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -359,11 +330,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, CircularLevelSet& rThis)

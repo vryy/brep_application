@@ -10,7 +10,6 @@ LICENSE: see brep_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -26,7 +25,6 @@ LICENSE: see brep_application/LICENSE.txt
 #include "custom_algebra/trans/transformation_utility.h"
 #include "custom_python3/add_transformation_to_python.h"
 
-
 namespace Kratos
 {
 
@@ -39,7 +37,7 @@ using namespace pybind11;
 
 template<typename TDataType>
 Transformation<TDataType> TransformationUtility_CreateAlignTransformation(TransformationUtility<TDataType>& rDummy,
-    const typename Transformation<TDataType>::VectorType& a, const typename Transformation<TDataType>::VectorType& b)
+        const typename Transformation<TDataType>::VectorType& a, const typename Transformation<TDataType>::VectorType& b)
 {
     Transformation<TDataType> T;
     T = rDummy.CreateAlignTransformation(a, b);
@@ -71,13 +69,17 @@ pybind11::list Transformation_Apply2(Transformation<TDataType>& rDummy, pybind11
 {
     std::vector<TDataType> newv;
     for (auto d : v)
+    {
         newv.push_back(d.cast<TDataType>());
+    }
 
     rDummy.template ApplyTransformation<std::vector<TDataType> >(newv);
 
     pybind11::list res;
     for (std::size_t i = 0; i < newv.size(); ++i)
+    {
         res.append(newv[i]);
+    }
 
     return res;
 }
@@ -189,4 +191,3 @@ void BRepApplication_AddTransformationToPython(pybind11::module& m)
 }  // namespace Python.
 
 } // Namespace Kratos
-

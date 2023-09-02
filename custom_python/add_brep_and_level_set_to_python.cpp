@@ -50,7 +50,6 @@
 #include "custom_algebra/surface/parametric_surface.h"
 #include "custom_algebra/volume/parametric_volume.h"
 
-
 namespace Kratos
 {
 
@@ -82,7 +81,7 @@ bool BRep_IsInside3(BRep& rDummy, const double& x, const double& y, const double
 }
 
 bool BRep_IsInside4Element(BRep& rDummy, Element::Pointer pElement,
-    const BRep::CoordinatesArrayType& local_coords, const int& configuration)
+                           const BRep::CoordinatesArrayType& local_coords, const int& configuration)
 {
     return rDummy.IsInside(pElement->GetGeometry(), local_coords, configuration);
 }
@@ -92,7 +91,9 @@ int BRep_CutStatusPoints(BRep& rDummy, boost::python::list& list_points)
     std::vector<BRep::PointType> points;
 
     for (std::size_t i = 0; i < boost::python::len(list_points); ++i)
+    {
         points.push_back(boost::python::extract<BRep::PointType>(list_points[i]));
+    }
 
     return rDummy.CutStatus(points);
 }
@@ -177,8 +178,8 @@ boost::python::list LevelSet_CreateQ4Elements(
     const double Pi = 3.1415926535897932384626433;
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
         = rDummy.CreateQ4Elements(r_model_part, sample_element_name, pProperties,
-            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial),
-            start_radial_angle/180.0*Pi, end_radial_angle/180*Pi);
+                                  static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial),
+                                  start_radial_angle / 180.0 * Pi, end_radial_angle / 180 * Pi);
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -196,7 +197,7 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoop(
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
         = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties,
-            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial));
+                                            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial));
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -216,7 +217,7 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoopWithRange(
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
         = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties,
-            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax);
+                                            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax);
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -237,7 +238,7 @@ boost::python::list LevelSet_CreateQ4ConditionsClosedLoopWithRange(
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
         = rDummy.CreateQ4ConditionsClosedLoop(r_model_part, sample_condition_name, pProperties,
-            static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax, reverse);
+                static_cast<std::size_t>(nsampling_axial), static_cast<std::size_t>(nsampling_radial), tmin, tmax, reverse);
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -254,7 +255,7 @@ boost::python::list LinearLevelSet_CreateLineConditions(
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
         = rDummy.CreateLineConditions(r_model_part, sample_condition_name, pProperties,
-            StartPoint, EndPoint, type, nsampling);
+                                      StartPoint, EndPoint, type, nsampling);
     boost::python::list Output;
     Output.append(Results.first);
     Output.append(Results.second);
@@ -262,13 +263,13 @@ boost::python::list LinearLevelSet_CreateLineConditions(
 }
 
 void NodalLevelSet_InitializeFromNodes(NodalLevelSet& dummy,
-    const ModelPart::NodesContainerType& rNodes, const int& configuration)
+                                       const ModelPart::NodesContainerType& rNodes, const int& configuration)
 {
     dummy.Initialize(rNodes, configuration);
 }
 
 void NodalLevelSet_InitializeFromElements(NodalLevelSet& dummy,
-    const ModelPart::ElementsContainerType& rElements, const int& configuration)
+        const ModelPart::ElementsContainerType& rElements, const int& configuration)
 {
     dummy.Initialize(rElements, configuration);
 }
@@ -303,7 +304,9 @@ boost::python::list Section_Triangulation(Section& rDummy)
 
     boost::python::list OutputP;
     for (std::size_t i = 0; i < Points.size(); ++i)
+    {
         OutputP.append(Points[i]);
+    }
     Output.append(OutputP);
 
     boost::python::list OutputC;
@@ -311,7 +314,9 @@ boost::python::list Section_Triangulation(Section& rDummy)
     {
         boost::python::list tri;
         for (std::size_t j = 0; j < Connectivities[i].size(); ++j)
+        {
             tri.append(Connectivities[i][j]);
+        }
         OutputC.append(tri);
     }
     Output.append(OutputC);
@@ -516,12 +521,12 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "NotBRep", init<BRep::Pointer>() )
     ;
 
-    #ifdef BREP_APPLICATION_USE_OPENCASCADE
+#ifdef BREP_APPLICATION_USE_OPENCASCADE
     class_<OCCBRep, OCCBRep::Pointer, bases<BRep>, boost::noncopyable>
     ( "OCCBRep", init<>() )
     .def("SetShape", &OCCBRep::SetShape)
     ;
-    #endif
+#endif
 
     class_<NATMArcBRep, NATMArcBRep::Pointer, bases<BRep>, boost::noncopyable>
     ( "NATMArcBRep", init<>() )

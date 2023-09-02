@@ -11,26 +11,20 @@
 //  Date:            5 Jan 2017
 //
 
-
 #if !defined(KRATOS_UNION_LEVEL_SET_H_INCLUDED )
 #define  KRATOS_UNION_LEVEL_SET_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "includes/element.h"
 #include "includes/ublas_interface.h"
 #include "custom_algebra/level_set/level_set.h"
-
 
 namespace Kratos
 {
@@ -85,66 +79,61 @@ public:
 
     /// Default constructor.
     UnionLevelSet(const BaseType::Pointer p_level_set_1, const BaseType::Pointer p_level_set_2)
-    : BaseType(), mp_level_set_1(p_level_set_1), mp_level_set_2(p_level_set_2)
+        : BaseType(), mp_level_set_1(p_level_set_1), mp_level_set_2(p_level_set_2)
     {}
 
     /// Copy constructor.
     UnionLevelSet(UnionLevelSet const& rOther)
-    : BaseType(rOther)
-    , mp_level_set_1(rOther.mp_level_set_1->CloneLevelSet())
-    , mp_level_set_2(rOther.mp_level_set_2->CloneLevelSet())
+        : BaseType(rOther)
+        , mp_level_set_1(rOther.mp_level_set_1->CloneLevelSet())
+        , mp_level_set_2(rOther.mp_level_set_2->CloneLevelSet())
     {}
 
     /// Destructor.
     virtual ~UnionLevelSet() {}
 
-
     ///@}
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
-
 
     LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new UnionLevelSet(*this));
     }
 
-
     std::size_t WorkingSpaceDimension() const final
     {
         return mp_level_set_1->WorkingSpaceDimension();
     }
-
 
     double GetValue(const PointType& P) const final
     {
         return std::min(mp_level_set_1->GetValue(P), mp_level_set_2->GetValue(P));
     }
 
-
     Vector GetGradient(const PointType& P) const final
     {
         if (mp_level_set_1->GetValue(P) < mp_level_set_2->GetValue(P))
+        {
             return mp_level_set_1->GetGradient(P);
+        }
         else
+        {
             return mp_level_set_2->GetGradient(P);
+        }
     }
-
 
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -168,11 +157,9 @@ public:
         // rOStream << ")";
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -180,40 +167,32 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
 
-
     const BaseType::Pointer mp_level_set_1;
     const BaseType::Pointer mp_level_set_2;
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -221,31 +200,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -263,11 +236,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, UnionLevelSet& rThis)

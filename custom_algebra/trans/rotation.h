@@ -36,8 +36,8 @@ struct ComputeRotationalTransformationMatrix_Helper<0, TMatrixType, TDataType>
 {
     static void Execute(TMatrixType& trans_mat, const TDataType& angle)
     {
-        TDataType c = std::cos(angle/180.0*M_PI);
-        TDataType s = std::sin(angle/180.0*M_PI);
+        TDataType c = std::cos(angle / 180.0 * M_PI);
+        TDataType s = std::sin(angle / 180.0 * M_PI);
         trans_mat(1, 1) = c;
         trans_mat(1, 2) = -s;
         trans_mat(2, 1) = s;
@@ -50,8 +50,8 @@ struct ComputeRotationalTransformationMatrix_Helper<1, TMatrixType, TDataType>
 {
     static void Execute(TMatrixType& trans_mat, const TDataType& angle)
     {
-        TDataType c = std::cos(angle/180.0*M_PI);
-        TDataType s = std::sin(angle/180.0*M_PI);
+        TDataType c = std::cos(angle / 180.0 * M_PI);
+        TDataType s = std::sin(angle / 180.0 * M_PI);
         trans_mat(0, 0) = c;
         trans_mat(0, 2) = s;
         trans_mat(2, 0) = -s;
@@ -64,8 +64,8 @@ struct ComputeRotationalTransformationMatrix_Helper<2, TMatrixType, TDataType>
 {
     static void Execute(TMatrixType& trans_mat, const TDataType& angle)
     {
-        TDataType c = std::cos(angle/180.0*M_PI);
-        TDataType s = std::sin(angle/180.0*M_PI);
+        TDataType c = std::cos(angle / 180.0 * M_PI);
+        TDataType s = std::sin(angle / 180.0 * M_PI);
         trans_mat(0, 0) = c;
         trans_mat(0, 1) = -s;
         trans_mat(1, 0) = s;
@@ -102,11 +102,17 @@ public:
     {
         rOStream << "Homogeneous Rotation";
         if (TAxis == 0)
+        {
             rOStream << "_X";
+        }
         else if (TAxis == 1)
+        {
             rOStream << "_Y";
+        }
         else if (TAxis == 2)
+        {
             rOStream << "_Z";
+        }
     }
 
 };
@@ -124,4 +130,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Rotation<TAxis, T
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_ROTATION_H_INCLUDED
-

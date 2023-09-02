@@ -11,16 +11,12 @@
 //  Date:            22 Jun 2020
 //
 
-
 #if !defined(KRATOS_NATM_ARC_BREP_H_INCLUDED )
 #define  KRATOS_NATM_ARC_BREP_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
-
 
 // External includes
 
@@ -28,7 +24,6 @@
 #include "includes/define.h"
 #include "custom_algebra/brep.h"
 #include "custom_utilities/brep_math_utility.h"
-
 
 namespace Kratos
 {
@@ -99,7 +94,6 @@ public:
 
     typedef BaseType::CoordinatesArrayType CoordinatesArrayType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -110,13 +104,12 @@ public:
 
     /// Copy constructor.
     NATMArcBRep(NATMArcBRep const& rOther) : BaseType(rOther)
-    , mArcs(rOther.mArcs), mRefAngle(rOther.mRefAngle), mRefCenter(rOther.mRefCenter)
+        , mArcs(rOther.mArcs), mRefAngle(rOther.mRefAngle), mRefCenter(rOther.mRefCenter)
     {}
 
     /// Destructor.
     virtual ~NATMArcBRep()
     {}
-
 
     ///@}
     ///@name Self Operations
@@ -146,29 +139,35 @@ public:
         double x2 = X3 - X1, y2 = Y3 - Y1;
         double xc, yc;
 
-        BRepMathUtility::Solve(2*x1, 2*y1, x1*x1 + y1*y1,
-                2*x2, 2*y2, x2*x2 + y2*y2, xc, yc);
+        BRepMathUtility::Solve(2 * x1, 2 * y1, x1 * x1 + y1 * y1,
+                               2 * x2, 2 * y2, x2 * x2 + y2 * y2, xc, yc);
 
         NATMArc a;
         a.X = X1 + xc;
         a.Y = Y1 + yc;
         a.R = sqrt(pow(x1 - xc, 2) + pow(y1 - yc, 2));
 
-        const double pi = std::atan(1)*4;
+        const double pi = std::atan(1) * 4;
         // KRATOS_WATCH(pi)
 
         a.Alpha1 = std::atan2(Y1 - mRefCenter[1], X1 - mRefCenter[0]) - mRefAngle;
         // KRATOS_WATCH(a.Alpha1)
-        if (a.Alpha1 < 0.0) a.Alpha1 += 2*pi;
+        if (a.Alpha1 < 0.0) { a.Alpha1 += 2 * pi; }
         a.Alpha2 = std::atan2(Y3 - mRefCenter[1], X3 - mRefCenter[0]) - mRefAngle;
         // KRATOS_WATCH(a.Alpha2)
-        if (a.Alpha2 <= 0.0) a.Alpha2 += 2*pi;
+        if (a.Alpha2 <= 0.0) { a.Alpha2 += 2 * pi; }
 
-        Vector v1(2); v1[0] = X1 - a.X; v1[1] = Y1 - a.Y;
-        Vector v2(2); v2[0] = X2 - a.X; v2[1] = Y2 - a.Y;
-        Vector v3(2); v3[0] = X3 - a.X; v3[1] = Y3 - a.Y;
+        Vector v1(2);
+        v1[0] = X1 - a.X;
+        v1[1] = Y1 - a.Y;
+        Vector v2(2);
+        v2[0] = X2 - a.X;
+        v2[1] = Y2 - a.Y;
+        Vector v3(2);
+        v3[0] = X3 - a.X;
+        v3[1] = Y3 - a.Y;
         a.Angle1 = std::atan2(v1[1], v1[0]);
-        if (a.Angle1 < 0.0) a.Angle1 += 2*pi;
+        if (a.Angle1 < 0.0) { a.Angle1 += 2 * pi; }
         a.Angle2 = a.Angle1 + std::acos( inner_prod(v1, v2) / (norm_2(v1) * norm_2(v2)) );
         a.Angle3 = a.Angle2 + std::acos( inner_prod(v3, v2) / (norm_2(v3) * norm_2(v2)) );
 
@@ -203,9 +202,9 @@ public:
     virtual bool IsInside(const PointType& P) const
     {
         // check which arc the point is in
-        const double pi = std::atan(1)*4;
+        const double pi = std::atan(1) * 4;
         double alpha = std::atan2(P[1] - mRefCenter[1], P[0] - mRefCenter[0]) - mRefAngle;
-        if (alpha <= 0.0) alpha += 2*pi;
+        if (alpha <= 0.0) { alpha += 2 * pi; }
 
         bool is_in = false;
         for (std::size_t i = 0; i < mArcs.size(); ++i)
@@ -213,13 +212,17 @@ public:
             if (mArcs[i].Alpha2 > mArcs[i].Alpha1)
             {
                 if (mArcs[i].Alpha2 >= alpha && alpha >= mArcs[i].Alpha1)
+                {
                     is_in = true;
+                }
             }
 
             if (mArcs[i].Alpha1 > mArcs[i].Alpha2)
             {
                 if (mArcs[i].Alpha1 >= alpha && alpha >= mArcs[i].Alpha2)
+                {
                     is_in = true;
+                }
             }
 
             if (is_in)
@@ -232,7 +235,7 @@ public:
                 // compute the intersection point
                 double a = P[1] - mRefCenter[1];
                 double b = mRefCenter[0] - P[0];
-                double c = -a*P[0] - b*P[1];
+                double c = -a * P[0] - b * P[1];
                 std::vector<double> points = BRepMathUtility::Intersect(a, b, c, mArcs[i].X, mArcs[i].Y, mArcs[i].R);
 
                 // KRATOS_WATCH(points.size())
@@ -249,22 +252,22 @@ public:
 
                 // find the right intersection point
                 double angle1 = std::atan2(points[1] - mArcs[i].Y, points[0] - mArcs[i].X);
-                if (angle1 < 0.0) angle1 += 2*pi;
+                if (angle1 < 0.0) { angle1 += 2 * pi; }
                 double angle2 = std::atan2(points[3] - mArcs[i].Y, points[2] - mArcs[i].X);
-                if (angle2 < 0.0) angle2 += 2*pi;
+                if (angle2 < 0.0) { angle2 += 2 * pi; }
 
                 // KRATOS_WATCH(angle1)
                 // KRATOS_WATCH(angle2)
 
                 double xi, yi;
                 if ( (angle1 >= mArcs[i].Angle1 && angle1 <= mArcs[i].Angle3)
-                  || (angle1+2*pi >= mArcs[i].Angle1 && angle1+2*pi <= mArcs[i].Angle3) )
+                        || (angle1 + 2 * pi >= mArcs[i].Angle1 && angle1 + 2 * pi <= mArcs[i].Angle3) )
                 {
                     xi = points[0];
                     yi = points[1];
                 }
                 else if ( (angle2 >= mArcs[i].Angle1 && angle2 <= mArcs[i].Angle3)
-                       || (angle2+2*pi >= mArcs[i].Angle1 && angle2+2*pi <= mArcs[i].Angle3) )
+                          || (angle2 + 2 * pi >= mArcs[i].Angle1 && angle2 + 2 * pi <= mArcs[i].Angle3) )
                 {
                     xi = points[2];
                     yi = points[3];
@@ -320,11 +323,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -347,11 +348,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -359,43 +358,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -409,21 +400,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -441,11 +428,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, NATMArcBRep& rThis)

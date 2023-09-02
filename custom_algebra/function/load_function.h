@@ -11,25 +11,19 @@
 //  Date:            26 Aug 2019
 //
 
-
 #if !defined(KRATOS_LOAD_FUNCTION_H_INCLUDED )
 #define  KRATOS_LOAD_FUNCTION_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <sstream>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/function/function.h"
-
 
 namespace Kratos
 {
@@ -73,30 +67,27 @@ public:
 
     typedef BaseType::OutputType OutputType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
     LoadFunctionR3Rn()
-    : BaseType()
+        : BaseType()
     {}
 
     /// Copy constructor.
     LoadFunctionR3Rn(LoadFunctionR3Rn const& rOther)
-    : BaseType(rOther)
+        : BaseType(rOther)
     {}
 
     /// Destructor.
     virtual ~LoadFunctionR3Rn()
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -118,7 +109,9 @@ public:
         Vector Load(ncomponent);
 
         for (std::size_t i = 0; i < ncomponent; ++i)
+        {
             Load(i) = mpLoadComponents[i]->GetValue(P);
+        }
 
         return Load;
     }
@@ -127,11 +120,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -156,11 +147,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -168,43 +157,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -216,21 +197,17 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -248,11 +225,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream LoadFunctionR3Rn
 inline std::istream& operator >> (std::istream& rIStream, LoadFunctionR3Rn& rThis)

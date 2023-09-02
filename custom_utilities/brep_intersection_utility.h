@@ -11,27 +11,21 @@
 //  Date:            20 Mar 2021
 //
 
-
 #if !defined(KRATOS_BREP_INTERSECTION_UTILITY_H_INCLUDED )
 #define  KRATOS_BREP_INTERSECTION_UTILITY_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 #include <fstream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "custom_algebra/brep.h"
 #include "custom_algebra/level_set/distance_to_curve_level_set.h"
 #include "custom_algebra/level_set/planar_level_set.h"
-
 
 namespace Kratos
 {
@@ -81,11 +75,9 @@ public:
     /// Destructor.
     virtual ~BRepIntersectionUtility() {}
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -102,9 +94,7 @@ public:
         }
         else
         {
-            std::stringstream ss;
-            ss << "Intersection between " << rBRep1.Info() << " and " << rBRep2.Info() << " is not implemented";
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "Intersection between " << rBRep1.Info() << " and " << rBRep2.Info() << " is not implemented";
         }
     }
 
@@ -115,7 +105,9 @@ public:
         PointType C, T;
         int error_code = rLS1.AlignmentCurve().ComputeIntersection(rLS2, C, T);
         if (error_code != 0)
-            KRATOS_THROW_ERROR(std::logic_error, "The alignment curve and the plane do not intersect", "")
+        {
+            KRATOS_ERROR << "The alignment curve and the plane do not intersect";
+        }
         // KRATOS_WATCH(C)
         // KRATOS_WATCH(T)
 
@@ -132,11 +124,15 @@ public:
 
         // compute a local Frenet frame at the intersection point
         PointType T1, T2;
-        T2[0] = 0.0; T2[1] = 0.0; T2[2] = 1.0;
+        T2[0] = 0.0;
+        T2[1] = 0.0;
+        T2[2] = 1.0;
         noalias(T1) = MathUtils<double>::CrossProduct(N, T2);
         if (norm_2(T1) < 1.0e-10)
         {
-            T2[0] = 0.0; T2[1] = 1.0; T2[2] = 0.0;
+            T2[0] = 0.0;
+            T2[1] = 1.0;
+            T2[2] = 0.0;
             noalias(T1) = MathUtils<double>::CrossProduct(N, T2);
         }
         T1 /= norm_2(T1);
@@ -147,17 +143,17 @@ public:
 
         // perform the sampling on the effective circle
         double a, c, s;
-        const double pi = atan(1.0)*4;
+        const double pi = atan(1.0) * 4;
         const double rfactor = 2.0; // we take the factor 2 to make sure the point is outside the distance-to-curve level set
         PointType P;
         rPoints.resize(nsampling);
         for (std::size_t i = 0; i < nsampling; ++i)
         {
-            a = 2*pi*i/nsampling;
+            a = 2 * pi * i / nsampling;
             c = cos(a);
             s = sin(a);
 
-            noalias(P) = C + rfactor*eradius*(c*T1 + s*T2);
+            noalias(P) = C + rfactor * eradius * (c * T1 + s * T2);
 
             // compute the intersection between CP and the distance-to-curve level set
             error_code = rLS1.Bisect(rPoints[i], C, P, rLS1.Tolerance());
@@ -172,11 +168,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -199,11 +193,9 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -211,36 +203,29 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -249,31 +234,25 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -294,11 +273,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, BRepIntersectionUtility& rThis)
@@ -320,6 +297,5 @@ inline std::ostream& operator << (std::ostream& rOStream, const BRepIntersection
 ///@} addtogroup block
 
 }  // namespace Kratos.
-
 
 #endif // KRATOS_BREP_INTERSECTION_UTILITY_H_INCLUDED  defined
