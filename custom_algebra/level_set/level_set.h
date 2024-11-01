@@ -135,7 +135,7 @@ public:
     }
 
     /// Get level set value at a point
-    double GetValue(const double& X, const double& Y, const double& Z) const
+    double GetValue(const double X, const double Y, const double Z) const
     {
         PointType P;
         P[0] = X;
@@ -163,7 +163,7 @@ public:
 //    }
 
     /// Compute the gradient at a point, i.e. [d Phi / dX, d Phi / dY, d Phi / dZ]
-    Vector GetGradient(const double& X, const double& Y, const double& Z) const
+    Vector GetGradient(const double X, const double Y, const double Z) const
     {
         PointType P;
         P[0] = X;
@@ -465,7 +465,7 @@ private:
     ///@{
 
     template<class TPointsContainerType>
-    int CutStatusOfPoints(const TPointsContainerType& r_points, const double& tolerance) const
+    int CutStatusOfPoints(const TPointsContainerType& r_points, const double tolerance) const
     {
         std::vector<std::size_t> in_list, out_list, on_list;
         for (std::size_t v = 0; v < r_points.size(); ++v)
@@ -537,9 +537,9 @@ private:
     }
 
     /// Shape function of 3-node line
-    static inline double L3_N1(const double& xi) {return 0.5 * (xi - 1.0) * xi;}
-    static inline double L3_N2(const double& xi) {return 0.5 * (xi + 1.0) * xi;}
-    static inline double L3_N3(const double& xi) {return 1.0 - xi * xi;}
+    static inline double L3_N1(const double xi) {return 0.5 * (xi - 1.0) * xi;}
+    static inline double L3_N2(const double xi) {return 0.5 * (xi + 1.0) * xi;}
+    static inline double L3_N3(const double xi) {return 1.0 - xi * xi;}
 
     ///@}
     ///@name Private  Access

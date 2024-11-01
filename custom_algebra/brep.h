@@ -121,19 +121,19 @@ public:
     /// Get working space dimension
     virtual std::size_t WorkingSpaceDimension() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Get local space dimension
     virtual std::size_t LocalSpaceDimension() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Check if a point is inside/outside of the BRep
     virtual bool IsInside(const PointType& P) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Check if a point is inside/outside of the BRep
@@ -151,7 +151,7 @@ public:
         }
         else
         {
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid configuration", configuration)
+            KRATOS_ERROR << "Invalid configuration " << configuration;
         }
     }
 
@@ -167,7 +167,7 @@ public:
     /// Check if a point is on the boundary
     virtual bool IsOnBoundary(const PointType& P) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Check if an element is cut by the brep
@@ -234,20 +234,20 @@ public:
     /// Compute the intersection of the BRep with a line connected by 2 points
     virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& Tol) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Compute the intersection of the BRep with a line connected by 3 points
     /// Remark: P3 is the middle point, the line is interpolated by using Lagrange shape function
     virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const PointType& P3, const double& Tol) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Get/compute the normal vector at a point on the BRep
     virtual void GetNormal(const PointType& P, PointType& rNormal) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Get/compute the normal vector derivatives w.r.t the global point
@@ -257,13 +257,13 @@ public:
     ///     [d N[2] / d P[0], d N[2] / d P[1], d N[2] / d P[2]]
     virtual void GetNormalDerivatives(const PointType& P, Matrix& Derivatives) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Get/compute the tangential vectors at a point on the BRep
     virtual void GetTangent(const PointType& P, std::vector<PointType>& rTangentialVectors) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Get/compute the tangential vectors derivatives w.r.t the global point
@@ -280,13 +280,13 @@ public:
     /// ]
     virtual void GetTangentDerivatives(const PointType& P, std::vector<Matrix>& Derivatives) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// projects a point on the surface of brep
     virtual int ProjectOnSurface(const PointType& P, PointType& Proj) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// compute the derivatives of the projection point w.r.t to the original point.
@@ -296,7 +296,7 @@ public:
     ///     [d Proj[2] / d P[0], d Proj[2] / d P[1], d Proj[2] / d P[2]]
     virtual void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// Intersect the BRep with a geometry
@@ -338,7 +338,7 @@ public:
             KRATOS_WATCH(in_list.size())
             KRATOS_WATCH(out_list.size())
             KRATOS_WATCH(this->GetTolerance())
-            KRATOS_THROW_ERROR(std::logic_error, "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.", "")
+            KRATOS_ERROR << "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.";
         }
         else
         {

@@ -404,7 +404,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     /************* EXPORT INTERFACE FOR LEVEL SET *****************/
     /**************************************************************/
 
-    double(LevelSet::*LevelSet_pointer_to_GetValue)(const double&, const double&, const double&) const = &LevelSet::GetValue;
+    double(LevelSet::*LevelSet_pointer_to_GetValue)(const double, const double, const double) const = &LevelSet::GetValue;
     double(LevelSet::*LevelSet_pointer_to_GetValueAtPoint)(const LevelSet::PointType&) const = &LevelSet::GetValue;
 
     class_<LevelSet, LevelSet::Pointer, boost::noncopyable, bases<FunctionR3R1, BRep> >

@@ -115,25 +115,25 @@ public:
     /// inherit from Function
     OutputType GetValue(const InputType& t) const override
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling abstract function";
     }
 
     /// inherit from Function
     OutputType GetDerivative(const int& component, const InputType& t) const override
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling abstract function";
     }
 
     /// inherit from Function
     OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const override
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling abstract function";
     }
 
     /// inherit from Function
     BaseType::Pointer GetDiffFunction(const int& component) const override
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling abstract function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling abstract function";
     }
 
     /******************** SPECIFIC CURVE OPERATIONS **********************/

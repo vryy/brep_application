@@ -25,7 +25,7 @@ namespace Kratos
 {
 
 void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayType>& SamplingLocalPoints,
-        const GeometryType& r_geom, const std::size_t& nsampling)
+        const GeometryType& r_geom, const std::size_t nsampling)
 {
     if (r_geom.GetGeometryFamily() == GeometryData::KratosGeometryFamily::Kratos_Triangle )
     {
@@ -172,7 +172,7 @@ void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayTy
 
 template<int TFrame>
 void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
-        const GeometryType& r_geom, const std::size_t& nsampling)
+        const GeometryType& r_geom, const std::size_t nsampling)
 {
     std::vector<CoordinatesArrayType> SamplingLocalPoints;
 
@@ -195,7 +195,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
 }
 
 void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
-        const PointType& StartPoint, const PointType& EndPoint, const std::size_t& nsampling)
+        const PointType& StartPoint, const PointType& EndPoint, const std::size_t nsampling)
 {
     SamplingPoints.resize(nsampling + 1);
 
@@ -209,7 +209,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
 
 void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
         const PointType& rCenter, const PointType& rNormal,
-        const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial)
+        const double radius, const std::size_t nsampling_axial, const std::size_t nsampling_radial)
 {
     PointType zvec;
     zvec[0] = 0.0;
@@ -224,7 +224,7 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
 
 void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
         const PointType& rCenter, const PointType& rTangent1, const PointType& rTangent2,
-        const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial)
+        const double radius, const std::size_t nsampling_axial, const std::size_t nsampling_radial)
 {
     const double pi = 4.0 * std::atan(1.0);
 
@@ -249,8 +249,8 @@ void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoi
 BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateLineElements(ModelPart& r_model_part,
         const std::vector<PointType>& sampling_points,
         const std::string& sample_element_name,
-        const int& type, // if 1: generate L2 elements; 2: L3 elements;
-        const bool& close, // if false: open loop; true: close loop
+        const int type, // if 1: generate L2 elements; 2: L3 elements;
+        const bool close, // if false: open loop; true: close loop
         Properties::Pointer pProperties)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
@@ -281,8 +281,8 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateLineElements(ModelPa
 BRepMeshUtility::ConditionMeshInfoType BRepMeshUtility::CreateLineConditions(ModelPart& r_model_part,
         const std::vector<PointType>& sampling_points,
         const std::string& sample_condition_name,
-        const int& type, // if 1: generate L2 elements; 2: L3 elements;
-        const bool& close, // if false: open loop; true: close loop
+        const int type, // if 1: generate L2 elements; 2: L3 elements;
+        const bool close, // if false: open loop; true: close loop
         Properties::Pointer pProperties)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
@@ -312,10 +312,10 @@ BRepMeshUtility::ConditionMeshInfoType BRepMeshUtility::CreateLineConditions(Mod
 
 BRepMeshUtility::ConditionMeshInfoSimpleType BRepMeshUtility::CreateTriangleConditions(ModelPart& r_model_part,
         const std::string& sample_condition_name,
-        const int& type, // if 1: generate T3 elements; 2: T6 elements;
+        const int type, // if 1: generate T3 elements; 2: T6 elements;
         const PointType& rCenter, const PointType& rNormal,
-        const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-        const int& activation_level,
+        const double radius, const std::size_t nsampling_axial, const std::size_t nsampling_radial,
+        const int activation_level,
         Properties::Pointer pProperties)
 {
     std::vector<PointType> SamplingPoints;
@@ -361,9 +361,9 @@ BRepMeshUtility::ConditionMeshInfoSimpleType BRepMeshUtility::CreateTriangleCond
 BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_model_part,
         const std::vector<std::vector<PointType> >& sampling_points,
         const std::string& sample_element_name,
-        const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
-        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
-        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+        const int type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+        const int close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+        const int activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
         Properties::Pointer pProperties)
 {
     int initial_activation_level = 0;
@@ -373,10 +373,10 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateQuadElements(ModelPa
 BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateQuadElements(ModelPart& r_model_part,
         const std::vector<std::vector<PointType> >& sampling_points,
         const std::string& sample_element_name,
-        const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
-        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
-        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
-        const int& initial_activation_level,
+        const int type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+        const int close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+        const int activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+        const int initial_activation_level,
         Properties::Pointer pProperties)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
@@ -392,11 +392,11 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateQuadElements(ModelPa
 BRepMeshUtility::ConditionMeshInfoType BRepMeshUtility::CreateQuadConditions(ModelPart& r_model_part,
         const std::vector<std::vector<PointType> >& sampling_points,
         const std::string& sample_condition_name,
-        const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
-        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
-        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
-        const int& initial_activation_level,
-        const bool& reverse,
+        const int type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+        const int close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+        const int activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+        const int initial_activation_level,
+        const bool reverse,
         Properties::Pointer pProperties)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
@@ -416,11 +416,11 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
                                     const std::string& sample_element_name,
                                     std::size_t& last_node_id,
                                     std::size_t& last_element_id,
-                                    const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
-                                    const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
-                                    const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
-                                    const int& initial_activation_level,
-                                    const bool& reverse,
+                                    const int type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+                                    const int close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+                                    const int activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+                                    const int initial_activation_level,
+                                    const bool reverse,
                                     Properties::Pointer pProperties)
 {
     std::size_t last_node_id_old = last_node_id;
@@ -714,7 +714,7 @@ BRepMeshUtility::CreateQuadEntities(ModelPart& r_model_part,
 BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPart& r_model_part,
         const std::vector<std::vector<std::vector<PointType> > >& sampling_points,
         const std::string& sample_element_name,
-        const int& type, // if 1: generate H8 elements; 2: H20 elements; 3: H27 elements
+        const int type, // if 1: generate H8 elements; 2: H20 elements; 3: H27 elements
         Properties::Pointer pProperties)
 {
     std::size_t last_node_id = BRepUtility::GetLastNodeId(r_model_part);
@@ -1071,8 +1071,8 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     const TEntityType& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& type, // if 1: generate L2 elements; 2, 3: L3 elements; from 13 to 19: 13 (L4 element), 14 (L5 element), ...
-    const bool& close, // if false: open loop; true: close loop
+    const int type, // if 1: generate L2 elements; 2, 3: L3 elements; from 13 to 19: 13 (L4 element), 14 (L5 element), ...
+    const bool close, // if false: open loop; true: close loop
     Properties::Pointer pProperties)
 {
     if (sampling_points.size() < 3)
@@ -1243,8 +1243,8 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     const TEntityType& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& type, // if 1: generate T3 elements; 2: T6 elements;
-    const int& activation_level,
+    const int type, // if 1: generate T3 elements; 2: T6 elements;
+    const int activation_level,
     Properties::Pointer pProperties)
 {
     if (sampling_points.size() < 3)
@@ -1380,7 +1380,7 @@ std::tuple<ModelPart::NodesContainerType, TEntitiesContainerType> BRepMeshUtilit
     const TEntityType& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& activation_level,
+    const int activation_level,
     Properties::Pointer pProperties)
 {
     if (!KratosComponents<VariableData>::Has("ACTIVATION_LEVEL"))
@@ -1440,7 +1440,7 @@ ModelPart::ConditionsContainerType BRepMeshUtility::CreateConditionsOnSurface(Mo
         const BRep& r_brep,
         std::size_t& last_node_id, std::size_t& last_cond_id,
         const Condition& rCloneCondition, Properties::Pointer pProperties,
-        const bool& add_to_model_part)
+        const bool add_to_model_part)
 {
     ModelPart::ConditionsContainerType NewConditions;
     CreateEntitiesOnSurface<Condition, ModelPart::ConditionsContainerType>(NewConditions,
@@ -1473,8 +1473,8 @@ BRepMeshUtility::CreateElementsByProjectingOnSurface(ModelPart& r_model_part,
         std::size_t& last_node_id, std::size_t& last_condition_id, std::size_t& last_element_id,
         const Condition& rCloneCondition, const Element& rCloneElement,
         Properties::Pointer pProperties,
-        const bool& create_condition,
-        const bool& add_to_model_part)
+        const bool create_condition,
+        const bool add_to_model_part)
 {
     ModelPart::ElementsContainerType NewElements;
     ModelPart::ConditionsContainerType NewConditions;
@@ -1583,7 +1583,7 @@ void BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface(TSurfaceEnti
         const BRep& r_brep,
         std::size_t& last_node_id, std::size_t& last_condition_id, std::size_t& last_element_id,
         const TSurfaceEntityType& rCloneSurfaceEntity, const TEntityType& rCloneEntity,
-        const bool& create_condition, Properties::Pointer pProperties)
+        const bool create_condition, Properties::Pointer pProperties)
 {
     // collecting the nodes
     std::unordered_set<std::size_t> list_nodes;
@@ -1808,8 +1808,8 @@ BRepMeshUtility::CreateLineEntities<Element, ModelPart::ElementsContainerType>(
     const Element& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& type, // if 1: generate L2 elements; 2: L3 elements;
-    const bool& close, // if false: open loop; true: close loop
+    const int type, // if 1: generate L2 elements; 2: L3 elements;
+    const bool close, // if false: open loop; true: close loop
     Properties::Pointer pProperties);
 
 template
@@ -1821,8 +1821,8 @@ BRepMeshUtility::CreateLineEntities<Condition, ModelPart::ConditionsContainerTyp
     const Condition& rCloneCondition,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& type, // if 1: generate L2 elements; 2: L3 elements;
-    const bool& close, // if false: open loop; true: close loop
+    const int type, // if 1: generate L2 elements; 2: L3 elements;
+    const bool close, // if false: open loop; true: close loop
     Properties::Pointer pProperties);
 
 ///
@@ -1836,8 +1836,8 @@ BRepMeshUtility::CreateTriangleEntities<Element, ModelPart::ElementsContainerTyp
     const Element& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& type, // if 1: generate T3 elements; 2: T6 elements;
-    const int& activation_level,
+    const int type, // if 1: generate T3 elements; 2: T6 elements;
+    const int activation_level,
     Properties::Pointer pProperties);
 
 template
@@ -1849,8 +1849,8 @@ BRepMeshUtility::CreateTriangleEntities<Condition, ModelPart::ConditionsContaine
     const Condition& rCloneCondition,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& type, // if 1: generate T3 elements; 2: T6 elements;
-    const int& activation_level,
+    const int type, // if 1: generate T3 elements; 2: T6 elements;
+    const int activation_level,
     Properties::Pointer pProperties);
 
 template
@@ -1863,7 +1863,7 @@ BRepMeshUtility::CreateTriangleEntities(
     const Condition& rCloneElement,
     std::size_t& last_node_id,
     std::size_t& last_element_id,
-    const int& activation_level,
+    const int activation_level,
     Properties::Pointer pProperties);
 
 ///
@@ -1876,11 +1876,11 @@ BRepMeshUtility::CreateQuadEntities<Element, ModelPart::ElementsContainerType>(M
         const std::string& sample_element_name,
         std::size_t& last_node_id,
         std::size_t& last_element_id,
-        const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
-        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
-        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
-        const int& initial_activation_level,
-        const bool& reverse,
+        const int type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+        const int close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+        const int activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+        const int initial_activation_level,
+        const bool reverse,
         Properties::Pointer pProperties);
 
 template
@@ -1891,11 +1891,11 @@ BRepMeshUtility::CreateQuadEntities<Condition, ModelPart::ConditionsContainerTyp
         const std::string& sample_element_name,
         std::size_t& last_node_id,
         std::size_t& last_element_id,
-        const int& type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
-        const int& close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
-        const int& activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
-        const int& initial_activation_level,
-        const bool& reverse,
+        const int type, // if 1: generate Q4 elements; 2: Q8 elements; 3: Q9 elements
+        const int close_dir, // if 0: open loop; 1: close on 1st dir; 2: close on 2nd dir
+        const int activation_dir, // if 0: no activation; 1: activation on 1st dir; 2: activation on 2nd dir
+        const int initial_activation_level,
+        const bool reverse,
         Properties::Pointer pProperties);
 
 ///
@@ -1919,12 +1919,12 @@ BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface<Condition, ModelP
                 const BRep& r_brep,
                 std::size_t& last_node_id, std::size_t& last_cond_id, std::size_t& last_elem_id,
                 const Condition& rCloneSurfaceEntity, const Element& rCloneEntity,
-                const bool& create_condition, Properties::Pointer pProperties);
+                const bool create_condition, Properties::Pointer pProperties);
 
 template void BRepMeshUtility::GenerateSamplingPoints<0>(std::vector<PointType>& SamplingPoints,
-        const GeometryType& r_geom, const std::size_t& nsampling);
+        const GeometryType& r_geom, const std::size_t nsampling);
 
 template void BRepMeshUtility::GenerateSamplingPoints<1>(std::vector<PointType>& SamplingPoints,
-        const GeometryType& r_geom, const std::size_t& nsampling);
+        const GeometryType& r_geom, const std::size_t nsampling);
 
 }  // namespace Kratos.
