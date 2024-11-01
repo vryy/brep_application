@@ -79,7 +79,7 @@ public:
         : BaseType(), mp_func_x(p_func_x), mp_func_y(p_func_y), mp_func_z(p_func_z)
     {
         DataValueContainer::SetValue(CURVE_LOWER_BOUND, -1.0);
-        DataValueContainer::SetValue(CURVE_LOWER_BOUND, 2.0);
+        DataValueContainer::SetValue(CURVE_UPPER_BOUND, 2.0);
         DataValueContainer::SetValue(CURVE_NUMBER_OF_SAMPLING, 10);
     }
 
