@@ -166,7 +166,8 @@ boost::python::list BRepMeshUtility_CreateElementsByProjectingOnSurface(BRepMesh
     return list_output;
 }
 
-boost::python::list TubeMesher_GetPoints(TubeMesher& dummy)
+template<typename TPointType>
+boost::python::list TubeMesher_GetPoints(TubeMesher<TPointType>& dummy)
 {
     boost::python::list point_list;
     for (std::size_t i = 0; i < dummy.GetPoints().size(); ++i)
@@ -176,7 +177,8 @@ boost::python::list TubeMesher_GetPoints(TubeMesher& dummy)
     return point_list;
 }
 
-boost::python::list TubeMesher_GetElements(TubeMesher& dummy)
+template<typename TPointType>
+boost::python::list TubeMesher_GetElements(TubeMesher<TPointType>& dummy)
 {
     boost::python::list element_list;
     for (std::size_t i = 0; i < dummy.GetElements().size(); ++i)
@@ -206,7 +208,8 @@ boost::python::list TubeMesher_GetElements(TubeMesher& dummy)
     return element_list;
 }
 
-boost::python::list TubeMesher_GetConditions(TubeMesher& dummy)
+template<typename TPointType>
+boost::python::list TubeMesher_GetConditions(TubeMesher<TPointType>& dummy)
 {
     boost::python::list condition_list;
     for (std::size_t i = 0; i < dummy.GetConditions().size(); ++i)
@@ -231,7 +234,8 @@ boost::python::list TubeMesher_GetConditions(TubeMesher& dummy)
     return condition_list;
 }
 
-boost::python::list TubeMesher_GetSlice1(TubeMesher& dummy, const std::size_t& slice,
+template<typename TPointType>
+boost::python::list TubeMesher_GetSlice1(TubeMesher<TPointType>& dummy, const std::size_t& slice,
         const std::size_t& layer, const std::size_t& sub_layer)
 {
     std::vector<std::vector<std::size_t> > conditions;
@@ -250,7 +254,8 @@ boost::python::list TubeMesher_GetSlice1(TubeMesher& dummy, const std::size_t& s
     return condition_list;
 }
 
-boost::python::list TubeMesher_GetSlice2(TubeMesher& dummy, const std::size_t& slice,
+template<typename TPointType>
+boost::python::list TubeMesher_GetSlice2(TubeMesher<TPointType>& dummy, const std::size_t& slice,
         const std::size_t& layer)
 {
     std::vector<std::vector<std::vector<std::size_t> > > conditions;
@@ -274,7 +279,8 @@ boost::python::list TubeMesher_GetSlice2(TubeMesher& dummy, const std::size_t& s
     return condition_list;
 }
 
-boost::python::list TubeMesher_GetRing(TubeMesher& dummy, const std::size_t& ring,
+template<typename TPointType>
+boost::python::list TubeMesher_GetRing(TubeMesher<TPointType>& dummy, const std::size_t& ring,
                                        const std::size_t& layer)
 {
     std::vector<std::vector<std::vector<std::size_t> > > elements;
@@ -298,16 +304,15 @@ boost::python::list TubeMesher_GetRing(TubeMesher& dummy, const std::size_t& rin
     return element_list;
 }
 
-class TubeMesherWrapper
+template<typename TPointType>
+struct TubeMesherWrapper
 {
-public:
-
-    static TubeMesher::Pointer initWrapper(const Curve::Pointer pCurve, boost::python::list r_list,
-                                           boost::python::list nsamping_layers,
-                                           const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-                                           const double& rotate_angle, const double& start_angle, const double& end_angle,
-                                           const double& tmin, const double& tmax,
-                                           const int& type, const std::size_t& last_node_id)
+    static typename TubeMesher<TPointType>::Pointer initWrapper(const Curve::Pointer pCurve, boost::python::list r_list,
+                                           boost::python::list nsampling_layers,
+                                           const std::size_t nsampling_axial, const std::size_t nsampling_radial,
+                                           const double rotate_angle, const double start_angle, const double end_angle,
+                                           const double tmin, const double tmax,
+                                           const int type, const std::size_t last_node_id)
     {
         std::vector<double> r_vec;
         for (int i = 0; i < boost::python::len(r_list); ++i)
@@ -315,13 +320,13 @@ public:
             r_vec.push_back(boost::python::extract<double>(r_list[i]));
         }
 
-        std::vector<std::size_t> nsamping_layers_vec;
-        for (int i = 0; i < boost::python::len(nsamping_layers); ++i)
+        std::vector<std::size_t> nsampling_layers_vec;
+        for (int i = 0; i < boost::python::len(nsampling_layers); ++i)
         {
-            nsamping_layers_vec.push_back(static_cast<std::size_t>(boost::python::extract<int>(nsamping_layers[i])));
+            nsampling_layers_vec.push_back(static_cast<std::size_t>(boost::python::extract<int>(nsampling_layers[i])));
         }
 
-        return TubeMesher::Pointer(new TubeMesher(pCurve, r_vec, nsamping_layers_vec, nsampling_axial, nsampling_radial,
+        return typename TubeMesher<TPointType>::Pointer(new TubeMesher<TPointType>(pCurve, r_vec, nsampling_layers_vec, nsampling_axial, nsampling_radial,
                                    rotate_angle, start_angle, end_angle, tmin, tmax, type, last_node_id));
     }
 };
@@ -376,19 +381,21 @@ void BRepApplication_AddUtilitiesToPython()
     .def("CreateElementsByProjectingOnSurface", &BRepMeshUtility_CreateElementsByProjectingOnSurface)
     ;
 
-    class_<TubeMesher, TubeMesher::Pointer, boost::noncopyable>
+    typedef typename Element::GeometryType::PointType::PointType PointType;
+
+    class_<TubeMesher<PointType>, typename TubeMesher<PointType>::Pointer, boost::noncopyable>
     ("TubeMesher", no_init)
-    .def("__init__", make_constructor(&TubeMesherWrapper::initWrapper))
-    .def("GetPoints", &TubeMesher_GetPoints)
-    .def("GetElements", &TubeMesher_GetElements)
-    .def("GetConditions", &TubeMesher_GetConditions)
-    .def("GetSlice", &TubeMesher_GetSlice1)
-    .def("GetSlice", &TubeMesher_GetSlice2)
-    .def("GetRing", &TubeMesher_GetRing)
-    .def("NumberOfLayers", &TubeMesher::NumberOfLayers)
-    .def("NumberOfSubLayers", &TubeMesher::NumberOfSubLayers)
-    .def("NumberOfRings", &TubeMesher::NumberOfRings)
-    .def("NumberOfSegments", &TubeMesher::NumberOfSegments)
+    .def("__init__", make_constructor(&TubeMesherWrapper<PointType>::initWrapper))
+    .def("GetPoints", &TubeMesher_GetPoints<PointType>)
+    .def("GetElements", &TubeMesher_GetElements<PointType>)
+    .def("GetConditions", &TubeMesher_GetConditions<PointType>)
+    .def("GetSlice", &TubeMesher_GetSlice1<PointType>)
+    .def("GetSlice", &TubeMesher_GetSlice2<PointType>)
+    .def("GetRing", &TubeMesher_GetRing<PointType>)
+    .def("NumberOfLayers", &TubeMesher<PointType>::NumberOfLayers)
+    .def("NumberOfSubLayers", &TubeMesher<PointType>::NumberOfSubLayers)
+    .def("NumberOfRings", &TubeMesher<PointType>::NumberOfRings)
+    .def("NumberOfSegments", &TubeMesher<PointType>::NumberOfSegments)
     ;
 
     void(Delaunay::*pointer_to_addPoint)(const double&, const double&) = &Delaunay::addPoint;
