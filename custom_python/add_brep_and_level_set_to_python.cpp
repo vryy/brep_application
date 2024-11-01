@@ -23,6 +23,7 @@
 #include "custom_algebra/or_brep.h"
 #include "custom_algebra/not_brep.h"
 #include "custom_algebra/natm_arc_brep.h"
+#include "custom_algebra/r_min_max_tube_brep.h"
 #ifdef BREP_APPLICATION_USE_OPENCASCADE
 #include "custom_algebra/occ_brep.h"
 #endif
@@ -533,6 +534,10 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def("SetReferenceCenter", &NATMArcBRep::SetReferenceCenter)
     .def("SetReferencePoint", &NATMArcBRep::SetReferencePoint)
     .def("AddArc", &NATMArcBRep::AddArc)
+    ;
+
+    class_<RminmaxTubeBRep, RminmaxTubeBRep::Pointer, bases<BRep>, boost::noncopyable>
+    ( "RminmaxTubeBRep", init<const BRep::Pointer, const Curve::Pointer, const double, const double>() )
     ;
 
 }
