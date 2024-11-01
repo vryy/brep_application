@@ -22,7 +22,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/element.h"
 #include "custom_algebra/curve/curve.h"
 #include "custom_algebra/level_set/distance_to_curve_level_set.h"
 
@@ -52,8 +51,9 @@ namespace Kratos
 
 /// Short class definition.
 /**
- * class to generate the mesh for lining and grouting
+ * Class to generate the mesh for lining and grouting with circular profile
  */
+template<typename TPointType>
 class TubeMesher
 {
 public:
@@ -63,11 +63,7 @@ public:
     /// Pointer definition of TubeMesher
     KRATOS_CLASS_POINTER_DEFINITION(TubeMesher);
 
-    typedef typename Element::GeometryType GeometryType;
-
-    typedef typename GeometryType::PointType NodeType;
-
-    typedef typename NodeType::PointType PointType;
+    typedef TPointType PointType;
 
     ///@}
     ///@name Life Cycle
@@ -75,14 +71,14 @@ public:
 
     /// Default constructor.
     TubeMesher(const Curve::Pointer pCurve, const std::vector<double>& r_list,
-               const std::vector<std::size_t>& nsamping_layers,
-               const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-               const double& rotate_angle, const double& start_angle, const double& end_angle,
-               const double& tmin, const double& tmax,
-               const int& type, const std::size_t& last_node_id)
+               const std::vector<std::size_t>& nsampling_layers,
+               const std::size_t nsampling_axial, const std::size_t nsampling_radial,
+               const double rotate_angle, const double start_angle, const double end_angle,
+               const double tmin, const double tmax,
+               const int type, const std::size_t last_node_id)
     {
-        mlayers = nsamping_layers.size();
-        msub_layers = nsamping_layers;
+        mlayers = nsampling_layers.size();
+        msub_layers = nsampling_layers;
         mrings = nsampling_axial;
         msegments = nsampling_radial;
 
@@ -99,7 +95,7 @@ public:
             mnodes = 27;
         }
 
-        melement_connectivities.resize(nsamping_layers.size());
+        melement_connectivities.resize(nsampling_layers.size());
         mcondition_connectivities.resize(r_list.size());
         mpoints.clear();
         std::size_t last_id = last_node_id;
@@ -115,15 +111,15 @@ public:
             last_id = last_node_id + mpoints.size();
 
             // create the points for each layer
-            for (std::size_t i = 0; i < nsamping_layers.size(); ++i)
+            for (std::size_t i = 0; i < nsampling_layers.size(); ++i)
             {
                 mcondition_connectivities[i + 1] = mcondition_connectivities[i];
 
-                melement_connectivities[i].resize(nsamping_layers[i]);
+                melement_connectivities[i].resize(nsampling_layers[i]);
 
-                for (std::size_t j = 0; j < nsamping_layers[i]; ++j)
+                for (std::size_t j = 0; j < nsampling_layers[i]; ++j)
                 {
-                    double r = r_list[i] + (r_list[i + 1] - r_list[i]) * (j + 1) / nsamping_layers[i];
+                    double r = r_list[i] + (r_list[i + 1] - r_list[i]) * (j + 1) / nsampling_layers[i];
 
                     DistanceToCurveLevelSet ls2(pCurve, r);
 
@@ -170,16 +166,16 @@ public:
             last_id = last_node_id + mpoints.size();
 
             // create the points for each layer
-            for (std::size_t i = 0; i < nsamping_layers.size(); ++i)
+            for (std::size_t i = 0; i < nsampling_layers.size(); ++i)
             {
                 mcondition_connectivities[i + 1] = mcondition_connectivities[i];
 
-                melement_connectivities[i].resize(nsamping_layers[i]);
+                melement_connectivities[i].resize(nsampling_layers[i]);
 
-                for (std::size_t j = 0; j < nsamping_layers[i]; ++j)
+                for (std::size_t j = 0; j < nsampling_layers[i]; ++j)
                 {
-                    double r1 = r_list[i] + (r_list[i + 1] - r_list[i]) * (j + 0.5) / nsamping_layers[i];
-                    double r2 = r_list[i] + (r_list[i + 1] - r_list[i]) * (j + 1) / nsamping_layers[i];
+                    double r1 = r_list[i] + (r_list[i + 1] - r_list[i]) * (j + 0.5) / nsampling_layers[i];
+                    double r2 = r_list[i] + (r_list[i + 1] - r_list[i]) * (j + 1) / nsampling_layers[i];
 
                     DistanceToCurveLevelSet ls1(pCurve, r1);
                     DistanceToCurveLevelSet ls2(pCurve, r2);
@@ -834,13 +830,15 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream, TubeMesher& rThis)
+template<typename TPointType>
+inline std::istream& operator >> (std::istream& rIStream, TubeMesher<TPointType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const TubeMesher& rThis)
+template<typename TPointType>
+inline std::ostream& operator << (std::ostream& rOStream, const TubeMesher<TPointType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
