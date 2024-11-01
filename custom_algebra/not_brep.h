@@ -115,65 +115,6 @@ public:
         return !mpBRep->IsInside(P);
     }
 
-    /// Check if a point is inside/outside of the BRep
-    /// The point will be interpolated in reference configuration
-    /// Since now C++ does not support virtual template function, this function must be separated to 2 functions
-    bool IsInside0(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
-    {
-        return !mpBRep->IsInside0(rGeometry, local_coords);
-    }
-
-    /// Check if a point is inside/outside of the BRep
-    /// The point will be interpolated in current configuration
-    bool IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
-    {
-        return !mpBRep->IsInside1(rGeometry, local_coords);
-    }
-
-    /// Check if a geometry is cut by the level set
-    /// 0: the cell is completely inside the domain bounded by level set
-    /// 1: completely outside
-    /// -1: the cell is cut by level set
-    int CutStatus(GeometryType& r_geom, const int& configuration) const final
-    {
-        int stat = mpBRep->CutStatus(r_geom, configuration);
-        return this->NotCutStatus(stat);
-    }
-
-    /// Check if a set of points is cut by the level set
-    /// 0: the cell is completely inside the domain bounded by level set
-    /// 1: completely outside
-    /// -1: the cell is cut by level set
-    int CutStatus(const std::vector<PointType>& r_points) const final
-    {
-        int stat = mpBRep->CutStatus(r_points);
-        return this->NotCutStatus(stat);
-    }
-
-    /// Check if a set of points is cut by the BRep
-    /// The geometry and the local information of the points are also provided.
-    /// This function allows the use of BRep defined on grid (nodes)
-    /// 0: the cell is completely inside the domain bounded by BRep
-    /// 1: completely outside
-    /// -1: the cell is cut by BRep
-    int CutStatus(const GeometryType& r_geom,
-                  const std::vector<CoordinatesArrayType>& r_local_points,
-                  const std::vector<PointType>& r_points) const final
-    {
-        int stat = mpBRep->CutStatus(r_geom, r_local_points, r_points);
-        return this->NotCutStatus(stat);
-    }
-
-    /// Check if a geometry is cut by the BRep by sampling the geometry
-    /// 0: the cell is completely inside the domain bounded by BRep
-    /// 1: completely outside
-    /// -1: the cell is cut by BRep
-    int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
-    {
-        int stat = mpBRep->CutStatusBySampling(r_geom, nsampling, configuration);
-        return this->NotCutStatus(stat);
-    }
-
     ///@}
     ///@name Access
     ///@{
@@ -190,7 +131,7 @@ public:
     std::string Info() const final
     {
         std::stringstream ss;
-        ss << "NOT operation of " << mpBRep->Info();
+        ss << "NOT of (" << mpBRep->Info() << ")";
         return ss.str();
     }
 
@@ -305,19 +246,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, NotBRep& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const NotBRep& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block
