@@ -15,16 +15,14 @@
 #define  KRATOS_NODAL_LEVEL_SET_H_INCLUDED
 
 // System includes
-#include <unordered_map>
-#include <fstream>
 
 // External includes
-#include <boost/progress.hpp>
 
 // Project includes
 #include "includes/model_part.h"
 #include "utilities/openmp_utils.h"
-#include "custom_algebra/level_set/level_set.h"
+#include "utilities/progress.h"
+#include "custom_algebra/level_set/interpolatory_nodal_level_set.h"
 #include "custom_utilities/brep_mesh_utility.h"
 #include "brep_application_variables.h"
 
@@ -58,7 +56,6 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
 /** As name suggested, this level set approximates the level set value by using interpolation.
  * Hence nodal level set values shall be pre-computed at node
  * To create a nodal level set, simply create an implicit level set function and then call this level set
@@ -66,7 +63,7 @@ namespace Kratos
  *  ls = CircularLevelSet(0.0, 0.0, 1.0)
  *  nls = NodalLevelSet(ls)
  */
-class NodalLevelSet : public LevelSet
+class NodalLevelSet : public InterpolatoryNodalLevelSet
 {
 public:
     ///@name Type Definitions
@@ -75,7 +72,7 @@ public:
     /// Pointer definition of NodalLevelSet
     KRATOS_CLASS_POINTER_DEFINITION(NodalLevelSet);
 
-    typedef LevelSet BaseType;
+    typedef InterpolatoryNodalLevelSet BaseType;
 
     typedef BaseType::GeometryType GeometryType;
 
@@ -150,25 +147,19 @@ public:
     /// + 1: compute nodal level set values and store to file
     /// + 2: read nodal set values from file
     /// + 3: read nodal set values using GetSolutionStepValue
-    void SetOperationMode(const int& opMode)
+    void SetOperationMode(const int opMode)
     {
         mOpMode = opMode;
     }
 
     /// Clone this level set
-    LevelSet::Pointer CloneLevelSet() const final
+    LevelSet::Pointer CloneLevelSet() const override
     {
         return LevelSet::Pointer(new NodalLevelSet(mpLevelSet->CloneLevelSet()));
     }
 
-    /// A utility function to use in Python interface to tell this is a nodal level set
-    bool IsNodalLevelSet() const
-    {
-        return true;
-    }
-
     /// Initialize the internal container to store the nodal level set values
-    void Initialize(const ModelPart::ElementsContainerType& rElements, const int& configuration)
+    virtual void Initialize(const ModelPart::ElementsContainerType& rElements, const int configuration)
     {
         mNodalNodalLevelSetValues.clear();
 
@@ -194,7 +185,7 @@ public:
             // TODO can we parallelize this process?
 
             /** serial calculation of the nodal level set values **/
-            // boost::progress_display progress(rElements.size());
+            // Kratos::progress_display progress(rElements.size());
             // for (ModelPart::ElementsContainerType::const_iterator it = rElements.begin(); it != rElements.end(); ++it)
             // {
             //     for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
@@ -231,7 +222,7 @@ public:
                 node_ids[cnt++] = it.first;
             }
 
-            // boost::progress_display progress(node_ids.size());
+            // Kratos::progress_display progress(node_ids.size());
             // for (auto it : node_ids)
             // {
             //     mNodalNodalLevelSetValues[it] = mpLevelSet->GetValue(X_coords[it], Y_coords[it], Z_coords[it]);
@@ -255,7 +246,7 @@ public:
             }
 
             // parallel calculation of nodal level set values
-            boost::progress_display progress(node_ids.size());
+            Kratos::progress_display progress(node_ids.size());
             #pragma omp parallel for
             for (int k = 0; k < number_of_threads; ++k)
             {
@@ -335,7 +326,7 @@ public:
     }
 
     /// Initialize the internal container to store the nodal level set values
-    void Initialize(const ModelPart::NodesContainerType& rNodes, const int& configuration)
+    void Initialize(const ModelPart::NodesContainerType& rNodes, const int configuration)
     {
 #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
@@ -350,7 +341,7 @@ public:
                 KRATOS_ERROR << "The master level set is not set";
             }
 
-            boost::progress_display progress(rNodes.size());
+            Kratos::progress_display progress(rNodes.size());
             if (configuration == 0)
             {
                 for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
@@ -390,152 +381,6 @@ public:
     }
 
     /// inherit from BRep
-    /// Check if a point is inside/outside of the BRep
-    inline bool IsInside0(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
-    {
-        double phi = this->CalculateOnPoint(rGeometry, local_coords);
-        return (phi < 0.0);
-    }
-
-    /// inherit from BRep
-    /// Check if a point is inside/outside of the BRep
-    bool IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
-    {
-        return this->IsInside0(rGeometry, local_coords);
-    }
-
-    /// inherit from BRep
-    /// Check if a geometry is cut by the BRep by sampling the geometry
-    int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
-    {
-        std::vector<CoordinatesArrayType> SamplingLocalPoints;
-        BRepMeshUtility::GenerateSamplingLocalPoints(SamplingLocalPoints, r_geom, nsampling);
-
-        const std::vector<PointType> dummy;
-
-        return this->CutStatus(r_geom, SamplingLocalPoints, dummy);
-    }
-
-    /// inherit from BRep
-    /// Check if a geometry is cut by the level set
-    int CutStatus(GeometryType& r_geom, const int& configuration) const final
-    {
-        std::vector<std::size_t> in_list, out_list, on_list;
-        for (std::size_t v = 0; v < r_geom.size(); ++v)
-        {
-            double phi = this->GetValue(r_geom[v]);
-            if (phi < -this->GetTolerance())
-            {
-                in_list.push_back(v);
-            }
-            else if (phi > this->GetTolerance())
-            {
-                out_list.push_back(v);
-            }
-            else
-            {
-                on_list.push_back(v);
-            }
-        }
-
-        int stat;
-        if (in_list.size() == 0 && out_list.size() == 0)
-        {
-            for (std::size_t v = 0; v < r_geom.size(); ++v)
-            {
-                KRATOS_WATCH(r_geom[v])
-            }
-            KRATOS_WATCH(in_list.size())
-            KRATOS_WATCH(out_list.size())
-            KRATOS_WATCH(on_list.size())
-            KRATOS_WATCH(this->GetTolerance())
-            KRATOS_ERROR << "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.";
-        }
-        else
-        {
-            if (in_list.size() == 0)
-            {
-                stat = BRep::_OUT;
-                return stat;
-            }
-
-            if (out_list.size() == 0)
-            {
-                stat = BRep::_IN;
-                return stat;
-            }
-
-            stat = BRep::_CUT;
-            return stat;
-        }
-
-        return -99; // can't come here. Just to silence the compiler.
-    }
-
-    /// inherit from BRep
-    /// Check if a set of points is cut by the BRep
-    /// The geometry and the local information of the points are also provided.
-    /// This function allows the use of BRep defined on grid (nodes)
-    /// 0: the cell is completely inside the domain bounded by BRep
-    /// 1: completely outside
-    /// -1: the cell is cut by BRep
-    int CutStatus(const GeometryType& r_geom,
-                  const std::vector<CoordinatesArrayType>& r_local_points,
-                  const std::vector<PointType>& r_points) const final
-    {
-        std::vector<std::size_t> in_list, out_list, on_list;
-        for (std::size_t v = 0; v < r_local_points.size(); ++v)
-        {
-            double phi = this->CalculateOnPoint(r_geom, r_local_points[v]);
-            if (phi < -this->GetTolerance())
-            {
-                in_list.push_back(v);
-            }
-            else if (phi > this->GetTolerance())
-            {
-                out_list.push_back(v);
-            }
-            else
-            {
-                on_list.push_back(v);
-            }
-        }
-
-        int stat;
-        if (in_list.size() == 0 && out_list.size() == 0)
-        {
-            for (std::size_t v = 0; v < r_local_points.size(); ++v)
-            {
-                KRATOS_WATCH(r_local_points[v])
-            }
-            KRATOS_WATCH(in_list.size())
-            KRATOS_WATCH(out_list.size())
-            KRATOS_WATCH(on_list.size())
-            KRATOS_WATCH(this->GetTolerance())
-            KRATOS_ERROR << "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.";
-        }
-        else
-        {
-            if (in_list.size() == 0)
-            {
-                stat = BRep::_OUT;
-                return stat;
-            }
-
-            if (out_list.size() == 0)
-            {
-                stat = BRep::_IN;
-                return stat;
-            }
-
-            stat = BRep::_CUT;
-            return stat;
-        }
-
-        return -99; // can't come here. Just to silence the compiler.
-    }
-
-    /// inherit from BRep
     /// projects a point on the surface of level_set
     int ProjectOnSurface(const PointType& P, PointType& Proj) const final
     {
@@ -566,7 +411,7 @@ public:
     }
 
     /// Get level set value at a node
-    double GetValue(const NodeType& rNode) const
+    double GetValue(const NodeType& rNode) const override
     {
         auto it = mNodalNodalLevelSetValues.find(rNode.Id());
 
@@ -581,12 +426,6 @@ public:
         }
     }
 
-    /// Get level set value at integration points of element
-    void CalculateOnIntegrationPoints(Element::Pointer pElement, std::vector<double>& rValues) const
-    {
-        return this->CalculateOnIntegrationPoints(pElement->GetGeometry(), pElement->GetIntegrationMethod(), rValues);
-    }
-
     ///@}
     ///@name Inquiry
     ///@{
@@ -596,7 +435,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const final
+    std::string Info() const override
     {
         return "Nodal Level Set";
     }
@@ -691,72 +530,6 @@ private:
     ///@name Private Operations
     ///@{
 
-    /// Get level set value at integration points of geometry
-    void CalculateOnIntegrationPoints(const GeometryType& rGeometry, const IntegrationMethod& ThisIntegrationMethod,
-                                      std::vector<double>& rValues) const
-    {
-        // collect the nodal values
-        std::vector<double> nodal_values(rGeometry.size());
-
-        for (std::size_t i = 0; i < rGeometry.size(); ++i)
-        {
-            auto it = mNodalNodalLevelSetValues.find(rGeometry[i].Id());
-
-            if (it == mNodalNodalLevelSetValues.end())
-            {
-                KRATOS_ERROR << "Error on " << __FUNCTION__ << ": Nodal level set value at node " << rGeometry[i].Id() << " is not assigned";
-            }
-
-            nodal_values[i] = it->second;
-        }
-
-        const GeometryType::IntegrationPointsArrayType& integration_points = rGeometry.IntegrationPoints( ThisIntegrationMethod );
-
-        const Matrix& Ncontainer = rGeometry.ShapeFunctionsValues( ThisIntegrationMethod );
-
-        rValues.resize(integration_points.size());
-
-        for (std::size_t j = 0; j < integration_points.size(); ++j)
-        {
-            rValues[j] = 0.0;
-
-            for (std::size_t i = 0; i < rGeometry.size(); ++i)
-            {
-                rValues[j] += Ncontainer(j, i) * nodal_values[i];
-            }
-        }
-    }
-
-    /// Get level set value at point in geometry
-    double CalculateOnPoint(const GeometryType& rGeometry, const CoordinatesArrayType& rLocalPoint) const
-    {
-        // collect the nodal values
-        std::vector<double> nodal_values(rGeometry.size());
-
-        for (std::size_t i = 0; i < rGeometry.size(); ++i)
-        {
-            auto it = mNodalNodalLevelSetValues.find(rGeometry[i].Id());
-
-            if (it == mNodalNodalLevelSetValues.end())
-            {
-                KRATOS_ERROR << "Error on " << __FUNCTION__ << ": Nodal level set value at node " << rGeometry[i].Id() << " is not assigned";
-            }
-
-            nodal_values[i] = it->second;
-        }
-
-        Vector Ncontainer;
-        rGeometry.ShapeFunctionsValues( Ncontainer, rLocalPoint );
-
-        double result = 0.0;
-        for (std::size_t i = 0; i < rGeometry.size(); ++i)
-        {
-            result += Ncontainer(i) * nodal_values[i];
-        }
-
-        return result;
-    }
-
     ///@}
     ///@name Private  Access
     ///@{
@@ -785,29 +558,10 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, NodalLevelSet& rThis)
-{
-    return rIStream;
-}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const NodalLevelSet& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rThis.PrintData(rOStream);
-    rOStream << std::endl;
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block
 
 }  // namespace Kratos.
-
-#ifdef ENABLE_PROFILING
-#undef ENABLE_PROFILING
-#endif
 
 #endif // KRATOS_NODAL_LEVEL_SET_H_INCLUDED  defined
