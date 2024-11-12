@@ -23,7 +23,6 @@
 #include "utilities/openmp_utils.h"
 #include "utilities/progress.h"
 #include "custom_algebra/level_set/interpolatory_nodal_level_set.h"
-#include "custom_utilities/brep_mesh_utility.h"
 #include "brep_application_variables.h"
 
 #define ENABLE_PROFILING
@@ -88,14 +87,6 @@ public:
     ///@name Life Cycle
     ///@{
 
-    /// Default constructor.
-    NodalLevelSet()
-        : BaseType()
-        , mpLevelSet(NULL)
-        , mOpMode(0)
-        , mPostfix("nodal_level_set_values")
-    {}
-
     /// Constructor with level set
     NodalLevelSet(LevelSet::Pointer pLevelSet)
         : BaseType()
@@ -110,7 +101,7 @@ public:
         , mpLevelSet(rOther.mpLevelSet)
         , mOpMode(rOther.mOpMode)
         , mPostfix(rOther.mPostfix)
-        , mNodalNodalLevelSetValues(rOther.mNodalNodalLevelSetValues)
+        , mNodalLevelSetValues(rOther.mNodalLevelSetValues)
     {}
 
     /// Destructor.
@@ -161,7 +152,7 @@ public:
     /// Initialize the internal container to store the nodal level set values
     virtual void Initialize(const ModelPart::ElementsContainerType& rElements, const int configuration)
     {
-        mNodalNodalLevelSetValues.clear();
+        mNodalLevelSetValues.clear();
 
         if ((mOpMode == 0) || (mOpMode == 1))
         {
@@ -174,31 +165,21 @@ public:
             double start = OpenMPUtils::GetCurrentTime();
 #endif
 
-            // std::set<std::size_t> nodes;
-            // for (ModelPart::ElementsContainerType::const_iterator it = rElements.begin(); it != rElements.end(); ++it)
-            // {
-            //     for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
-            //         nodes.insert(it->GetGeometry()[i].Id());
-            // }
-            // KRATOS_WATCH(nodes.size())
-
-            // TODO can we parallelize this process?
-
+#ifndef _OPENMP
             /** serial calculation of the nodal level set values **/
-            // Kratos::progress_display progress(rElements.size());
-            // for (ModelPart::ElementsContainerType::const_iterator it = rElements.begin(); it != rElements.end(); ++it)
-            // {
-            //     for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
-            //     {
-            //         if (mNodalNodalLevelSetValues.find(it->GetGeometry()[i].Id()) == mNodalNodalLevelSetValues.end())
-            //         {
-            //             // std::cout << "compute for node " << it->GetGeometry()[i].Id() << std::endl;
-            //             mNodalNodalLevelSetValues[it->GetGeometry()[i].Id()] = mpLevelSet->GetValue(it->GetGeometry()[i].GetInitialPosition());
-            //         }
-            //     }
-            //     ++progress;
-            // }
-
+            Kratos::progress_display progress(rElements.size());
+            for (ModelPart::ElementsContainerType::const_iterator it = rElements.begin(); it != rElements.end(); ++it)
+            {
+                for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
+                {
+                    if (mNodalLevelSetValues.find(it->GetGeometry()[i].Id()) == mNodalLevelSetValues.end())
+                    {
+                        mNodalLevelSetValues[it->GetGeometry()[i].Id()] = mpLevelSet->GetValue(it->GetGeometry()[i].GetInitialPosition());
+                    }
+                }
+                ++progress;
+            }
+#else
             /** multithreaded calculation of the nodal level set values **/
 
             // collect all the nodes and coordinates
@@ -225,7 +206,7 @@ public:
             // Kratos::progress_display progress(node_ids.size());
             // for (auto it : node_ids)
             // {
-            //     mNodalNodalLevelSetValues[it] = mpLevelSet->GetValue(X_coords[it], Y_coords[it], Z_coords[it]);
+            //     mNodalLevelSetValues[it] = mpLevelSet->GetValue(X_coords[it], Y_coords[it], Z_coords[it]);
             //     ++progress;
             // }
 
@@ -266,9 +247,10 @@ public:
                 for (std::size_t i = node_partition[k]; i < node_partition[k + 1]; ++i)
                 {
                     node_id = node_ids[i];
-                    mNodalNodalLevelSetValues[node_id] = nodal_values[k][cnt1++];
+                    mNodalLevelSetValues[node_id] = nodal_values[k][cnt1++];
                 }
             }
+#endif
 
             if (mOpMode == 1)
             {
@@ -279,7 +261,7 @@ public:
                 DataFile.open(filename.c_str());
                 DataFile.precision(15);
                 DataFile.setf(std::ios_base::scientific, std::ios_base::floatfield);
-                for (auto it = mNodalNodalLevelSetValues.begin(); it != mNodalNodalLevelSetValues.end(); ++it)
+                for (auto it = mNodalLevelSetValues.begin(); it != mNodalLevelSetValues.end(); ++it)
                 {
                     DataFile << it->first << " " << it->second << std::endl;
                 }
@@ -312,12 +294,12 @@ public:
                     i = 0;
                     std::size_t node_id = std::atoi(prev_word.c_str());
                     double value = std::atof(word.c_str());
-                    mNodalNodalLevelSetValues[node_id] = value;
+                    mNodalLevelSetValues[node_id] = value;
                 }
             }
             DataFile.close();
             std::cout << "Read nodal level set values from " << filename << " completed, "
-                      << mNodalNodalLevelSetValues.size() << " values are read" << std::endl;
+                      << mNodalLevelSetValues.size() << " values are read" << std::endl;
         }
         else
         {
@@ -332,7 +314,7 @@ public:
         double start = OpenMPUtils::GetCurrentTime();
 #endif
 
-        mNodalNodalLevelSetValues.clear();
+        mNodalLevelSetValues.clear();
 
         if (mOpMode == 0)
         {
@@ -346,7 +328,7 @@ public:
             {
                 for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
                 {
-                    mNodalNodalLevelSetValues[it->Id()] = mpLevelSet->GetValue(it->GetInitialPosition());
+                    mNodalLevelSetValues[it->Id()] = mpLevelSet->GetValue(it->GetInitialPosition());
                     ++progress;
                 }
             }
@@ -354,7 +336,7 @@ public:
             {
                 for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
                 {
-                    mNodalNodalLevelSetValues[it->Id()] = mpLevelSet->GetValue(it->X(), it->Y(), it->Z());
+                    mNodalLevelSetValues[it->Id()] = mpLevelSet->GetValue(it->X(), it->Y(), it->Z());
                     ++progress;
                 }
             }
@@ -371,7 +353,7 @@ public:
         {
             for (ModelPart::NodesContainerType::const_iterator it = rNodes.begin(); it != rNodes.end(); ++it)
             {
-                mNodalNodalLevelSetValues[it->Id()] = it->GetSolutionStepValue(LEVEL_SET_VALUE);
+                mNodalLevelSetValues[it->Id()] = it->GetSolutionStepValue(LEVEL_SET_VALUE);
             }
         }
         else
@@ -413,17 +395,62 @@ public:
     /// Get level set value at a node
     double GetValue(const NodeType& rNode) const override
     {
-        auto it = mNodalNodalLevelSetValues.find(rNode.Id());
+        auto it = mNodalLevelSetValues.find(rNode.Id());
 
-        if (it != mNodalNodalLevelSetValues.end())
+        if (it != mNodalLevelSetValues.end())
         {
             return it->second;
         }
         else
         {
-            std::cout << "WARNING: node " << rNode.Id() << " does not have level set value. Consider to initialize first the model_part" << std::endl;
+            KRATOS_ERROR << "Node " << rNode.Id() << " does not have level set value." << std::endl;
             return 0.0;
         }
+    }
+
+    /// Set value of internal variable
+    void SetValue(const Variable<bool>& rVariable, const bool& rValue) override
+    {
+        mpLevelSet->SetValue(rVariable, rValue);
+    }
+
+    /// Set value of internal variable
+    void SetValue(const Variable<int>& rVariable, const int& rValue) override
+    {
+        mpLevelSet->SetValue(rVariable, rValue);
+    }
+
+    /// Set value of internal variable
+    void SetValue(const Variable<double>& rVariable, const double& rValue) override
+    {
+        mpLevelSet->SetValue(rVariable, rValue);
+    }
+
+    /// Get value of internal variable
+    bool& GetValue(const Variable<bool>& rThisVariable, bool& rValue) const override
+    {
+        if (rThisVariable == IS_NODAL_LEVEL_SET)
+        {
+            rValue = true;
+        }
+        else
+        {
+            rValue = false;
+        }
+
+        return rValue;
+    }
+
+    /// Get value of internal variable
+    int& GetValue(const Variable<int>& rThisVariable, int& rValue) const override
+    {
+        return mpLevelSet->GetValue(rThisVariable, rValue);
+    }
+
+    /// Get value of internal variable
+    double& GetValue(const Variable<double>& rThisVariable, double& rValue) const override
+    {
+        return mpLevelSet->GetValue(rThisVariable, rValue);
     }
 
     ///@}
@@ -464,7 +491,7 @@ public:
         }
 
         rOStream << "Nodal level set values:" << std::endl;
-        for (auto it = mNodalNodalLevelSetValues.begin(); it != mNodalNodalLevelSetValues.end(); ++it)
+        for (auto it = mNodalLevelSetValues.begin(); it != mNodalLevelSetValues.end(); ++it)
         {
             rOStream << " " << it->first << ": " << it->second << std::endl;
         }
@@ -518,7 +545,7 @@ private:
 
     // an internal container to store the level set values at nodes
     LevelSet::Pointer mpLevelSet;
-    std::unordered_map<std::size_t, double> mNodalNodalLevelSetValues;
+    std::unordered_map<std::size_t, double> mNodalLevelSetValues;
 
     int mOpMode;
 
@@ -563,5 +590,7 @@ private:
 ///@} addtogroup block
 
 }  // namespace Kratos.
+
+#undef ENABLE_PROFILING
 
 #endif // KRATOS_NODAL_LEVEL_SET_H_INCLUDED  defined
