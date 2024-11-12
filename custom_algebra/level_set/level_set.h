@@ -122,17 +122,9 @@ public:
     ///@name Access
     ///@{
 
-    /// inherit from BRep
-    std::size_t WorkingSpaceDimension() const override
-    {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
-    }
-
-    /// inherit from BRep
-    std::size_t LocalSpaceDimension() const override
-    {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
-    }
+    using BRep::LocalSpaceDimension;
+    using BRep::WorkingSpaceDimension;
+    using BRep::GetValue;
 
     /// Get level set value at a point
     double GetValue(const double X, const double Y, const double Z) const
@@ -154,12 +146,12 @@ public:
     /// Get level set value at a point
     virtual double GetValue(const PointType& P) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
 //    virtual double GetValue(GeometryType& rGeometry, const CoordinatesArrayType& rLocalPoint) const
 //    {
-//        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+//        KRATOS_ERROR << "Calling the base class";
 //    }
 
     /// Compute the gradient at a point, i.e. [d Phi / dX, d Phi / dY, d Phi / dZ]
@@ -182,7 +174,7 @@ public:
     /// Get the gradient at point
     virtual Vector GetGradient(const PointType& P) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
     /// compute the derivatives of the gradient w.r.t the global point
@@ -191,12 +183,12 @@ public:
     ///  d^2 Phi / dX dZ, d^2 Phi / dY dZ, d^2 Phi / d Z^2]
     virtual Matrix GetGradientDerivatives(const PointType& P) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class";
     }
 
 //    virtual Vector GetGradient(GeometryType& rGeometry, const CoordinatesArrayType& rLocalPoint) const
 //    {
-//        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
+//        KRATOS_ERROR << "Calling the base class";
 //    }
 
     /// inherit from BRep
@@ -371,21 +363,8 @@ public:
         Derivatives = this->GetGradientDerivatives(P);
     }
 
-    /// projects a point on the surface of level_set
-    int ProjectOnSurface(const PointType& P, PointType& Proj) const override
-    {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
-    }
-
-    /// compute the derivatives of the projection point w.r.t to the original point.
-    /// The derivatives are organized as;
-    ///     [d Proj[0] / d P[0], d Proj[0] / d P[1], d Proj[0] / d P[2]]
-    ///     [d Proj[1] / d P[0], d Proj[1] / d P[1], d Proj[1] / d P[2]]
-    ///     [d Proj[2] / d P[0], d Proj[2] / d P[1], d Proj[2] / d P[2]]
-    void ProjectionDerivatives(const PointType& P, Matrix& Derivatives) const override
-    {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the base class", __FUNCTION__)
-    }
+    using BRep::ProjectOnSurface;
+    using BRep::ProjectionDerivatives;
 
     ///@}
     ///@name Inquiry
@@ -503,7 +482,7 @@ private:
                 KRATOS_WATCH(out_list.size())
                 KRATOS_WATCH(on_list.size())
                 KRATOS_WATCH(tolerance)
-                KRATOS_THROW_ERROR(std::logic_error, "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.", "")
+                KRATOS_ERROR << "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.";
                 // std::cout << "!!!WARNING!!!The geometry is degenerated." << std::endl;
                 std::cout << "----------------------------------------" << std::endl;
                 return BRep::_INVALID; // geometry is degenerated
