@@ -182,7 +182,7 @@ public:
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
+    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
     {
         int stat1 = mpBRep1->CutStatusBySampling(r_geom, nsampling, configuration);
         int stat2 = mpBRep2->CutStatusBySampling(r_geom, nsampling, configuration);

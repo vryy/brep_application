@@ -90,7 +90,7 @@ int BRep::CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t& n
     return this->CutStatusBySampling(*p_geom, nsampling, configuration);
 }
 
-int BRep::CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const
+int BRep::CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const
 {
     std::vector<PointType> SamplingPoints;
     if (configuration == 0)

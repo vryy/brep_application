@@ -211,7 +211,7 @@ public:
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    virtual int CutStatusBySampling(GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const;
+    virtual int CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const;
 
     /// Compute the intersection of the BRep with a line
     virtual int Bisect(PointType& P, const std::vector<PointType>& Points, const double& Tol) const
