@@ -20,8 +20,11 @@
 #include "custom_algebra/section/polygonal_section.h"
 #include "custom_algebra/brep.h"
 #include "custom_algebra/and_brep.h"
+#include "custom_algebra/and_brep_2.h"
 #include "custom_algebra/or_brep.h"
+#include "custom_algebra/or_brep_2.h"
 #include "custom_algebra/not_brep.h"
+#include "custom_algebra/not_brep_2.h"
 #include "custom_algebra/natm_arc_brep.h"
 #include "custom_algebra/r_min_max_tube_brep.h"
 #ifdef BREP_APPLICATION_USE_OPENCASCADE
@@ -46,6 +49,7 @@
 #include "custom_algebra/level_set/difference_level_set.h"
 #include "custom_algebra/level_set/closest_level_set.h"
 #include "custom_algebra/level_set/distance_to_curve_level_set.h"
+#include "custom_algebra/level_set/r_min_max_tube_level_set.h"
 #include "custom_algebra/curve/curve.h"
 #include "custom_algebra/curve/parametric_curve.h"
 #include "custom_algebra/surface/parametric_surface.h"
@@ -165,9 +169,9 @@ void InverseLevelSet_SetLevelSet(InverseLevelSet& rDummy, LevelSet::Pointer p_le
     rDummy.pSetLevelSet(p_level_set);
 }
 
-template<class TLevelSel>
+template<class TLevelSet>
 boost::python::list LevelSet_CreateQ4Elements(
-    TLevelSel& rDummy,
+    TLevelSet& rDummy,
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
@@ -187,9 +191,9 @@ boost::python::list LevelSet_CreateQ4Elements(
     return Output;
 }
 
-template<class TLevelSel>
+template<class TLevelSet>
 boost::python::list LevelSet_CreateQ4ElementsClosedLoop(
-    TLevelSel& rDummy,
+    TLevelSet& rDummy,
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
@@ -205,9 +209,9 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoop(
     return Output;
 }
 
-template<class TLevelSel>
+template<class TLevelSet>
 boost::python::list LevelSet_CreateQ4ElementsClosedLoopWithRange(
-    TLevelSel& rDummy,
+    TLevelSet& rDummy,
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
@@ -225,9 +229,9 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoopWithRange(
     return Output;
 }
 
-template<class TLevelSel>
+template<class TLevelSet>
 boost::python::list LevelSet_CreateQ4ConditionsClosedLoopWithRange(
-    TLevelSel& rDummy,
+    TLevelSet& rDummy,
     ModelPart& r_model_part,
     const std::string& sample_condition_name,
     Properties::Pointer pProperties,
@@ -351,10 +355,14 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     int(BRep::*pointer_to_CutStatusGeometry)(Element::GeometryType::Pointer, const int&) const = &BRep::CutStatus;
     int(BRep::*pointer_to_CutStatusBySamplingElement)(Element::Pointer, const std::size_t&, const int&) const = &BRep::CutStatusBySampling;
     int(BRep::*pointer_to_CutStatusBySamplingGeometry)(Element::GeometryType::Pointer, const std::size_t&, const int&) const = &BRep::CutStatusBySampling;
+    void(BRep::*pointer_to_SetValueBool)(const Variable<bool>&, const bool&) = &BRep::SetValue;
+    void(BRep::*pointer_to_SetValueInt)(const Variable<int>&, const int&) = &BRep::SetValue;
+    void(BRep::*pointer_to_SetValueDouble)(const Variable<double>&, const double&) = &BRep::SetValue;
 
     class_<BRep, BRep::Pointer, boost::noncopyable>
     ( "BRep", init<>() )
     .add_property("Name", &BRep::Name, &BRep::SetName)
+    .add_property("Info", &BRep::Info)
     .add_property("Tolerance", &BRep::GetTolerance, &BRep::SetTolerance)
     .def("IsInside", &BRep_IsInside2)
     .def("IsInside", &BRep_IsInside3)
@@ -370,6 +378,13 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def("Intersect", &BRep_IntersectElement)
     .def("ProjectOnSurface", &BRep_ProjectOnSurface)
     .def("Clone", &BRep::CloneBRep)
+    .def("SetValue", pointer_to_SetValueBool)
+    .def("SetValue", pointer_to_SetValueInt)
+    .def("SetValue", pointer_to_SetValueDouble)
+    .def("GetValue", &BRep::GetValue<bool>)
+    .def("GetValue", &BRep::GetValue<int>)
+    .def("GetValue", &BRep::GetValue<double>)
+    .def("GetInternalBRep", &BRep::pBRep)
     .def_readonly("_CUT", &BRep::_CUT)
     .def_readonly("_IN", &BRep::_IN)
     .def_readonly("_OUT", &BRep::_OUT)
@@ -412,6 +427,9 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "LevelSet", init<>() )
     .def("GetValue", LevelSet_pointer_to_GetValue)
     .def("GetValue", LevelSet_pointer_to_GetValueAtPoint)
+    .def("GetValue", &LevelSet::GetValue<bool>)
+    .def("GetValue", &LevelSet::GetValue<int>)
+    .def("GetValue", &LevelSet::GetValue<double>)
     .def(self_ns::str(self))
     ;
 
@@ -493,17 +511,24 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def("CreateQ4ConditionsClosedLoop", &LevelSet_CreateQ4ConditionsClosedLoopWithRange<DistanceToCurveLevelSet>)
     ;
 
-    double(NodalLevelSet::*NodalLevelSet_pointer_to_GetValueAtNode)(const NodalLevelSet::NodeType&) const = &NodalLevelSet::GetValue;
+    double(InterpolatoryNodalLevelSet::*InterpolatoryNodalLevelSet_pointer_to_GetValueAtNode)(const InterpolatoryNodalLevelSet::NodeType&) const = &InterpolatoryNodalLevelSet::GetValue;
 
-    class_<NodalLevelSet, NodalLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "NodalLevelSet", init<>() )
-    .def(init<LevelSet::Pointer>())
+    class_<InterpolatoryNodalLevelSet, InterpolatoryNodalLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
+    ( "InterpolatoryNodalLevelSet", init<>() )
+    .add_property("IsNodalLevelSet", &InterpolatoryNodalLevelSet::IsNodalLevelSet)
+    .def("GetNodalValue", InterpolatoryNodalLevelSet_pointer_to_GetValueAtNode)
+    ;
+
+    class_<NodalLevelSet, NodalLevelSet::Pointer, boost::noncopyable, bases<InterpolatoryNodalLevelSet> >
+    ( "NodalLevelSet", init<LevelSet::Pointer>())
     .add_property("Postfix", &NodalLevelSet::Postfix, &NodalLevelSet::SetPostfix)
-    .add_property("IsNodalLevelSet", &NodalLevelSet::IsNodalLevelSet)
     .add_property("OperationMode", &NodalLevelSet::OperationMode, &NodalLevelSet::SetOperationMode)
     .def("Initialize", &NodalLevelSet_InitializeFromNodes)
     .def("Initialize", &NodalLevelSet_InitializeFromElements)
-    .def("GetValue", NodalLevelSet_pointer_to_GetValueAtNode)
+    ;
+
+    class_<RminmaxTubeLevelSet, RminmaxTubeLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
+    ( "RminmaxTubeLevelSet", init<const LevelSet::Pointer, const Curve::Pointer, const double, const double, const double, const double>() )
     ;
 
     /**************************************************************/
@@ -514,12 +539,24 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "AndBRep", init<BRep::Pointer, BRep::Pointer>() )
     ;
 
+    class_<AndBRep2, AndBRep2::Pointer, bases<BRep>, boost::noncopyable>
+    ( "AndBRep2", init<BRep::Pointer, BRep::Pointer>() )
+    ;
+
     class_<OrBRep, OrBRep::Pointer, bases<BRep>, boost::noncopyable>
     ( "OrBRep", init<BRep::Pointer, BRep::Pointer>() )
     ;
 
+    class_<OrBRep2, OrBRep2::Pointer, bases<BRep>, boost::noncopyable>
+    ( "OrBRep2", init<BRep::Pointer, BRep::Pointer>() )
+    ;
+
     class_<NotBRep, NotBRep::Pointer, bases<BRep>, boost::noncopyable>
     ( "NotBRep", init<BRep::Pointer>() )
+    ;
+
+    class_<NotBRep2, NotBRep2::Pointer, bases<BRep>, boost::noncopyable>
+    ( "NotBRep2", init<BRep::Pointer>() )
     ;
 
 #ifdef BREP_APPLICATION_USE_OPENCASCADE
