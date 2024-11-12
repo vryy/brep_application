@@ -157,4 +157,34 @@ Section::Pointer BRep::Intersect(GeometryType& r_geom) const
     return pSection;
 }
 
+void BRep::SetValue(const Variable<bool>& rVariable, const bool& Value)
+{
+    // DO NOTHING
+}
+
+void BRep::SetValue(const Variable<int>& rVariable, const int& Value)
+{
+    // DO NOTHING
+}
+
+void BRep::SetValue(const Variable<double>& rVariable, const double& rValue)
+{
+    // DO NOTHING
+}
+
+bool& BRep::GetValue(const Variable<bool>& rThisVariable, bool& rValue) const
+{
+    return rValue;
+}
+
+int& BRep::GetValue(const Variable<int>& rThisVariable, int& rValue) const
+{
+    return rValue;
+}
+
+double& BRep::GetValue(const Variable<double>& rThisVariable, double& rValue) const
+{
+    return rValue;
+}
+
 }  // namespace Kratos.

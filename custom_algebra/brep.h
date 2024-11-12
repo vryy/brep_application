@@ -105,7 +105,13 @@ public:
         return BRep::Pointer(new BRep(*this));
     }
 
-    /// Set name for thie BRep
+    /// Expose this BRep as a shared_ptr. Host BRep can also use this to expose the internal BRep.
+    virtual BRep::ConstPointer pBRep() const
+    {
+        return BRep::ConstPointer(this);
+    }
+
+    /// Set name for this BRep
     void SetName(const std::string& Name) {mName = Name;}
 
     /// Get name of this BRep
@@ -305,6 +311,33 @@ public:
     ///@}
     ///@name Access
     ///@{
+
+    /// Set value of internal variable
+    virtual void SetValue(const Variable<bool>& rVariable, const bool& rValue);
+
+    /// Set value of internal variable
+    virtual void SetValue(const Variable<int>& rVariable, const int& rValue);
+
+    /// Set value of internal variable
+    virtual void SetValue(const Variable<double>& rVariable, const double& rValue);
+
+    /// Get value of internal variable
+    virtual bool& GetValue(const Variable<bool>& rThisVariable, bool& rValue) const;
+
+    /// Get value of internal variable
+    virtual int& GetValue(const Variable<int>& rThisVariable, int& rValue) const;
+
+    /// Get value of internal variable
+    virtual double& GetValue(const Variable<double>& rThisVariable, double& rValue) const;
+
+    /// Helper function of GetValue for Python interface
+    template<typename TDataType>
+    TDataType GetValue(const Variable<TDataType>& rThisVariable) const
+    {
+        TDataType value;
+        value = this->GetValue(rThisVariable, value);
+        return std::move(value);
+    }
 
     ///@}
     ///@name Inquiry
