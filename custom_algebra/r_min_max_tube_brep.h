@@ -100,6 +100,11 @@ public:
         return BRep::Pointer(new RminmaxTubeBRep(*this));
     }
 
+    BRep::ConstPointer pBRep() const final
+    {
+        return mpBRep;
+    }
+
     std::size_t WorkingSpaceDimension() const final
     {
         return mpBRep->WorkingSpaceDimension();
@@ -114,30 +119,6 @@ public:
     bool IsInside(const PointType& P) const final
     {
         const double R = mpCurve->ComputeDistance(P);
-        // KRATOS_WATCH(R)
-        // KRATOS_WATCH(mRmin)
-        // KRATOS_WATCH(mRmax)
-
-        // PointType proj;
-        // double t;
-        // mpCurve->ProjectOnCurve(P, proj, t);
-        // KRATOS_WATCH(P)
-        // KRATOS_WATCH(proj)
-        // KRATOS_WATCH(t)
-        // KRATOS_WATCH(norm_2(P - proj))
-
-        // const auto v = mpCurve->GetDerivative(0, t);
-        // KRATOS_WATCH(v)
-        // KRATOS_WATCH(inner_prod(P - proj, v))
-
-        // std::cout << "curve sampling:" << std::endl;
-        // const unsigned int nsampling = 300;
-        // for (unsigned int i = 0; i < nsampling; ++i)
-        // {
-        //     const double t = ((double)i / nsampling);
-        //     const auto p = mpCurve->GetValue(t);
-        //     std::cout << " " << p[0] << "," << p[1] << "," << p[2] << std::endl;
-        // }
 
         if (R < mRmin) return true;
         if (R > mRmax) return false;
@@ -148,6 +129,36 @@ public:
     ///@}
     ///@name Access
     ///@{
+
+    void SetValue(const Variable<bool>& rVariable, const bool& rValue) override
+    {
+        mpBRep->SetValue(rVariable, rValue);
+    }
+
+    void SetValue(const Variable<int>& rVariable, const int& rValue) override
+    {
+        mpBRep->SetValue(rVariable, rValue);
+    }
+
+    void SetValue(const Variable<double>& rVariable, const double& rValue) override
+    {
+        mpBRep->SetValue(rVariable, rValue);
+    }
+
+    bool& GetValue(const Variable<bool>& rThisVariable, bool& rValue) const override
+    {
+        return mpBRep->GetValue(rThisVariable, rValue);
+    }
+
+    int& GetValue(const Variable<int>& rThisVariable, int& rValue) const override
+    {
+        return mpBRep->GetValue(rThisVariable, rValue);
+    }
+
+    double& GetValue(const Variable<double>& rThisVariable, double& rValue) const override
+    {
+        return mpBRep->GetValue(rThisVariable, rValue);
+    }
 
     ///@}
     ///@name Inquiry
