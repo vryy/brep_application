@@ -24,6 +24,9 @@ def normalize(a):
 ### Create a list of Frenet frame along a curve. The Frenet frame is stored as a transformation matrix.
 ### tvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
 ### tvec shall be in the same reference plane as first tangent in a suitable direction to make B pointing upwards.
+### In the tunnel application, where the tunnel axis is pointing along x-direction, tvec denotes the y-direction
+### in the tunnel section and B will be the local x-direction. If tvec is in z-direction, then B will be y-direction.
+### Therefore, tvec is denoted as zvec in the tunnel application.
 def GenerateLocalFrenetFrame(curve, num_sampling_points, tvec = [1.0, 0.0, 0.0]):
     trans_list = []
     xi_list = []
