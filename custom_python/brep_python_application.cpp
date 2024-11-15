@@ -10,10 +10,9 @@
 
 // External includes
 #if defined(KRATOS_PYTHON)
-#include <boost/python.hpp>
 
 // Project includes
-#include "includes/define.h"
+#include "includes/define_python.h"
 #include "brep_application.h"
 #include "brep_application_variables.h"
 #include "custom_python/add_custom_algebra_to_python.h"
@@ -30,9 +29,10 @@ namespace Kratos
 namespace Python
 {
 
-using namespace boost::python;
 BOOST_PYTHON_MODULE(KratosBRepApplication)
 {
+
+    using namespace boost::python;
 
     class_<KratosBRepApplication, KratosBRepApplication::Pointer, bases<KratosApplication>, boost::noncopyable>
     ("KratosBRepApplication");
