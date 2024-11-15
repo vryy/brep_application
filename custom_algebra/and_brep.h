@@ -103,21 +103,25 @@ public:
     std::size_t WorkingSpaceDimension() const final
     {
         if (mpBRep1->WorkingSpaceDimension() != mpBRep2->WorkingSpaceDimension())
-            KRATOS_THROW_ERROR(std::logic_error, "The working space dimension is not compatible", "")
-            return mpBRep1->WorkingSpaceDimension();
+            KRATOS_ERROR << "The working space dimension is not compatible";
+        return mpBRep1->WorkingSpaceDimension();
     }
 
     std::size_t LocalSpaceDimension() const final
     {
         if (mpBRep1->LocalSpaceDimension() != mpBRep2->LocalSpaceDimension())
-            KRATOS_THROW_ERROR(std::logic_error, "The local space dimension is not compatible", "")
-            return mpBRep1->LocalSpaceDimension();
+            KRATOS_ERROR << "The local space dimension is not compatible";
+        return mpBRep1->LocalSpaceDimension();
     }
 
     /// Check if a point is inside/outside of the BRep
     bool IsInside(const PointType& P) const final
     {
-        return (mpBRep1->IsInside(P) && mpBRep2->IsInside(P));
+        const bool is_inside1 = mpBRep1->IsInside(P);
+        if (is_inside1)
+            return mpBRep2->IsInside(P);
+        else
+            return false;
     }
 
     /// Check if a point is inside/outside of the BRep
@@ -125,16 +129,22 @@ public:
     /// Since now C++ does not support virtual template function, this function must be separated to 2 functions
     bool IsInside0(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
     {
-        return (mpBRep1->IsInside0(rGeometry, local_coords)
-                && mpBRep2->IsInside0(rGeometry, local_coords));
+        const bool is_inside1 = mpBRep1->IsInside0(rGeometry, local_coords);
+        if (is_inside1)
+            return mpBRep2->IsInside0(rGeometry, local_coords);
+        else
+            return false;
     }
 
     /// Check if a point is inside/outside of the BRep
     /// The point will be interpolated in current configuration
     bool IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords) const final
     {
-        return (mpBRep1->IsInside1(rGeometry, local_coords)
-                && mpBRep2->IsInside1(rGeometry, local_coords));
+        const bool is_inside1 = mpBRep1->IsInside1(rGeometry, local_coords);
+        if (is_inside1)
+            return mpBRep2->IsInside1(rGeometry, local_coords);
+        else
+            return false;
     }
 
     /// Check if a geometry is cut by the level set
@@ -201,7 +211,7 @@ public:
     std::string Info() const final
     {
         std::stringstream ss;
-        ss << "AND operation of " << mpBRep1->Info() << " and " << mpBRep2->Info();
+        ss << "AND of (" << mpBRep1->Info() << " and " << mpBRep2->Info() << ")";
         return ss.str();
     }
 
@@ -322,19 +332,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, AndBRep& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const AndBRep& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block
