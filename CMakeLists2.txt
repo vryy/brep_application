@@ -55,6 +55,7 @@ set( KRATOS_BREP_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/brep_application_variables.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/brep_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_algebra/brep.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_algebra/curve/curve.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/brep_mesh_utility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_custom_algebra_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_transformation_to_python.cpp

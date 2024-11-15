@@ -288,14 +288,38 @@ boost::python::list Curve_ProjectOnCurve(Curve& rDummy, const Curve::PointType& 
     Output.append(t);
     Output.append(Proj);
     Output.append(stat);
-    return Output;
+    return std::move(Output);
+}
+
+boost::python::list Curve_ComputeEquallyDistanceDivisionByRecursiveBisection(Curve& rDummy,
+        const double tmin, const double tmax, const unsigned int num_division)
+{
+    const double tolerance = static_cast<DataValueContainer>(rDummy).GetValue(CURVE_SEARCH_TOLERANCE);
+    std::vector<double> tvec;
+    rDummy.ComputeEquallyDistanceDivisionByRecursiveBisection(tmin, tmax, num_division, tvec, tolerance);
+    boost::python::list Output;
+    for (std::size_t i = 0; i < tvec.size(); ++i)
+        Output.append(tvec[i]);
+    return std::move(Output);
+}
+
+boost::python::list Curve_ComputeUniformDivision(Curve& rDummy,
+        const double tmin, const double tmax, const unsigned int num_division)
+{
+    const double tolerance = static_cast<DataValueContainer>(rDummy).GetValue(CURVE_SEARCH_TOLERANCE);
+    std::vector<double> tvec;
+    rDummy.ComputeUniformDivision(tmin, tmax, num_division, tvec, tolerance);
+    boost::python::list Output;
+    for (std::size_t i = 0; i < tvec.size(); ++i)
+        Output.append(tvec[i]);
+    return std::move(Output);
 }
 
 BRep::PointType Section_ComputeCenter(Section& rDummy)
 {
     BRep::PointType Point;
     rDummy.ComputeCenter(Point);
-    return Point;
+    return std::move(Point);
 }
 
 boost::python::list Section_Triangulation(Section& rDummy)
@@ -391,16 +415,22 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def(self_ns::str(self))
     ;
 
+    double(Curve::*pointer_to_ComputeLength)() const = &Curve::ComputeLength;
+    double(Curve::*pointer_to_ComputeLength2)(const double, const double) const = &Curve::ComputeLength;
     double(Curve::*pointer_to_ComputeDistance)(const Curve::PointType&) const = &Curve::ComputeDistance;
     Curve::PointType(Curve::*pointer_to_ComputeProjection)(const Curve::PointType&) const = &Curve::ComputeProjection;
     Curve::PointType(Curve::*pointer_to_ComputeIntersection)(const LevelSet&) const = &Curve::ComputeIntersection;
 
     class_<Curve, Curve::Pointer, boost::noncopyable, bases<FunctionR1R3, DataValueContainer> >
     ("Curve", init<>())
+    .def("ComputeLength", pointer_to_ComputeLength)
+    .def("ComputeLength", pointer_to_ComputeLength2)
     .def("ComputeDistance", pointer_to_ComputeDistance)
     .def("ComputeProjection", pointer_to_ComputeProjection)
     .def("ComputeIntersection", pointer_to_ComputeIntersection)
     .def("ProjectOnCurve", &Curve_ProjectOnCurve)
+    .def("ComputeEquallyDistanceDivisionByRecursiveBisection", &Curve_ComputeEquallyDistanceDivisionByRecursiveBisection)
+    .def("ComputeUniformDivision", &Curve_ComputeUniformDivision)
     ;
 
     class_<ParametricCurve, ParametricCurve::Pointer, boost::noncopyable, bases<Curve> >
