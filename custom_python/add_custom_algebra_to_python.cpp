@@ -9,7 +9,7 @@
 
 // External includes
 #include <boost/python.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+#include <boost/foreach.hpp>
 
 // Project includes
 #include "includes/element.h"
@@ -34,6 +34,7 @@
 #include "custom_algebra/function/load_function.h"
 #include "custom_algebra/function/load_function_plate_with_the_hole.h"
 #include "custom_algebra/function/hydrostatic_pressure_function_on_surface.h"
+#include "custom_utilities/brep_math_utility.h"
 
 namespace Kratos
 {
@@ -41,10 +42,20 @@ namespace Kratos
 namespace Python
 {
 
-using namespace boost::python;
+template<typename TFunctionType>
+typename TFunctionType::OutputType Function_Integrate_1(TFunctionType& rDummy, const Element::Pointer pElement)
+{
+    return rDummy.Integrate(pElement->GetGeometry());
+}
 
-double Helper_FunctionR3R1_GetValue_1(FunctionR3R1& rDummy,
-                                      const double& x, const double& y)
+template<typename TFunctionType>
+typename TFunctionType::OutputType Function_Integrate_2(TFunctionType& rDummy, const Element::Pointer pElement, const int integration_order)
+{
+    GeometryData::IntegrationMethod ThisIntegrationMethod = BRepMathUtility<>::GetIntegrationMethod(integration_order);
+    return rDummy.Integrate(pElement->GetGeometry(), ThisIntegrationMethod);
+}
+
+double FunctionR3R1_GetValue_1(FunctionR3R1& rDummy, const double x, const double y)
 {
     FunctionR3R1::InputType P;
     P[0] = x;
@@ -52,8 +63,7 @@ double Helper_FunctionR3R1_GetValue_1(FunctionR3R1& rDummy,
     return rDummy.GetValue(P);
 }
 
-double Helper_FunctionR3R1_GetValue_2(FunctionR3R1& rDummy,
-                                      const double& x, const double& y, const double& z)
+double FunctionR3R1_GetValue_2(FunctionR3R1& rDummy, const double x, const double y, const double z)
 {
     FunctionR3R1::InputType P;
     P[0] = x;
@@ -62,21 +72,19 @@ double Helper_FunctionR3R1_GetValue_2(FunctionR3R1& rDummy,
     return rDummy.GetValue(P);
 }
 
-double Helper_FunctionR1R1_GetDerivative(FunctionR1R1& rDummy,
-        const double& t)
+double FunctionR1R1_GetDerivative(FunctionR1R1& rDummy, const double t)
 {
     return rDummy.GetDerivative(0, t);
 }
 
-double Helper_FunctionR1R1_GetSecondDerivative(FunctionR1R1& rDummy,
-        const double& t)
+double FunctionR1R1_GetSecondDerivative(FunctionR1R1& rDummy, const double t)
 {
     return rDummy.GetSecondDerivative(0, 0, t);
 }
 
 template<int TDerivDegree>
-void CubicSplineFunction_SetPoints(CubicSplineFunction<TDerivDegree>& rDummy, boost::python::list list_t,
-                                   boost::python::list list_x)
+void CubicSplineFunction_SetPoints(CubicSplineFunction<TDerivDegree>& rDummy, const boost::python::list& list_t,
+                                   const boost::python::list& list_x)
 {
     std::vector<double> t;
     std::vector<double> x;
@@ -102,21 +110,21 @@ void CubicSplineFunction_SetPoints(CubicSplineFunction<TDerivDegree>& rDummy, bo
 
 void BRepApplication_AddFunctionsToPython()
 {
+    using namespace boost::python;
+
     /**************************************************************/
     /************** EXPORT INTERFACE FOR FUNCTIONR1R1 *************/
     /**************************************************************/
 
     double(FunctionR1R1::*FunctionR1R1_pointer_to_GetValue)(const double&) const = &FunctionR1R1::GetValue;
-    double(FunctionR1R1::*FunctionR1R1_pointer_to_Integrate)(Element::Pointer&) const = &FunctionR1R1::Integrate;
-    double(FunctionR1R1::*FunctionR1R1_pointer_to_Integrate2)(Element::Pointer&, const int) const = &FunctionR1R1::Integrate;
 
     class_<FunctionR1R1, FunctionR1R1::Pointer, boost::noncopyable>
     ("FunctionR1R1", init<>())
-    .def("Integrate", FunctionR1R1_pointer_to_Integrate)
-    .def("Integrate", FunctionR1R1_pointer_to_Integrate2)
+    .def("Integrate", Function_Integrate_1<FunctionR1R1>)
+    .def("Integrate", Function_Integrate_2<FunctionR1R1>)
     .def("GetValue", FunctionR1R1_pointer_to_GetValue)
-    .def("GetDerivative", Helper_FunctionR1R1_GetDerivative)
-    .def("GetSecondDerivative", Helper_FunctionR1R1_GetSecondDerivative)
+    .def("GetDerivative", FunctionR1R1_GetDerivative)
+    .def("GetSecondDerivative", FunctionR1R1_GetSecondDerivative)
     .def("GetFormula", &FunctionR1R1::GetFormula)
     .def("GetDiffFunction", &FunctionR1R1::GetDiffFunction)
     .def(self_ns::str(self))
@@ -216,17 +224,18 @@ void BRepApplication_AddFunctionsToPython()
 
     array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetValue)(const double&) const = &FunctionR1R3::GetValue;
     array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetDerivative)(const int&, const double&) const = &FunctionR1R3::GetDerivative;
-    array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_Integrate)(Element::Pointer&) const = &FunctionR1R3::Integrate;
-    array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_Integrate2)(Element::Pointer&, const int) const = &FunctionR1R3::Integrate;
+    array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetSecondDerivative)(const int&, const int&, const double&) const = &FunctionR1R3::GetSecondDerivative;
 
     class_<FunctionR1R3, FunctionR1R3::Pointer, boost::noncopyable>
     ("FunctionR1R3", init<>())
-    .def("Integrate", FunctionR1R3_pointer_to_Integrate)
-    .def("Integrate", FunctionR1R3_pointer_to_Integrate2)
+    .def("Integrate", Function_Integrate_1<FunctionR1R3>)
+    .def("Integrate", Function_Integrate_2<FunctionR1R3>)
     .def("GetValue", FunctionR1R3_pointer_to_GetValue)
     .def("GetDerivative", FunctionR1R3_pointer_to_GetDerivative)
+    .def("GetSecondDerivative", FunctionR1R3_pointer_to_GetSecondDerivative)
     .def("GetFormula", &FunctionR1R3::GetFormula)
     .def("GetDiffFunction", &FunctionR1R3::GetDiffFunction)
+    .def(self_ns::str(self))
     ;
 
     /**************************************************************/
@@ -234,16 +243,15 @@ void BRepApplication_AddFunctionsToPython()
     /**************************************************************/
 
     double(FunctionR2R1::*FunctionR2R1_pointer_to_GetValue)(const array_1d<double, 2>&) const = &FunctionR2R1::GetValue;
-    double(FunctionR2R1::*FunctionR2R1_pointer_to_Integrate)(Element::Pointer&) const = &FunctionR2R1::Integrate;
-    double(FunctionR2R1::*FunctionR2R1_pointer_to_Integrate2)(Element::Pointer&, const int) const = &FunctionR2R1::Integrate;
 
     class_<FunctionR2R1, FunctionR2R1::Pointer, boost::noncopyable>
     ("FunctionR2R1", init<>())
-    .def("Integrate", FunctionR2R1_pointer_to_Integrate)
-    .def("Integrate", FunctionR2R1_pointer_to_Integrate2)
+    .def("Integrate", Function_Integrate_1<FunctionR2R1>)
+    .def("Integrate", Function_Integrate_2<FunctionR2R1>)
     .def("GetValue", FunctionR2R1_pointer_to_GetValue)
     .def("GetFormula", &FunctionR2R1::GetFormula)
     .def("GetDiffFunction", &FunctionR2R1::GetDiffFunction)
+    .def(self_ns::str(self))
     ;
 
     typedef ProductFunction<FunctionR2R1> ProductFunctionR2R1;
@@ -289,16 +297,15 @@ void BRepApplication_AddFunctionsToPython()
     /**************************************************************/
 
     array_1d<double, 3>(FunctionR2R3::*FunctionR2R3_pointer_to_GetValue)(const array_1d<double, 2>&) const = &FunctionR2R3::GetValue;
-    array_1d<double, 3>(FunctionR2R3::*FunctionR2R3_pointer_to_Integrate)(Element::Pointer&) const = &FunctionR2R3::Integrate;
-    array_1d<double, 3>(FunctionR2R3::*FunctionR2R3_pointer_to_Integrate2)(Element::Pointer&, const int) const = &FunctionR2R3::Integrate;
 
     class_<FunctionR2R3, FunctionR2R3::Pointer, boost::noncopyable>
     ("FunctionR2R3", init<>())
-    .def("Integrate", FunctionR2R3_pointer_to_Integrate)
-    .def("Integrate", FunctionR2R3_pointer_to_Integrate2)
+    .def("Integrate", Function_Integrate_1<FunctionR2R3>)
+    .def("Integrate", Function_Integrate_2<FunctionR2R3>)
     .def("GetValue", FunctionR2R3_pointer_to_GetValue)
     .def("GetFormula", &FunctionR2R3::GetFormula)
     .def("GetDiffFunction", &FunctionR2R3::GetDiffFunction)
+    .def(self_ns::str(self))
     ;
 
     /**************************************************************/
@@ -306,22 +313,22 @@ void BRepApplication_AddFunctionsToPython()
     /**************************************************************/
 
     double(FunctionR3R1::*FunctionR3R1_pointer_to_GetValue)(const array_1d<double, 3>&) const = &FunctionR3R1::GetValue;
-    double(FunctionR3R1::*FunctionR3R1_pointer_to_Integrate)(Element::Pointer&) const = &FunctionR3R1::Integrate;
-    double(FunctionR3R1::*FunctionR3R1_pointer_to_Integrate2)(Element::Pointer&, const int) const = &FunctionR3R1::Integrate;
 
     class_<FunctionR3R1, FunctionR3R1::Pointer, boost::noncopyable>
     ("FunctionR3R1", init<>())
-    .def("Integrate", FunctionR3R1_pointer_to_Integrate)
-    .def("Integrate", FunctionR3R1_pointer_to_Integrate2)
+    .def("Integrate", Function_Integrate_1<FunctionR3R1>)
+    .def("Integrate", Function_Integrate_2<FunctionR3R1>)
     .def("GetValue", FunctionR3R1_pointer_to_GetValue)
-    .def("GetValue", Helper_FunctionR3R1_GetValue_1)
-    .def("GetValue", Helper_FunctionR3R1_GetValue_2)
+    .def("GetValue", FunctionR3R1_GetValue_1)
+    .def("GetValue", FunctionR3R1_GetValue_2)
     .def("GetFormula", &FunctionR3R1::GetFormula)
     .def("GetDiffFunction", &FunctionR3R1::GetDiffFunction)
+    .def(self_ns::str(self))
     ;
 
     class_<FunctionR3Rn, FunctionR3Rn::Pointer, boost::noncopyable>
     ("FunctionR3Rn", init<>())
+    .def(self_ns::str(self))
     ;
 
     class_<Variable<FunctionR3Rn::Pointer>, bases<VariableData>, boost::noncopyable>
@@ -1773,13 +1780,11 @@ void BRepApplication_AddFunctionsToPython()
     /**************************************************************/
 
     array_1d<double, 3>(FunctionR3R3::*FunctionR3R3_pointer_to_GetValue)(const array_1d<double, 3>&) const = &FunctionR3R3::GetValue;
-    array_1d<double, 3>(FunctionR3R3::*FunctionR3R3_pointer_to_Integrate)(Element::Pointer&) const = &FunctionR3R3::Integrate;
-    array_1d<double, 3>(FunctionR3R3::*FunctionR3R3_pointer_to_Integrate2)(Element::Pointer&, const int) const = &FunctionR3R3::Integrate;
 
     class_<FunctionR3R3, FunctionR3R3::Pointer, boost::noncopyable>
     ("FunctionR3R3", init<>())
-    .def("Integrate", FunctionR3R3_pointer_to_Integrate)
-    .def("Integrate", FunctionR3R3_pointer_to_Integrate2)
+    .def("Integrate", Function_Integrate_1<FunctionR3R3>)
+    .def("Integrate", Function_Integrate_2<FunctionR3R3>)
     .def("GetValue", FunctionR3R3_pointer_to_GetValue)
     .def("GetFormula", &FunctionR3R3::GetFormula)
     .def("GetDiffFunction", &FunctionR3R3::GetDiffFunction)
@@ -1789,13 +1794,11 @@ void BRepApplication_AddFunctionsToPython()
     typedef ScaleFunction<FunctionR3R3> ScaleFunctionR3R3;
     class_<ScaleFunctionR3R3, ScaleFunctionR3R3::Pointer, boost::noncopyable, bases<FunctionR3R3> >
     ("ScaleFunctionR3R3", init<const double, const FunctionR3R3::Pointer>())
-    .def(self_ns::str(self))
     ;
 
     class_<HydrostaticPressureFunctionOnSurface, HydrostaticPressureFunctionOnSurface::Pointer, boost::noncopyable, bases<FunctionR3R3> >
     ("HydrostaticPressureFunctionOnSurface", init<const double&, const double&, const array_1d<double, 3>&>())
     // .def(init<const double&, const double&, const Vector&>())
-    .def(self_ns::str(self))
     ;
 
     /**************************************************************/
@@ -1805,17 +1808,14 @@ void BRepApplication_AddFunctionsToPython()
     class_<LoadFunctionR3Rn, LoadFunctionR3Rn::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
     ("LoadFunctionR3Rn", init<>())
     .def("AddComponent", &LoadFunctionR3Rn::AddComponent)
-    .def(self_ns::str(self))
     ;
 
     class_<LoadFunctionR3RnPlateWithTheHole<0>, LoadFunctionR3RnPlateWithTheHole<0>::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
     ("LoadFunctionR3RnPlateWithTheHoleX", init<const double, const double>())
-    .def(self_ns::str(self))
     ;
 
     class_<LoadFunctionR3RnPlateWithTheHole<1>, LoadFunctionR3RnPlateWithTheHole<1>::Pointer, boost::noncopyable, bases<FunctionR3Rn> >
     ("LoadFunctionR3RnPlateWithTheHoleY", init<const double, const double>())
-    .def(self_ns::str(self))
     ;
 
 }

@@ -20,6 +20,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "geometries/geometry_data.h"
 
 namespace Kratos
 {
@@ -48,6 +49,7 @@ namespace Kratos
 /// Short class definition.
 /** class for auxilliary routines
 */
+template<typename TDataType = double>
 class BRepMathUtility
 {
 public:
@@ -56,14 +58,6 @@ public:
 
     /// Pointer definition of BRepMathUtility
     KRATOS_CLASS_POINTER_DEFINITION(BRepMathUtility);
-
-    typedef typename Element::GeometryType GeometryType;
-
-    typedef typename GeometryType::PointType NodeType;
-
-    typedef typename NodeType::PointType PointType;
-
-    typedef typename NodeType::CoordinatesArrayType CoordinatesArrayType;
 
     ///@}
     ///@name Life Cycle
@@ -83,12 +77,54 @@ public:
     ///@name Operations
     ///@{
 
+    static inline constexpr int GetMaxIntegrationOrder()
+    {
+        return 5;
+    }
+
+    static inline GeometryData::IntegrationMethod GetIntegrationMethod(const int integration_order)
+    {
+        if (integration_order > GetMaxIntegrationOrder())
+        {
+            KRATOS_ERROR << "Does not support for integration rule with order > " << GetMaxIntegrationOrder();
+        }
+
+        GeometryData::IntegrationMethod ThisIntegrationMethod;
+
+        if (integration_order == 1)
+        {
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
+        }
+        else if (integration_order == 2)
+        {
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_2;
+        }
+        else if (integration_order == 3)
+        {
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_3;
+        }
+        else if (integration_order == 4)
+        {
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_4;
+        }
+        else if (integration_order == 5)
+        {
+            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_5;
+        }
+        else
+        {
+            KRATOS_ERROR << "Unsupported integration order " << integration_order;
+        }
+
+        return ThisIntegrationMethod;
+    }
+
     /**
      * Solve a1 * x + b1 * y = c1
      *       a2 * x + b2 * y = c2
      */
-    static void Solve(const double& a1, const double& b1, const double& c1,
-                      const double& a2, const double& b2, const double& c2, double& x, double& y)
+    static void Solve(const TDataType a1, const TDataType b1, const TDataType c1,
+                      const TDataType a2, const TDataType b2, const TDataType c2, TDataType& x, TDataType& y)
     {
         x = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1);
         y = (c2 * a1 - c1 * a2) / (a1 * b2 - a2 * b1);
@@ -100,11 +136,11 @@ public:
      *              1: one solution
      *              2: two solutions
      */
-    static std::vector<double> SolveQuadratic(const double& a, const double& b, const double& c)
+    static std::vector<TDataType> SolveQuadratic(const TDataType a, const TDataType b, const TDataType c)
     {
-        double b2 = b / 2;
-        double delta = b2 * b2 - a * c;
-        std::vector<double> x;
+        TDataType b2 = b / 2;
+        TDataType delta = b2 * b2 - a * c;
+        std::vector<TDataType> x;
 
         if (delta < 0.0)
         {
@@ -144,13 +180,13 @@ public:
      * Depending on the cut situation, the output may have 0, 2 or 4 results
      * The input shall exclude the special sitation, e.g. a=b=0 or R=0
      */
-    static std::vector<double> Intersect(const double& a, const double& b, const double& c,
-                                         const double& xc, const double& yc, const double& R)
+    static std::vector<TDataType> Intersect(const TDataType a, const TDataType b, const TDataType c,
+                                         const TDataType xc, const TDataType yc, const TDataType R)
     {
-        std::vector<double> Output;
+        std::vector<TDataType> Output;
         if (a == 0.0)
         {
-            double y = -c / b;
+            TDataType y = -c / b;
 
             if (R >= abs(y - yc))
             {
@@ -162,7 +198,7 @@ public:
         }
         else if (b == 0.0)
         {
-            double x = -c / a;
+            TDataType x = -c / a;
 
             if (R >= abs(x - xc))
             {
@@ -174,11 +210,11 @@ public:
         }
         else
         {
-            double A = 1.0 + pow(a / b, 2);
-            double B = 2.0 * (-xc + a / b * (c / b + yc));
-            double C = pow(xc, 2) + pow(c / b + yc, 2) - pow(R, 2);
+            TDataType A = 1.0 + pow(a / b, 2);
+            TDataType B = 2.0 * (-xc + a / b * (c / b + yc));
+            TDataType C = pow(xc, 2) + pow(c / b + yc, 2) - pow(R, 2);
 
-            std::vector<double> x = SolveQuadratic(A, B, C);
+            std::vector<TDataType> x = SolveQuadratic(A, B, C);
             if (x.size() == 1)
             {
                 Output.push_back(x[0]);
@@ -310,13 +346,15 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream, BRepMathUtility& rThis)
+template<typename TDataType>
+inline std::istream& operator >> (std::istream& rIStream, BRepMathUtility<TDataType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const BRepMathUtility& rThis)
+template<typename TDataType>
+inline std::ostream& operator << (std::ostream& rOStream, const BRepMathUtility<TDataType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

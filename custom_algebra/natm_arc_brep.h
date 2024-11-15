@@ -139,7 +139,7 @@ public:
         double x2 = X3 - X1, y2 = Y3 - Y1;
         double xc, yc;
 
-        BRepMathUtility::Solve(2 * x1, 2 * y1, x1 * x1 + y1 * y1,
+        BRepMathUtility<double>::Solve(2 * x1, 2 * y1, x1 * x1 + y1 * y1,
                                2 * x2, 2 * y2, x2 * x2 + y2 * y2, xc, yc);
 
         NATMArc a;
@@ -236,7 +236,7 @@ public:
                 double a = P[1] - mRefCenter[1];
                 double b = mRefCenter[0] - P[0];
                 double c = -a * P[0] - b * P[1];
-                std::vector<double> points = BRepMathUtility::Intersect(a, b, c, mArcs[i].X, mArcs[i].Y, mArcs[i].R);
+                std::vector<double> points = BRepMathUtility<double>::Intersect(a, b, c, mArcs[i].X, mArcs[i].Y, mArcs[i].R);
 
                 // KRATOS_WATCH(points.size())
 

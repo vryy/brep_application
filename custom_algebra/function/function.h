@@ -23,8 +23,8 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/element.h"
 #include "includes/serializer.h"
+#include "utilities/math_utils.h"
 
 namespace Kratos
 {
@@ -67,14 +67,6 @@ public:
 
     typedef TOutputType OutputType;
 
-    typedef typename Element::GeometryType GeometryType;
-
-    typedef typename GeometryType::PointType NodeType;
-
-    typedef typename NodeType::PointType PointType;
-
-    typedef typename NodeType::CoordinatesArrayType CoordinatesArrayType;
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -104,17 +96,17 @@ public:
 
     virtual inline const std::size_t InputSize() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
+        KRATOS_ERROR << "Call the base class";
     }
 
     virtual inline const std::size_t OutputSize() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
+        KRATOS_ERROR << "Call the base class";
     }
 
     virtual TOutputType GetValue(const TInputType& P) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
+        KRATOS_ERROR << "Call the base class";
     }
 
     virtual TOutputType GetDerivative(const int& component, const TInputType& P) const
@@ -141,41 +133,32 @@ public:
 
     virtual std::string GetFormula(const std::string& Format) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
+        KRATOS_ERROR << "Call the base class";
     }
 
     virtual Function::Pointer GetDiffFunction(const int& component) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Call the base class", __FUNCTION__)
+        KRATOS_ERROR << "Call the base class";
     }
 
-    TOutputType Integrate(Element::Pointer& p_elem) const
+    template<typename TGeometryType>
+    TOutputType Integrate(const TGeometryType& r_geom) const
     {
-        return Integrate(p_elem->GetGeometry());
-    }
-
-    TOutputType Integrate(Element::Pointer& p_elem, const int integration_order) const
-    {
-        GeometryData::IntegrationMethod ThisIntegrationMethod
-            = GetIntegrationMethod(integration_order);
-        return Integrate(p_elem->GetGeometry(), ThisIntegrationMethod);
-    }
-
-    TOutputType Integrate(GeometryType& r_geom) const
-    {
-        return Integrate(r_geom, r_geom.GetDefaultIntegrationMethod());
+        return Integrate<TGeometryType>(r_geom, r_geom.GetDefaultIntegrationMethod());
     }
 
     /// Integrate a function using the sample geometry and integration rule
-    TOutputType Integrate(GeometryType& r_geom,
-                          const GeometryData::IntegrationMethod ThisIntegrationMethod) const
+    template<typename TGeometryType>
+    TOutputType Integrate(const TGeometryType& r_geom,
+                          const typename TGeometryType::IntegrationMethod ThisIntegrationMethod) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Integrate is not implemented", "")
+        KRATOS_ERROR << "Integrate is not implemented";
     }
 
     /// Helper function to compute determinant of Jacobian of a geometry at an integration point
-    static double ComputeDetJ(GeometryType& r_geom,
-                              const GeometryType::IntegrationPointType& integration_point)
+    template<typename TGeometryType>
+    static double ComputeDetJ(const TGeometryType& r_geom,
+                              const typename TGeometryType::IntegrationPointType& integration_point)
     {
         if (r_geom.WorkingSpaceDimension() == r_geom.LocalSpaceDimension())
         {
@@ -198,8 +181,9 @@ public:
     }
 
     /// Helper function to compute determinant of Jacobian of a geometry at an array of integration points
-    static void ComputeDetJ(std::vector<double>& DetJ,
-                            GeometryType& r_geom, const GeometryType::IntegrationPointsArrayType& integration_points)
+    template<typename TGeometryType>
+    static void ComputeDetJ(std::vector<double>& DetJ, const TGeometryType& r_geom,
+                            const typename TGeometryType::IntegrationPointsArrayType& integration_points)
     {
         if (DetJ.size() != integration_points.size())
         {
@@ -236,66 +220,6 @@ public:
     ///@}
     ///@name Inquiry
     ///@{
-
-    static inline int GetMaxIntegrationOrder()
-    {
-        return static_cast<int>(GeometryData::IntegrationMethod::NumberOfIntegrationMethods);
-    }
-
-    static inline GeometryData::IntegrationMethod GetIntegrationMethod(const int& integration_order)
-    {
-        if (integration_order > GetMaxIntegrationOrder())
-            KRATOS_THROW_ERROR(std::logic_error, "Does not support for integration rule with order > ", GetMaxIntegrationOrder())
-
-            GeometryData::IntegrationMethod ThisIntegrationMethod;
-
-        if (integration_order == 1)
-        {
-            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
-        }
-        else if (integration_order == 2)
-        {
-            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_2;
-        }
-        else if (integration_order == 3)
-        {
-            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_3;
-        }
-        else if (integration_order == 4)
-        {
-            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_4;
-        }
-        else if (integration_order == 5)
-        {
-            ThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_5;
-        }
-//        else if(integration_order == 6)
-//        {
-//            ThisIntegrationMethod = GeometryData::GI_GAUSS_6;
-//        }
-//        else if(integration_order == 7)
-//        {
-//            ThisIntegrationMethod = GeometryData::GI_GAUSS_7;
-//        }
-//        else if(integration_order == 8)
-//        {
-//            ThisIntegrationMethod = GeometryData::GI_GAUSS_8;
-//        }
-//        else if(integration_order == 9)
-//        {
-//            ThisIntegrationMethod = GeometryData::GI_GAUSS_9;
-//        }
-//        else if(integration_order == 10)
-//        {
-//            ThisIntegrationMethod = GeometryData::GI_GAUSS_10;
-//        }
-        else
-        {
-            ThisIntegrationMethod = GeometryData::IntegrationMethod::NumberOfIntegrationMethods;    // this will never be obtained, just to silence the compiler
-        }
-
-        return ThisIntegrationMethod;
-    }
 
     ///@}
     ///@name Input and output
@@ -434,10 +358,11 @@ template<> inline const std::size_t FunctionR2R1::InputSize() const {return 2;}
 template<> inline const std::size_t FunctionR2R1::OutputSize() const {return 1;}
 
 template<>
-inline double FunctionR3R1::Integrate(GeometryType& r_geom,
-                                      const GeometryData::IntegrationMethod ThisIntegrationMethod) const
+template<typename TGeometryType>
+inline double FunctionR3R1::Integrate(const TGeometryType& r_geom,
+                                      const typename TGeometryType::IntegrationMethod ThisIntegrationMethod) const
 {
-    const GeometryType::IntegrationPointsArrayType& integration_points
+    const typename TGeometryType::IntegrationPointsArrayType& integration_points
         = r_geom.IntegrationPoints( ThisIntegrationMethod );
 
     double Result = 0.0;
@@ -445,7 +370,7 @@ inline double FunctionR3R1::Integrate(GeometryType& r_geom,
     std::vector<double> DetJ;
     ComputeDetJ(DetJ, r_geom, integration_points);
 
-    CoordinatesArrayType GlobalCoords;
+    typename TGeometryType::CoordinatesArrayType GlobalCoords;
 
     for (std::size_t point = 0; point < integration_points.size(); ++point)
     {

@@ -260,19 +260,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, LinearCurve& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const LinearCurve& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block
