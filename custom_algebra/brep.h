@@ -24,7 +24,6 @@
 #include "includes/define.h"
 #include "includes/element.h"
 #include "includes/ublas_interface.h"
-#include "geometries/geometry_data.h"
 #include "section/section.h"
 
 namespace Kratos
@@ -500,7 +499,9 @@ private:
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, BRep& rThis)
-{}
+{
+    return rIStream;
+}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream, const BRep& rThis)
