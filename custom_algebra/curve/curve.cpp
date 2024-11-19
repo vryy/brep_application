@@ -64,6 +64,25 @@ double Curve::ComputeLengthByGaussQuadrature(const double tmin, const double tma
         KRATOS_ERROR << "Unsupported order " << order;
 }
 
+double Curve::ComputeLengthRecursively(const double tmin, const double tmax, const double tolerance) const
+{
+    // start value for number of sampling
+    std::size_t nsampling = 5;
+    const int order = 3;
+    double prev_length = this->ComputeLengthByGaussQuadrature(tmin, tmax, order, nsampling);
+
+    bool converged = false;
+    while (!converged)
+    {
+        nsampling += 5;
+        double length = this->ComputeLengthByGaussQuadrature(tmin, tmax, order, nsampling);
+        if (std::abs(length - prev_length) < tolerance) converged = true;
+        prev_length = length;
+    }
+
+    return prev_length;
+}
+
 template<class TQuadratureType>
 double Curve::ComputeLengthByQuadrature(const double tmin, const double tmax, const std::size_t nsampling) const
 {

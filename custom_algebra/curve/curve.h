@@ -55,6 +55,12 @@ namespace Kratos
 /// Short class definition.
 /** Abstract class for a curve in 3D
  * A curve is mapping: t \in R^1 -> P \in R^3
+ * Some important parameters:
+ * +    CURVE_NUMBER_OF_SAMPLING - this is used to sample the curve in computing intersection, length by integration, etc.
+ *      Therefore, it's crucial to set this value beforehand to obtain expected results.
+ * +    CURVE_SEARCH_TOLERANCE - tolerance for search the intersection
+ * +    CURVE_LOWER_BOUND - preset lower bound in the parameter space of the curve
+ * +    CURVE_UPPER_BOUND - preset upper bound in the parameter space of the curve
  */
 class Curve : public FunctionR1R3, public DataValueContainer
 {
@@ -142,14 +148,14 @@ public:
     {
         double tmin = DataValueContainer::GetValue(CURVE_LOWER_BOUND);
         double tmax = DataValueContainer::GetValue(CURVE_UPPER_BOUND);
-        int nsampling = DataValueContainer::GetValue(CURVE_NUMBER_OF_SAMPLING);
-        // return this->ComputeLengthByTrapezoidalQuadrature(tmin, tmax, nsampling);
-        return this->ComputeLengthByGaussQuadrature(tmin, tmax, 2, nsampling);
+        return this->ComputeLength(tmin, tmax);
     }
 
     /// Compute the length of the curve on a curve section
     double ComputeLength(const double tmin, const double tmax) const
     {
+        if (!DataValueContainer::Has(CURVE_NUMBER_OF_SAMPLING))
+            KRATOS_ERROR << "CURVE_NUMBER_OF_SAMPLING is not set";
         int nsampling = DataValueContainer::GetValue(CURVE_NUMBER_OF_SAMPLING);
         // return this->ComputeLengthByTrapezoidalQuadrature(tmin, tmax, nsampling);
         return this->ComputeLengthByGaussQuadrature(tmin, tmax, 2, nsampling);
@@ -331,6 +337,9 @@ private:
 
     /// Compute the length of the curve using Gauss integration rule
     double ComputeLengthByGaussQuadrature(const double tmin, const double tmax, const int order, const std::size_t nsampling) const;
+
+    /// Compute the length precisely of the curve on a curve section
+    double ComputeLengthRecursively(const double tmin, const double tmax, const double tolerance) const;
 
     /// Compute the length of the curve using specific integration rule
     template<class TQuadratureType>
