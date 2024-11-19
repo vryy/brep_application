@@ -21,24 +21,23 @@ def normalize(a):
     a[2] = a[2] / norma
     return a
 
-### Create a list of Frenet frame along a curve. The Frenet frame is stored as a transformation matrix.
+### Create a list of Frenet frame on specific points on a curve. The Frenet frame is stored as a transformation matrix.
 ### tvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
 ### tvec shall be in the same reference plane as first tangent in a suitable direction to make B pointing upwards.
 ### In the tunnel application, where the tunnel axis is pointing along x-direction, tvec denotes the y-direction
 ### in the tunnel section and B will be the local x-direction. If tvec is in z-direction, then B will be y-direction.
 ### Therefore, tvec is denoted as zvec in the tunnel application.
-def GenerateLocalFrenetFrame(curve, num_sampling_points, tvec = [1.0, 0.0, 0.0]):
+def GenerateLocalFrenetFrameAt(curve, xi_list, tvec = [1.0, 0.0, 0.0]):
     trans_list = []
-    xi_list = []
     B = Array3()
-    for i in range(0, num_sampling_points):
-        xi = float(i) / (num_sampling_points-1)
+    cnt = 0
+    for xi in xi_list:
         pnt = xi
         P = curve.GetValue(pnt)
         T = curve.GetDerivative(0, pnt)
         T = normalize(T)
 
-        if i == 0:
+        if cnt == 0:
             cross(B, tvec, T)
             B = normalize(B)
         else:
@@ -53,6 +52,19 @@ def GenerateLocalFrenetFrame(curve, num_sampling_points, tvec = [1.0, 0.0, 0.0])
         trans = Transformation(B, T, P)
         # print("trans: " + str(trans))
         trans_list.append(trans)
-        xi_list.append(xi)
+        cnt = cnt + 1
 
+    return trans_list
+
+### Create a list of Frenet frame along a curve. The Frenet frame is stored as a transformation matrix.
+### tvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
+### tvec shall be in the same reference plane as first tangent in a suitable direction to make B pointing upwards.
+### In the tunnel application, where the tunnel axis is pointing along x-direction, tvec denotes the y-direction
+### in the tunnel section and B will be the local x-direction. If tvec is in z-direction, then B will be y-direction.
+### Therefore, tvec is denoted as zvec in the tunnel application.
+def GenerateLocalFrenetFrame(curve, num_sampling_points, tvec = [1.0, 0.0, 0.0]):
+    xi_list = []
+    for i in range(0, num_sampling_points):
+        xi_list.append(float(i) / (num_sampling_points-1))
+    trans_list = GenerateLocalFrenetFrameAt(curve, xi_list, tvec=tvec)
     return [xi_list, trans_list]
