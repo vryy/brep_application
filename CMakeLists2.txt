@@ -48,6 +48,7 @@ else()
     message(STATUS "CGAL is not found and linked with BRepApplication")
 endif()
 
+#######################################################################
 
 ######### add compilation units here
 set( KRATOS_BREP_APPLICATION_SOURCES
@@ -80,6 +81,9 @@ set( KRATOS_BREP_APPLICATION_SOURCES ${KRATOS_BREP_APPLICATION_SOURCES}
 
 ## define library Kratos which defines the basic python interface
 add_library(KratosBRepApplication SHARED ${KRATOS_BREP_APPLICATION_SOURCES})
+if(MSVC)
+    target_compile_options(KratosBRepApplication PRIVATE /bigobj)
+endif()
 target_link_libraries(KratosBRepApplication KratosCore)
 IF(${MATHPRESSO_FOUND} MATCHES TRUE)
     target_link_libraries(KratosBRepApplication ${MATHPRESSO_LIBRARIES})
@@ -91,6 +95,7 @@ if(${CGAL_FOUND})
     target_link_libraries(KratosBRepApplication ${CGAL_LIBRARIES})
     target_link_libraries(KratosBRepApplication ${GMP_LIBRARIES})
 endif()
+set_target_properties(KratosBRepApplication PROPERTIES COMPILE_DEFINITIONS "BREP_APPLICATION=EXPORT,API")
 set_target_properties(KratosBRepApplication PROPERTIES PREFIX "")
 # cotire(KratosBRepApplication)
 install(TARGETS KratosBRepApplication DESTINATION libs )

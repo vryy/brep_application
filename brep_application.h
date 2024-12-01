@@ -44,10 +44,10 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
-class KratosBRepApplication : public KratosApplication
+/**
+ * Application for geometric operation on BoundaryRepresentation objects (BRep)
+ */
+class KRATOS_API(BREP_APPLICATION) KratosBRepApplication : public KratosApplication
 {
 public:
     ///@name Type Definitions
@@ -64,7 +64,7 @@ public:
     KratosBRepApplication();
 
     /// Destructor.
-    virtual ~KratosBRepApplication() {}
+    ~KratosBRepApplication() override {}
 
     ///@}
     ///@name Operators
@@ -74,7 +74,7 @@ public:
     ///@name Operations
     ///@{
 
-    virtual void Register();
+    void Register() override;
 
     ///@}
     ///@name Access
@@ -89,20 +89,20 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Description of your application";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
         PrintData(rOStream);
     }
 
     ///// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << "in KratosBRepApplication:";
         KRATOS_WATCH(KratosComponents<VariableData>::GetComponents().size());

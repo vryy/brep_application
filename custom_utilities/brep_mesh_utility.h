@@ -54,7 +54,7 @@ namespace Kratos
 /// Short class definition.
 /** class for auxiliary mesh routines
 */
-class BRepMeshUtility
+class KRATOS_API(BREP_APPLICATION) BRepMeshUtility
 {
 public:
     ///@name Type Definitions
@@ -112,7 +112,27 @@ public:
     /// Generate the sampling points on a geometry in the reference/current configuration
     template<int TFrame>
     static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
-                                       const GeometryType& r_geom, const std::size_t nsampling);
+                                       const GeometryType& r_geom, const std::size_t nsampling)
+    {
+        std::vector<CoordinatesArrayType> SamplingLocalPoints;
+
+        GenerateSamplingLocalPoints(SamplingLocalPoints, r_geom, nsampling);
+
+        SamplingPoints.resize(SamplingLocalPoints.size());
+        PointType P;
+        for (std::size_t i = 0; i < SamplingLocalPoints.size(); ++i)
+        {
+            if constexpr (TFrame == 0)
+            {
+                GlobalCoordinates0(r_geom, P, SamplingLocalPoints[i]);
+            }
+            else if constexpr (TFrame == 1)
+            {
+                GlobalCoordinates(r_geom, P, SamplingLocalPoints[i]);
+            }
+            SamplingPoints[i] = P;
+        }
+    }
 
     /// Generate the sampling points along a line
     static void GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,

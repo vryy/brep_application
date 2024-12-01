@@ -166,31 +166,7 @@ void BRepMeshUtility::GenerateSamplingLocalPoints(std::vector<CoordinatesArrayTy
     }
     else
     {
-        KRATOS_ERROR << "Geometry " << static_cast<int>(r_geom.GetGeometryType()) << " is not supported";
-    }
-}
-
-template<int TFrame>
-void BRepMeshUtility::GenerateSamplingPoints(std::vector<PointType>& SamplingPoints,
-        const GeometryType& r_geom, const std::size_t nsampling)
-{
-    std::vector<CoordinatesArrayType> SamplingLocalPoints;
-
-    GenerateSamplingLocalPoints(SamplingLocalPoints, r_geom, nsampling);
-
-    SamplingPoints.resize(SamplingLocalPoints.size());
-    PointType P;
-    for (std::size_t i = 0; i < SamplingLocalPoints.size(); ++i)
-    {
-        if (TFrame == 0)
-        {
-            GlobalCoordinates0(r_geom, P, SamplingLocalPoints[i]);
-        }
-        else if (TFrame == 1)
-        {
-            GlobalCoordinates(r_geom, P, SamplingLocalPoints[i]);
-        }
-        SamplingPoints[i] = P;
+        KRATOS_ERROR << "Geometry " << r_geom.GetGeometryType() << " is not supported";
     }
 }
 
@@ -1920,11 +1896,5 @@ BRepMeshUtility::CreateVolumetricEntitiesByProjectingOnSurface<Condition, ModelP
                 std::size_t& last_node_id, std::size_t& last_cond_id, std::size_t& last_elem_id,
                 const Condition& rCloneSurfaceEntity, const Element& rCloneEntity,
                 const bool create_condition, Properties::Pointer pProperties);
-
-template void BRepMeshUtility::GenerateSamplingPoints<0>(std::vector<PointType>& SamplingPoints,
-        const GeometryType& r_geom, const std::size_t nsampling);
-
-template void BRepMeshUtility::GenerateSamplingPoints<1>(std::vector<PointType>& SamplingPoints,
-        const GeometryType& r_geom, const std::size_t nsampling);
 
 }  // namespace Kratos.

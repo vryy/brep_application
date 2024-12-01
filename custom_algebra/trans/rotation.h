@@ -9,6 +9,10 @@
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ROTATION_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ROTATION_H_INCLUDED
 
+#ifdef _MSC_VER
+#define _USE_MATH_DEFINES
+#endif
+
 // System includes
 #include <math.h>
 #include <cmath>
@@ -27,7 +31,7 @@ struct ComputeRotationalTransformationMatrix_Helper
 {
     static void Execute(TMatrixType& trans_mat, const TDataType& angle)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling unimplemented function";
     }
 };
 
@@ -128,5 +132,9 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Rotation<TAxis, T
 }
 
 }// namespace Kratos.
+
+#ifdef _MSC_VER
+#undef _USE_MATH_DEFINES
+#endif
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_ROTATION_H_INCLUDED

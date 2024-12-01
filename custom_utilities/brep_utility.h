@@ -76,7 +76,7 @@ public:
 
     typedef typename NodeType::CoordinatesArrayType CoordinatesArrayType;
 
-    typedef struct Edge2
+    struct Edge2
     {
         Edge2(const std::size_t& i, const std::size_t& j) : mi(i), mj(j) {}
         const std::size_t& V1() const {return mi;}

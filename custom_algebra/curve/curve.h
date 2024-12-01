@@ -62,7 +62,7 @@ namespace Kratos
  * +    CURVE_LOWER_BOUND - preset lower bound in the parameter space of the curve
  * +    CURVE_UPPER_BOUND - preset upper bound in the parameter space of the curve
  */
-class Curve : public FunctionR1R3, public DataValueContainer
+class KRATOS_API(BREP_APPLICATION) Curve : public FunctionR1R3, public DataValueContainer
 {
 public:
     ///@name Type Definitions

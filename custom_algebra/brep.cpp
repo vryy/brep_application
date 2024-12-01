@@ -66,6 +66,8 @@ int BRep::CutStatus(GeometryType& r_geom, const int& configuration) const
         return this->CutStatusOfPoints(r_geom);
         // REMARK: this will use the current position of node, e.g. in dynamics
     }
+    else
+        KRATOS_ERROR << "Invalid configuration " << configuration << std::endl;
 }
 
 int BRep::CutStatus(const std::vector<PointType>& r_points) const

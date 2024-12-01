@@ -53,7 +53,7 @@ namespace Kratos
 /// Short class definition.
 /** Abstract class for a boundary representation
 */
-class BRep
+class KRATOS_API(BREP_APPLICATION) BRep
 {
 public:
     ///@name Type Definitions
@@ -335,7 +335,7 @@ public:
     {
         TDataType value;
         value = this->GetValue(rThisVariable, value);
-        return std::move(value);
+        return value;
     }
 
     ///@}

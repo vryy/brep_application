@@ -9,7 +9,6 @@
 
 // External includes
 #include <boost/python.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 // Project includes
 #include "includes/element.h"
@@ -457,9 +456,11 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "LevelSet", init<>() )
     .def("GetValue", LevelSet_pointer_to_GetValue)
     .def("GetValue", LevelSet_pointer_to_GetValueAtPoint)
+#ifndef _MSC_VER // for Windows, those lines aren't needed. They are taken from BRep.
     .def("GetValue", &LevelSet::GetValue<bool>)
     .def("GetValue", &LevelSet::GetValue<int>)
     .def("GetValue", &LevelSet::GetValue<double>)
+#endif
     .def(self_ns::str(self))
     ;
 
