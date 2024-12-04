@@ -158,6 +158,15 @@ BRep::PointType BRep_ProjectOnSurface(BRep& rDummy, const BRep::PointType& rPoin
     }
 }
 
+/// Helper function of GetValue for Python interface
+template<typename TBRepType, typename TDataType>
+TDataType BRep_GetValue(TBRepType& rDummy, const Variable<TDataType>& rThisVariable)
+{
+    TDataType value;
+    value = rDummy.GetValue(rThisVariable, value);
+    return value;
+}
+
 LevelSet::Pointer InverseLevelSet_GetLevelSet(InverseLevelSet& rDummy)
 {
     return rDummy.pLeveSet();
@@ -404,9 +413,9 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def("SetValue", pointer_to_SetValueBool)
     .def("SetValue", pointer_to_SetValueInt)
     .def("SetValue", pointer_to_SetValueDouble)
-    .def("GetValue", &BRep::GetValue<bool>)
-    .def("GetValue", &BRep::GetValue<int>)
-    .def("GetValue", &BRep::GetValue<double>)
+    .def("GetValue", &BRep_GetValue<BRep, bool>)
+    .def("GetValue", &BRep_GetValue<BRep, int>)
+    .def("GetValue", &BRep_GetValue<BRep, double>)
     .def("GetInternalBRep", &BRep::pBRep)
     .def_readonly("_CUT", &BRep::_CUT)
     .def_readonly("_IN", &BRep::_IN)
@@ -456,11 +465,9 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ( "LevelSet", init<>() )
     .def("GetValue", LevelSet_pointer_to_GetValue)
     .def("GetValue", LevelSet_pointer_to_GetValueAtPoint)
-#ifndef _MSC_VER // for Windows, those lines aren't needed. They are taken from BRep.
-    .def("GetValue", &LevelSet::GetValue<bool>)
-    .def("GetValue", &LevelSet::GetValue<int>)
-    .def("GetValue", &LevelSet::GetValue<double>)
-#endif
+    .def("GetValue", &BRep_GetValue<LevelSet, bool>)
+    .def("GetValue", &BRep_GetValue<LevelSet, int>)
+    .def("GetValue", &BRep_GetValue<LevelSet, double>)
     .def(self_ns::str(self))
     ;
 

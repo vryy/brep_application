@@ -329,15 +329,6 @@ public:
     /// Get value of internal variable
     virtual double& GetValue(const Variable<double>& rThisVariable, double& rValue) const;
 
-    /// Helper function of GetValue for Python interface
-    template<typename TDataType>
-    TDataType GetValue(const Variable<TDataType>& rThisVariable) const
-    {
-        TDataType value;
-        value = this->GetValue(rThisVariable, value);
-        return value;
-    }
-
     ///@}
     ///@name Inquiry
     ///@{
