@@ -84,7 +84,7 @@ public:
     BRep();
 
     /// Copy constructor.
-    BRep(BRep const& rOther) : mTOL(rOther.mTOL), mName(rOther.mName)
+    BRep(BRep const& rOther) : mTOL(rOther.mTOL), mName(rOther.mName), mEchoLevel(0)
     {}
 
     /// Destructor.
@@ -114,6 +114,7 @@ public:
     void SetName(const std::string& Name) {mName = Name;}
 
     /// Get name of this BRep
+    std::string GetName() const {return mName;}
     std::string Name() const {return mName;}
 
     /// Set for geometric tolerance
@@ -122,6 +123,12 @@ public:
     /// Get for geometric tolerance
     double GetTolerance() const {return mTOL;}
     double Tolerance() const {return mTOL;}
+
+    /// Set the echo level
+    void SetEchoLevel(const int echo_level) {mEchoLevel = echo_level;}
+
+    /// Get the echo level
+    int GetEchoLevel() const {return mEchoLevel;}
 
     /// Get working space dimension
     virtual std::size_t WorkingSpaceDimension() const
@@ -451,6 +458,7 @@ private:
 
     double mTOL;
     std::string mName;
+    int mEchoLevel;
 
     ///@}
     ///@name Private Operators
