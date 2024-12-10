@@ -34,7 +34,7 @@ void KratosBRepApplication::Register()
     std::cout << "Initializing KratosBRepApplication..." << std::endl;
 
     // register variables to Kratos kernel
-    //KRATOS_REGISTER_VARIABLE( LOAD_FUNCTION )
+    KRATOS_REGISTER_VARIABLE( LOAD_FUNCTION )
     KRATOS_REGISTER_VARIABLE( CUT_STATUS )
     KRATOS_REGISTER_VARIABLE( CURVE_SEARCH_TOLERANCE )
     KRATOS_REGISTER_VARIABLE( CURVE_MAX_ITERATIONS )

@@ -55,6 +55,14 @@ typename TFunctionType::OutputType Function_Integrate_2(TFunctionType& rDummy, c
     return rDummy.Integrate(pElement->GetGeometry(), ThisIntegrationMethod);
 }
 
+/// Utility function to set the function to the properties
+template<typename TFunctionType>
+void Function_Assign( TFunctionType& rDummy, const Variable<typename TFunctionType::Pointer>& rThisVariable,
+            const typename TFunctionType::Pointer pValue, const Properties::Pointer pProperties )
+{
+    TFunctionType::Assign(rThisVariable, pValue, *pProperties);
+}
+
 double FunctionR3R1_GetValue_1(FunctionR3R1& rDummy, const double x, const double y)
 {
     FunctionR3R1::InputType P;
@@ -328,6 +336,7 @@ void BRepApplication_AddFunctionsToPython()
 
     class_<FunctionR3Rn, FunctionR3Rn::Pointer, boost::noncopyable>
     ("FunctionR3Rn", init<>())
+    .def("Assign", &Function_Assign<FunctionR3Rn>)
     .def(self_ns::str(self))
     ;
 

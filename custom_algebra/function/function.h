@@ -213,6 +213,14 @@ public:
         }
     }
 
+    /// Utility function to set the function to the properties
+    template<typename TVariableType, typename TPropertiesType>
+    static void Assign( const TVariableType& rThisVariable, const typename TVariableType::Type& rValue,
+            TPropertiesType& rProperties )
+    {
+        rProperties.SetValue(rThisVariable, rValue);
+    }
+
     ///@}
     ///@name Access
     ///@{
