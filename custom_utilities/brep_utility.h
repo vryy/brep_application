@@ -219,7 +219,7 @@ public:
             output.resize(input.size());
         }
 
-        if (TDim == 2) // swapping for surface element/condition
+        if constexpr (TDim == 2) // swapping for surface element/condition
         {
             if (input.size() == 3) // tri3
             {
@@ -271,7 +271,7 @@ public:
                 KRATOS_ERROR << "The input size " << input.size() << " is invalid";
             }
         }
-        else if (TDim == 3) // swapping for volume element/condition
+        else if constexpr (TDim == 3) // swapping for volume element/condition
         {
             if (input.size() == 4) // tetrahedra
             {

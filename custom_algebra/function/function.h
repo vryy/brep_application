@@ -175,7 +175,7 @@ public:
             J = r_geom.Jacobian( J, integration_point );
             JtJ = prod(trans(J), J);
 
-            return sqrt(MathUtils<double>::Det(JtJ));
+            return std::sqrt(MathUtils<double>::Det(JtJ));
         }
         return 0.0; // to silence the compiler
     }
@@ -208,7 +208,7 @@ public:
             {
                 J = r_geom.Jacobian( J, integration_points[point] );
                 JtJ = prod(trans(J), J);
-                DetJ[point] = sqrt(MathUtils<double>::Det(JtJ));
+                DetJ[point] = std::sqrt(MathUtils<double>::Det(JtJ));
             }
         }
     }

@@ -85,7 +85,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~CubicSplineFunction()
+    ~CubicSplineFunction() override
     {}
 
     BaseType::Pointer CloneFunction() const final

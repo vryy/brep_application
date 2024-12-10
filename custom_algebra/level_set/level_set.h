@@ -90,7 +90,7 @@ public:
     LevelSet(LevelSet const& rOther) : BRep(rOther), BaseType(rOther) {}
 
     /// Destructor.
-    virtual ~LevelSet() {}
+    ~LevelSet() override {}
 
     ///@}
     ///@name Operators

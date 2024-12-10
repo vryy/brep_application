@@ -49,7 +49,7 @@ namespace Kratos
 /// Short class definition.
 /** class for auxilliary routines
 */
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class BRepMathUtility
 {
 public:

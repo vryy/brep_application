@@ -31,7 +31,7 @@ void KratosBRepApplication::Register()
 {
     // calling base class register to register Kratos components
     KratosApplication::Register();
-    std::cout << "Initializing KratosBRepApplication... " << std::endl;
+    std::cout << "Initializing KratosBRepApplication..." << std::endl;
 
     // register variables to Kratos kernel
     //KRATOS_REGISTER_VARIABLE( LOAD_FUNCTION )

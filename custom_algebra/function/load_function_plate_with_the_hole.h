@@ -83,7 +83,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~LoadFunctionR3RnPlateWithTheHole()
+    ~LoadFunctionR3RnPlateWithTheHole() override
     {}
 
     ///@}
@@ -112,12 +112,12 @@ public:
 
         Vector Load(2);
         double nx, ny;
-        if (tload_side == 0)
+        if constexpr (tload_side == 0)
         {
             nx = 1.0;
             ny = 0.0;
         }
-        else if (tload_side == 1)
+        else if constexpr (tload_side == 1)
         {
             nx = 0.0;
             ny = 1.0;
@@ -241,21 +241,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream LoadFunctionR3RnPlateWithTheHole
-template<std::size_t tload_side>
-inline std::istream& operator >> (std::istream& rIStream, LoadFunctionR3RnPlateWithTheHole<tload_side>& rThis)
-{}
-
-/// output stream LoadFunctionR3RnPlateWithTheHole
-template<std::size_t tload_side>
-inline std::ostream& operator << (std::ostream& rOStream, const LoadFunctionR3RnPlateWithTheHole<tload_side>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

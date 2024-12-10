@@ -296,7 +296,7 @@ boost::python::list Curve_ProjectOnCurve(Curve& rDummy, const Curve::PointType& 
     Output.append(t);
     Output.append(Proj);
     Output.append(stat);
-    return std::move(Output);
+    return Output;
 }
 
 boost::python::list Curve_ComputeEquallyDistanceDivisionByRecursiveBisection(Curve& rDummy,
@@ -308,7 +308,7 @@ boost::python::list Curve_ComputeEquallyDistanceDivisionByRecursiveBisection(Cur
     boost::python::list Output;
     for (std::size_t i = 0; i < tvec.size(); ++i)
         Output.append(tvec[i]);
-    return std::move(Output);
+    return Output;
 }
 
 boost::python::list Curve_ComputeUniformDivision(Curve& rDummy,
@@ -320,14 +320,14 @@ boost::python::list Curve_ComputeUniformDivision(Curve& rDummy,
     boost::python::list Output;
     for (std::size_t i = 0; i < tvec.size(); ++i)
         Output.append(tvec[i]);
-    return std::move(Output);
+    return Output;
 }
 
 BRep::PointType Section_ComputeCenter(Section& rDummy)
 {
     BRep::PointType Point;
     rDummy.ComputeCenter(Point);
-    return std::move(Point);
+    return Point;
 }
 
 boost::python::list Section_Triangulation(Section& rDummy)
