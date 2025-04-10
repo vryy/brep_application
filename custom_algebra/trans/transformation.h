@@ -145,6 +145,7 @@ public:
     template<typename TVectorType>
     void ApplyTransformation(TVectorType& value) const
     {
+        assert(value.size() == 3);
         TDataType new_value[3];
         for (std::size_t i = 0; i < 3; ++i)
         {
@@ -222,13 +223,13 @@ public:
     }
 
     /// overload operator ()
-    TDataType& operator() (const int& i, const int& j)
+    TDataType& operator() (const int i, const int j)
     {
         return mTransMat(i, j);
     }
 
     /// overload operator ()
-    const TDataType& operator() (const int& i, const int& j) const
+    const TDataType& operator() (const int i, const int j) const
     {
         return mTransMat(i, j);
     }

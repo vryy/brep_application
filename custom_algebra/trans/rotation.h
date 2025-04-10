@@ -6,17 +6,15 @@
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ROTATION_H_INCLUDED )
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_ROTATION_H_INCLUDED
+#if !defined(KRATOS_BREP_APPLICATION_ROTATION_H_INCLUDED )
+#define  KRATOS_BREP_APPLICATION_ROTATION_H_INCLUDED
 
 #ifdef _MSC_VER
 #define _USE_MATH_DEFINES
 #endif
 
 // System includes
-#include <math.h>
 #include <cmath>
-#include <string>
 
 // External includes
 
@@ -99,7 +97,7 @@ public:
     }
 
     /// Destructor
-    virtual ~Rotation() {}
+    ~Rotation() override {}
 
     /// Information
     void PrintInfo(std::ostream& rOStream) const final
@@ -121,20 +119,10 @@ public:
 
 };
 
-/// output stream function
-template<int TAxis, class TDataType>
-inline std::ostream& operator <<(std::ostream& rOStream, const Rotation<TAxis, TDataType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << ": ";
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
-
 }// namespace Kratos.
 
 #ifdef _MSC_VER
 #undef _USE_MATH_DEFINES
 #endif
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_ROTATION_H_INCLUDED
+#endif // KRATOS_BREP_APPLICATION_ROTATION_H_INCLUDED

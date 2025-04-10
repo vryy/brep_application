@@ -6,11 +6,10 @@
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_TRANSLATION_H_INCLUDED )
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_TRANSLATION_H_INCLUDED
+#if !defined(KRATOS_BREP_APPLICATION_TRANSLATION_H_INCLUDED )
+#define  KRATOS_BREP_APPLICATION_TRANSLATION_H_INCLUDED
 
 // System includes
-#include <string>
 
 // External includes
 
@@ -43,7 +42,7 @@ public:
     }
 
     /// Destructor
-    virtual ~Translation() {}
+    ~Translation() override {}
 
     /// Information
     void PrintInfo(std::ostream& rOStream) const final
@@ -53,17 +52,6 @@ public:
 
 };
 
-/// output stream function
-template<class TDataType>
-inline std::ostream& operator <<(std::ostream& rOStream, const Translation<TDataType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << ": ";
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
-
 }// namespace Kratos.
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_TRANSLATION_H_INCLUDED
-
+#endif // KRATOS_BREP_APPLICATION_TRANSLATION_H_INCLUDED

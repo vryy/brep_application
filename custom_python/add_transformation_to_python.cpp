@@ -50,13 +50,13 @@ Transformation<TDataType> TransformationUtility_CreateAlignTransformation(Transf
 }
 
 template<typename TDataType>
-void Transformation_SetValue(Transformation<TDataType>& rDummy, const int& i, const int& j, const TDataType& v)
+void Transformation_SetValue(Transformation<TDataType>& rDummy, const int i, const int j, const TDataType& v)
 {
     rDummy(i, j) = v;
 }
 
 template<typename TDataType>
-TDataType Transformation_GetValue(Transformation<TDataType>& rDummy, const int& i, const int& j)
+TDataType Transformation_GetValue(Transformation<TDataType>& rDummy, const int i, const int j)
 {
     return rDummy(i, j);
 }
@@ -70,12 +70,12 @@ TVectorType Transformation_Apply(Transformation<TDataType>& rDummy, const TVecto
 }
 
 template<typename TDataType>
-boost::python::list Transformation_Apply2(Transformation<TDataType>& rDummy, boost::python::list v)
+boost::python::list Transformation_Apply2(Transformation<TDataType>& rDummy, const boost::python::list& v)
 {
     std::vector<TDataType> newv;
     typedef boost::python::stl_input_iterator<TDataType> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type & d, std::make_pair(iterator_value_type(v), iterator_value_type() ) )
-    newv.push_back(d);
+    BOOST_FOREACH(const typename iterator_value_type::value_type& d, std::make_pair(iterator_value_type(v), iterator_value_type() ) )
+        newv.push_back(d);
 
     rDummy.template ApplyTransformation<std::vector<TDataType> >(newv);
 
