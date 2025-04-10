@@ -21,6 +21,12 @@
 // Project includes
 #include "custom_algebra/trans/transformation.h"
 
+// On Visual Studio M_PI is available in cmath when _USE_MATH_DEFINES is defined
+// but for any reason, it's not, then we define it here
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace Kratos
 {
 
