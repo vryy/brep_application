@@ -72,7 +72,7 @@ public:
 
     /// Default constructor.
     RminmaxTubeBRep(const BRep::Pointer pBRep, const Curve::Pointer pAlignCurve, const double Rmin, const double Rmax)
-        : mpBRep(pBRep), mpCurve(pAlignCurve), mRmin(Rmin), mRmax(Rmax), BaseType()
+        : BaseType(), mpBRep(pBRep), mpCurve(pAlignCurve), mRmin(Rmin), mRmax(Rmax)
     {}
 
     /// Copy constructor.

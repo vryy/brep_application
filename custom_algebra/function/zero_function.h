@@ -80,7 +80,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~ZeroFunction()
+    ~ZeroFunction() override
     {}
 
     ///@}

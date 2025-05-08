@@ -40,13 +40,13 @@ public:
         Point()
         {}
 
-        Point(const double& xx, const double& yy) : x(xx), y(yy)
+        Point(const double xx, const double yy) : x(xx), y(yy)
         {}
 
-        Point(const Point& p) : x(p.x), y(p.y), id(p.id)
+        Point(const Point& p) : id(p.id), x(p.x), y(p.y)
         {}
 
-        Point add(const double& a, const Point& p) const
+        Point add(const double a, const Point& p) const
         {
             return Point(x + a * p.x, y + a * p.y);
         }
@@ -259,7 +259,7 @@ public:
     };
 
     /// Default constructor.
-    Delaunay(const double& xmin, const double& xmax, const double& ymin, const double& ymax)
+    Delaunay(const double xmin, const double xmax, const double ymin, const double ymax)
     {
         bps.resize(4);
         bps[0] = Point(xmin, ymin);
@@ -279,7 +279,7 @@ public:
     virtual ~Delaunay()
     {}
 
-    void addPoint(const double& x, const double& y)
+    void addPoint(const double x, const double y)
     {
         Point p(x, y);
         addPoint(p);

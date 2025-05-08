@@ -105,7 +105,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~NodalLevelSet() {}
+    ~NodalLevelSet() override {}
 
     ///@}
     ///@name Operators

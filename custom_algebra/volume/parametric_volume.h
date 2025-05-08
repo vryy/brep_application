@@ -89,7 +89,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~ParametricVolume() {}
+    ~ParametricVolume() override {}
 
     ///@}
     ///@name Operators

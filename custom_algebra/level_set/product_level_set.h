@@ -89,7 +89,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~ProductLevelSet() {}
+    ~ProductLevelSet() override {}
 
     ///@}
     ///@name Operators
@@ -241,21 +241,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, ProductLevelSet& rThis)
-{
-    return rIStream;
-}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const ProductLevelSet& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << " ";
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

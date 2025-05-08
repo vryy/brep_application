@@ -90,11 +90,11 @@ Condition::GeometryType::PointType::PointType BRepUtility_ComputerCenterConditio
 boost::python::list BRepMeshUtility_CreateTriangleConditions1(BRepMeshUtility& rDummy,
         ModelPart& r_model_part,
         const std::string& sample_condition_name,
-        const int& type, // if 1: generate T3 elements; 2: T6 elements;
+        const int type, // if 1: generate T3 elements; 2: T6 elements;
         const array_1d<double, 3>& rCenter,
         const array_1d<double, 3>& rNormal,
-        const double& radius, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-        const int& activation_level,
+        const double radius, const std::size_t nsampling_axial, const std::size_t nsampling_radial,
+        const int activation_level,
         Properties::Pointer pProperties)
 {
     Element::GeometryType::PointType::PointType C, N;
@@ -235,8 +235,8 @@ boost::python::list TubeMesher_GetConditions(TubeMesher<TPointType>& dummy)
 }
 
 template<typename TPointType>
-boost::python::list TubeMesher_GetSlice1(TubeMesher<TPointType>& dummy, const std::size_t& slice,
-        const std::size_t& layer, const std::size_t& sub_layer)
+boost::python::list TubeMesher_GetSlice1(TubeMesher<TPointType>& dummy, const std::size_t slice,
+        const std::size_t layer, const std::size_t sub_layer)
 {
     std::vector<std::vector<std::size_t> > conditions;
     dummy.GetSlice(conditions, slice, layer, sub_layer);
@@ -255,8 +255,8 @@ boost::python::list TubeMesher_GetSlice1(TubeMesher<TPointType>& dummy, const st
 }
 
 template<typename TPointType>
-boost::python::list TubeMesher_GetSlice2(TubeMesher<TPointType>& dummy, const std::size_t& slice,
-        const std::size_t& layer)
+boost::python::list TubeMesher_GetSlice2(TubeMesher<TPointType>& dummy, const std::size_t slice,
+        const std::size_t layer)
 {
     std::vector<std::vector<std::vector<std::size_t> > > conditions;
     dummy.GetSlice(conditions, slice, layer);
@@ -280,8 +280,8 @@ boost::python::list TubeMesher_GetSlice2(TubeMesher<TPointType>& dummy, const st
 }
 
 template<typename TPointType>
-boost::python::list TubeMesher_GetRing(TubeMesher<TPointType>& dummy, const std::size_t& ring,
-                                       const std::size_t& layer)
+boost::python::list TubeMesher_GetRing(TubeMesher<TPointType>& dummy, const std::size_t ring,
+                                       const std::size_t layer)
 {
     std::vector<std::vector<std::vector<std::size_t> > > elements;
     dummy.GetRing(elements, ring, layer);
@@ -332,7 +332,7 @@ struct TubeMesherWrapper
 };
 
 boost::python::list BRepIntersectionUtility_Intersect(BRepIntersectionUtility& rDummy,
-        BRep::Pointer pBRep1, BRep::Pointer pBRep2, const std::size_t& nsampling)
+        BRep::Pointer pBRep1, BRep::Pointer pBRep2, const std::size_t nsampling)
 {
     std::vector<BRep::PointType> Points;
     rDummy.Intersect(Points, *pBRep1, *pBRep2, nsampling);
@@ -398,9 +398,9 @@ void BRepApplication_AddUtilitiesToPython()
     .def("NumberOfSegments", &TubeMesher<PointType>::NumberOfSegments)
     ;
 
-    void(Delaunay::*pointer_to_addPoint)(const double&, const double&) = &Delaunay::addPoint;
+    void(Delaunay::*pointer_to_addPoint)(const double, const double) = &Delaunay::addPoint;
     class_<Delaunay, boost::shared_ptr<Delaunay>, boost::noncopyable>
-    ("Delaunay", init<const double&, const double&, const double&, const double&>())
+    ("Delaunay", init<const double, const double, const double, const double>())
     .def("AddPoint", pointer_to_addPoint)
     .def("Print", &Delaunay::Print)
     ;

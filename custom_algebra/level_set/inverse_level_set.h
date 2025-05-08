@@ -88,7 +88,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~InverseLevelSet() {}
+    ~InverseLevelSet() override {}
 
     ///@}
     ///@name Operators
@@ -252,19 +252,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, InverseLevelSet& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const InverseLevelSet& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

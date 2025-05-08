@@ -74,7 +74,7 @@ public:
 
     /// Default constructor.
     OrBRep(BRep::Pointer pBRep1, BRep::Pointer pBRep2)
-        : mpBRep1(pBRep1), mpBRep2(pBRep2), BaseType()
+        : BaseType(), mpBRep1(pBRep1), mpBRep2(pBRep2)
     {}
 
     /// Copy constructor.
@@ -85,7 +85,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~OrBRep() {}
+    ~OrBRep() override {}
 
     ///@}
     ///@name Operators

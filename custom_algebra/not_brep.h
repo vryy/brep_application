@@ -74,7 +74,7 @@ public:
 
     /// Default constructor.
     NotBRep(BRep::Pointer pBRep)
-        : mpBRep(pBRep), BaseType()
+        : BaseType(), mpBRep(pBRep)
     {}
 
     /// Copy constructor.
@@ -84,7 +84,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~NotBRep() {}
+    ~NotBRep() override {}
 
     ///@}
     ///@name Operators

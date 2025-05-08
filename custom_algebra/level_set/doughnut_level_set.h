@@ -79,7 +79,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~DoughnutLevelSet() {}
+    ~DoughnutLevelSet() override {}
 
     ///@}
     ///@name Operators
@@ -220,21 +220,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                                  DoughnutLevelSet& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const DoughnutLevelSet& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

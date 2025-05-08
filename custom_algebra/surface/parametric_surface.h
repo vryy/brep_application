@@ -89,7 +89,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~ParametricSurface() {}
+    ~ParametricSurface() override {}
 
     ///@}
     ///@name Operators

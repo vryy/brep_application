@@ -84,10 +84,10 @@ public:
     ///@{
 
     /// Default constructor.
-    LevelSet() : BRep(), BaseType() {}
+    LevelSet() : BaseType(), BRep() {}
 
     /// Copy constructor.
-    LevelSet(LevelSet const& rOther) : BRep(rOther), BaseType(rOther) {}
+    LevelSet(LevelSet const& rOther) : BaseType(rOther), BRep(rOther) {}
 
     /// Destructor.
     ~LevelSet() override {}

@@ -79,7 +79,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~Circular2LevelSet() {}
+    ~Circular2LevelSet() override {}
 
     ///@}
     ///@name Operators
@@ -220,21 +220,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, Circular2LevelSet& rThis)
-{
-    return rIStream;
-}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const Circular2LevelSet& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << " ";
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

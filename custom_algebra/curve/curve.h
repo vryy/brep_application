@@ -95,7 +95,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~Curve() {}
+    ~Curve() override {}
 
     ///@}
     ///@name Operators
@@ -412,7 +412,9 @@ private:
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream, Curve& rThis)
-{}
+{
+    return rIStream;
+}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream, const Curve& rThis)

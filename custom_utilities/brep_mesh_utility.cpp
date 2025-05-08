@@ -751,7 +751,6 @@ BRepMeshUtility::ElementMeshInfoType BRepMeshUtility::CreateHexElements(ModelPar
     ModelPart::ElementsContainerType NewElements;
     const std::string NodeKey("Node");
     std::vector<std::size_t> node;
-    int activation_level;
 
     if (type == 1)
     {

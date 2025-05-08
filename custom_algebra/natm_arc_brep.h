@@ -108,7 +108,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~NATMArcBRep()
+    ~NATMArcBRep() override
     {}
 
     ///@}

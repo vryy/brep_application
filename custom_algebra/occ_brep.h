@@ -88,7 +88,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~OCCBRep()
+    ~OCCBRep() override
     {}
 
     ///@}

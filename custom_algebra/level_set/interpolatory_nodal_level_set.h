@@ -92,7 +92,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~InterpolatoryNodalLevelSet() {}
+    ~InterpolatoryNodalLevelSet() override {}
 
     ///@}
     ///@name Operators

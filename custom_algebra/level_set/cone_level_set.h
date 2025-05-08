@@ -97,7 +97,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~ConeLevelSet() {}
+    ~ConeLevelSet() override {}
 
     ///@}
     ///@name Operators
@@ -282,21 +282,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                                  ConeLevelSet& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const ConeLevelSet& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

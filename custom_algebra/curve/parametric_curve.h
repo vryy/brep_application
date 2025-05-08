@@ -92,7 +92,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~ParametricCurve() {}
+    ~ParametricCurve() override {}
 
     ///@}
     ///@name Operators

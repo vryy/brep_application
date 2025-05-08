@@ -368,12 +368,7 @@ private:
 
 }  // namespace Kratos.
 
-#ifdef USE_CGAL_FOR_TRIANGULATION
 #undef USE_CGAL_FOR_TRIANGULATION
-#endif
-
-#ifdef USE_DELAUNAY_FOR_TRIANGULATION
 #undef USE_DELAUNAY_FOR_TRIANGULATION
-#endif
 
 #endif // KRATOS_POLYGONAL_SECTION_H_INCLUDED  defined
