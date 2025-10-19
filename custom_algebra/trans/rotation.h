@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosBRepApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 21 Nov 2017 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
@@ -125,7 +124,7 @@ public:
 
 };
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #ifdef _MSC_VER
 #undef _USE_MATH_DEFINES

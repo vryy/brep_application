@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosBRepApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 14 Feb 2019 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
@@ -105,6 +104,6 @@ public:
 
 };
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_BREP_APPLICATION_MIRROR_H_INCLUDED

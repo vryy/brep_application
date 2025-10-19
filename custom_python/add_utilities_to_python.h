@@ -1,9 +1,8 @@
 // see brep_application/LICENSE.txt
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosBRepApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 23 Aug 2019 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 

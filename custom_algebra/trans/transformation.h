@@ -1,13 +1,12 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosBRepApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 21 Nov 2017 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_TRANSFORMATION_H_INCLUDED )
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_TRANSFORMATION_H_INCLUDED
+#if !defined(KRATOS_BREP_APPLICATION_TRANSFORMATION_H_INCLUDED )
+#define  KRATOS_BREP_APPLICATION_TRANSFORMATION_H_INCLUDED
 
 // System includes
 #include <string>
@@ -19,6 +18,8 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/serializer.h"
+#include "containers/array_1d.h"
 #include "utilities/math_utils.h"
 
 namespace Kratos
@@ -276,6 +277,20 @@ protected:
 
     MatrixType mTransMat;
 
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    virtual void save(Serializer& rSerializer) const
+    {
+        rSerializer.save( "TM", mTransMat );
+    }
+
+    virtual void load(Serializer& rSerializer)
+    {
+        rSerializer.load( "TM", mTransMat );
+    }
+    ///@}
 };
 
 /// output stream function
@@ -288,6 +303,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Transformation<TD
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_TRANSFORMATION_H_INCLUDED
+#endif // KRATOS_BREP_APPLICATION_TRANSFORMATION_H_INCLUDED

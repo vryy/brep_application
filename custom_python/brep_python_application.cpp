@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosBRepApplication
 //   Last modified by:    $Author: hbui $
 //   Date:                $Date: Oct 15, 2014 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
