@@ -71,7 +71,7 @@ public:
     ///@{
 
     /// Default constructor.
-    DistanceToCurveLevelSet(const Curve::Pointer pAlignCurve, const double& R)
+    DistanceToCurveLevelSet(const Curve::Pointer pAlignCurve, const double R)
         : BaseType(), mpCurve(pAlignCurve), mR(R)
     {}
 
@@ -118,7 +118,7 @@ public:
 
     Vector GetGradient(const PointType& P) const final
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not yet implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     /// projects a point on the surface of level_set using Bisection
@@ -129,7 +129,7 @@ public:
 
         if (P(0) == Proj(0) && P(1) == Proj(1) && P(2) == Proj(2))
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the curve of Brep distance_to_curve  ", "");
+            KRATOS_ERROR << "trying to project point that's on the curve of Brep distance_to_curve";
         }
 
         noalias(Proj) = (P - Proj) * mR / norm_2(P - Proj) + Proj;
@@ -138,8 +138,8 @@ public:
     }
 
     /// Generate the sampling points on the level set surface
-    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-                        const double& start_angle, const double& end_angle, const double& tmin, const double& tmax) const
+    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t nsampling_axial, const std::size_t nsampling_radial,
+                        const double start_angle, const double end_angle, const double tmin, const double tmax) const
     {
         // KRATOS_WATCH(nsampling_axial)
         // KRATOS_WATCH(nsampling_radial)
@@ -206,14 +206,14 @@ public:
     }
 
     /// Generate the sampling points on the level set surface
-    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-                        const double& start_angle, const double& end_angle) const
+    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t nsampling_axial, const std::size_t nsampling_radial,
+                        const double start_angle, const double end_angle) const
     {
         this->GeneratePoints(results, nsampling_axial, nsampling_radial, start_angle, end_angle, 0.0, 1.0);
     }
 
     /// Generate the sampling points on the level set surface
-    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t& nsampling_axial, const std::size_t& nsampling_radial) const
+    void GeneratePoints(std::vector<std::vector<PointType> >& results, const std::size_t nsampling_axial, const std::size_t nsampling_radial) const
     {
         const double Pi = 3.1415926535897932384626433832795028841971693;
         this->GeneratePoints(results, nsampling_axial, nsampling_radial, 0.0, 2 * Pi);
@@ -223,10 +223,10 @@ public:
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4ElementsClosedLoop(ModelPart& r_model_part,
             const std::string& sample_element_name,
             Properties::Pointer pProperties,
-            const std::size_t& nsampling_axial,
-            const std::size_t& nsampling_radial,
-            const double& tmin,
-            const double& tmax) const
+            const std::size_t nsampling_axial,
+            const std::size_t nsampling_radial,
+            const double tmin,
+            const double tmax) const
     {
         const double Pi = 3.1415926535897932384626433832795028841971693;
 
@@ -245,11 +245,11 @@ public:
     std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> CreateQ4ConditionsClosedLoop(ModelPart& r_model_part,
             const std::string& sample_condition_name,
             Properties::Pointer pProperties,
-            const std::size_t& nsampling_axial,
-            const std::size_t& nsampling_radial,
-            const double& tmin,
-            const double& tmax,
-            const bool& reverse) const
+            const std::size_t nsampling_axial,
+            const std::size_t nsampling_radial,
+            const double tmin,
+            const double tmax,
+            const bool reverse) const
     {
         const double Pi = 3.1415926535897932384626433832795028841971693;
 
@@ -269,8 +269,8 @@ public:
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4ElementsClosedLoop(ModelPart& r_model_part,
             const std::string& sample_element_name,
             Properties::Pointer pProperties,
-            const std::size_t& nsampling_axial,
-            const std::size_t& nsampling_radial) const
+            const std::size_t nsampling_axial,
+            const std::size_t nsampling_radial) const
     {
         return CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties, nsampling_axial, nsampling_radial, 0.0, 1.0);
     }
@@ -279,10 +279,10 @@ public:
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4Elements(ModelPart& r_model_part,
             const std::string& sample_element_name,
             Properties::Pointer pProperties,
-            const std::size_t& nsampling_axial,
-            const std::size_t& nsampling_radial,
-            const double& start_radial_angle,
-            const double& end_radial_angle) const
+            const std::size_t nsampling_axial,
+            const std::size_t nsampling_radial,
+            const double start_radial_angle,
+            const double end_radial_angle) const
     {
         // firstly create the sampling points on surface
         std::vector<std::vector<PointType> > sampling_points;
