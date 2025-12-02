@@ -95,7 +95,23 @@ if(${MATHPRESSO_FOUND})
     target_link_libraries(KratosBRepApplicationDependencies INTERFACE ${MATHPRESSO_LIBRARIES})
 endif()
 if(${OpenCASCADE_FOUND})
-    target_link_libraries(KratosBRepApplicationDependencies INTERFACE ${OpenCASCADE_LIBRARIES})
+    target_link_libraries(KratosBRepApplicationDependencies INTERFACE
+        TKernel
+        TKMath
+        TKG2d
+        TKG3d
+        TKGeomBase
+        TKBRep
+        TKXSBase
+        TKDESTEP
+        TKTopAlgo
+        TKGeomAlgo
+        TKPrim
+        TKFillet    # REQUIRED for BRepFilletAPI_MakeFillet
+        TKBO        # Boolean operations
+        TKShHealing # Shape healing
+        TKOffset    # REQUIRED for MakeThickSolid
+    )
 endif()
 if(${CGAL_FOUND})
     target_link_libraries(KratosBRepApplicationDependencies INTERFACE CGAL::CGAL)
