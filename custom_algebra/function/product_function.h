@@ -112,7 +112,7 @@ public:
         return mp_func_1->GetFormula(Format) + "*" + mp_func_2->GetFormula(Format);
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final
+    typename BaseType::Pointer GetDiffFunction(const int component) const final
     {
         return typename BaseType::Pointer(
                    new SumFunction<BaseType>(

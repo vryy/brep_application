@@ -152,7 +152,7 @@ public:
     /// 0: the cell is completely inside the domain bounded by level set
     /// 1: completely outside
     /// -1: the cell is cut by level set
-    int CutStatus(GeometryType& r_geom, const int& configuration) const final
+    int CutStatus(GeometryType& r_geom, const int configuration) const final
     {
         int stat1 = mpBRep1->CutStatus(r_geom, configuration);
         int stat2 = mpBRep2->CutStatus(r_geom, configuration);
@@ -189,7 +189,7 @@ public:
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
+    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t nsampling, const int configuration) const final
     {
         int stat1 = mpBRep1->CutStatusBySampling(r_geom, nsampling, configuration);
         int stat2 = mpBRep2->CutStatusBySampling(r_geom, nsampling, configuration);
@@ -286,7 +286,7 @@ private:
     ///@{
 
     /// OR the 2 cut statuses
-    int OrCutStatus(const int& stat1, const int& stat2) const
+    int OrCutStatus(const int stat1, const int stat2) const
     {
         if (stat1 == _OUT && stat2 == _OUT)
         {

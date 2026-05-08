@@ -127,7 +127,7 @@ public:
     }
 
     /// inherit from Function
-    OutputType GetDerivative(const int& component, const InputType& t) const final
+    OutputType GetDerivative(const int component, const InputType& t) const final
     {
         OutputType P;
 
@@ -139,7 +139,7 @@ public:
     }
 
     /// inherit from Function
-    OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const final
+    OutputType GetSecondDerivative(const int component_1, const int component_2, const InputType& t) const final
     {
         OutputType P;
 
@@ -151,7 +151,7 @@ public:
     }
 
     /// inherit from Function
-    SuperType::Pointer GetDiffFunction(const int& component) const final
+    SuperType::Pointer GetDiffFunction(const int component) const final
     {
         return SuperType::Pointer(
                    new ParametricCurve(
@@ -162,7 +162,7 @@ public:
                );
     }
 
-    void Export(const std::string& filename, const double& tmin, const double& tmax, const std::size_t& nsampling, const int& deriv) const
+    void Export(const std::string& filename, const double tmin, const double tmax, const std::size_t nsampling, const int deriv) const
     {
         std::ofstream fid(filename.c_str());
         fid << std::setprecision(6) << std::scientific;

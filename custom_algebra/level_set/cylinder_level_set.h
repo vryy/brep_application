@@ -79,15 +79,15 @@ public:
     ///@{
 
     /// Default constructor.
-    CylinderLevelSet(const double& cX, const double& cY, const double& cZ, const double& dX, const double& dY, const double& dZ, const double& R)
+    CylinderLevelSet(const double cX, const double cY, const double cZ, const double dX, const double dY, const double dZ, const double R)
         : BaseType(), mcX(cX), mcY(cY), mcZ(cZ), mR(R)
     {
         mLength = sqrt(pow(dX, 2) + pow(dY, 2) + pow(dZ, 2));
 
         if (mLength == 0.0)
-            KRATOS_THROW_ERROR(std::logic_error, "The director vector can't be null", "")
+            KRATOS_ERROR << "The director vector can't be null";
 
-            mdX = dX / mLength;
+        mdX = dX / mLength;
         mdY = dY / mLength;
         mdZ = dZ / mLength;
     }
@@ -145,12 +145,12 @@ public:
     Matrix GetGradientDerivatives(const PointType& P) const override
     {
         // TODO
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not yet implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     /// Generate the sampling points on the level set surface
-    std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-            const double& start_angle, const double& end_angle, const double& tmin, const double& tmax) const
+    std::vector<std::vector<PointType> > GeneratePoints(const std::size_t nsampling_axial, const std::size_t nsampling_radial,
+            const double start_angle, const double end_angle, const double tmin, const double tmax) const
     {
         // KRATOS_WATCH(nsampling_axial)
         // KRATOS_WATCH(nsampling_radial)
@@ -196,7 +196,7 @@ public:
     }
 
     /// Generate the sampling points on the level set surface
-    std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial) const
+    std::vector<std::vector<PointType> > GeneratePoints(const std::size_t nsampling_axial, const std::size_t nsampling_radial) const
     {
         return GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2 * PI, 0.0, 1.0);
     }
@@ -205,8 +205,8 @@ public:
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4ElementsClosedLoop(ModelPart& r_model_part,
             const std::string& sample_element_name,
             Properties::Pointer pProperties,
-            const std::size_t& nsampling_axial,
-            const std::size_t& nsampling_radial) const
+            const std::size_t nsampling_axial,
+            const std::size_t nsampling_radial) const
     {
         // firstly create the sampling points on surface
         std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial);
@@ -221,10 +221,10 @@ public:
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4ElementsClosedLoop(ModelPart& r_model_part,
             const std::string& sample_element_name,
             Properties::Pointer pProperties,
-            const std::size_t& nsampling_axial,
-            const std::size_t& nsampling_radial,
-            const double& tmin,
-            const double& tmax) const
+            const std::size_t nsampling_axial,
+            const std::size_t nsampling_radial,
+            const double tmin,
+            const double tmax) const
     {
         // firstly create the sampling points on surface
         std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2 * PI, tmin, tmax);
@@ -239,10 +239,10 @@ public:
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateQ4Elements(ModelPart& r_model_part,
             const std::string& sample_element_name,
             Properties::Pointer pProperties,
-            const std::size_t& nsampling_axial,
-            const std::size_t& nsampling_radial,
-            const double& start_radial_angle,
-            const double& end_radial_angle) const
+            const std::size_t nsampling_axial,
+            const std::size_t nsampling_radial,
+            const double start_radial_angle,
+            const double end_radial_angle) const
     {
         // firstly create the sampling points on surface
         std::vector<std::vector<PointType> > sampling_points = this->GeneratePoints(nsampling_axial, nsampling_radial, start_radial_angle, end_radial_angle, 0.0, 1.0);
@@ -263,7 +263,7 @@ public:
         double vector_length = sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2));
         if (vector_length == 0)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the center line  ", "");
+            KRATOS_ERROR << "trying to project point that's on the center line";
         }
 
         Proj(0) = (P(0) - pX) * mR / vector_length + pX;
@@ -292,7 +292,7 @@ public:
         double vector_length = sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2));
         if (vector_length == 0)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the center line  ", "");
+            KRATOS_ERROR << "trying to project point that's on the center line";
         }
 
         Vector dt(3);

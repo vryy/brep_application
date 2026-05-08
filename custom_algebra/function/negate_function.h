@@ -103,12 +103,12 @@ public:
         return -mp_func->GetValue(P);
     }
 
-    double GetDerivative(const int& component, const InputType& P) const final
+    double GetDerivative(const int component, const InputType& P) const final
     {
         return -mp_func->GetDerivative(component, P);
     }
 
-    double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const final
+    double GetSecondDerivative(const int component_1, const int component_2, const InputType& P) const final
     {
         return -mp_func->GetSecondDerivative(component_1, component_2, P);
     }
@@ -120,7 +120,7 @@ public:
         return ss.str();
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final
+    typename BaseType::Pointer GetDiffFunction(const int component) const final
     {
         return typename BaseType::Pointer(new NegateFunction(mp_func->GetDiffFunction(component)));
     }

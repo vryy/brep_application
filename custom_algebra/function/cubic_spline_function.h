@@ -98,12 +98,12 @@ public:
         mS.set_points(t, x);
     }
 
-    void SetLeftBoundary(const int& type, const double& value)
+    void SetLeftBoundary(const int type, const double value)
     {
         mS.set_left_boundary(static_cast<tk::spline::bd_type>(type), value);
     }
 
-    void SetRightBoundary(const int& type, const double& value)
+    void SetRightBoundary(const int type, const double value)
     {
         mS.set_right_boundary(static_cast<tk::spline::bd_type>(type), value);
     }
@@ -128,17 +128,17 @@ public:
         }
     }
 
-    double GetDerivative(const int& component, const InputType& P) const override
+    double GetDerivative(const int component, const InputType& P) const override
     {
         return mS.deriv(TDerivDegree + 1, P);
     }
 
-    double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const override
+    double GetSecondDerivative(const int component_1, const int component_2, const InputType& P) const override
     {
         return mS.deriv(TDerivDegree + 2, P);
     }
 
-    // virtual FunctionR1R1::Pointer GetDiffFunction(const int& component) const
+    // virtual FunctionR1R1::Pointer GetDiffFunction(const int component) const
     // {
     //     typename CubicSplineFunction<TDerivDegree+1>::Pointer pFunc = boost::make_shared<CubicSplineFunction<TDerivDegree+1> >();
     //     pFunc->SetPoints(mS.x(), mS.y());
@@ -269,17 +269,17 @@ public:
         return mS.deriv(3, P);
     }
 
-    double GetDerivative(const int& component, const InputType& P) const final
+    double GetDerivative(const int component, const InputType& P) const final
     {
         return mS.deriv(4, P);
     }
 
-    double GetSecondDerivative(const int& component_1, const int& component_2, const InputType& P) const final
+    double GetSecondDerivative(const int component_1, const int component_2, const InputType& P) const final
     {
         return mS.deriv(5, P);
     }
 
-    // virtual FunctionR1R1::Pointer GetDiffFunction(const int& component) const
+    // virtual FunctionR1R1::Pointer GetDiffFunction(const int component) const
     // {
     //     return FunctionR1R1::Pointer(new ZeroFunction<FunctionR1R1>());
     // }

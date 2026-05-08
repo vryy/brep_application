@@ -71,7 +71,7 @@ public:
     ///@{
 
     /// Default constructor.
-    Cylinder2LevelSet(const double& cX, const double& cY, const double& cZ, const double& dX, const double& dY, const double& dZ, const double& R)
+    Cylinder2LevelSet(const double cX, const double cY, const double cZ, const double dX, const double dY, const double dZ, const double R)
         : BaseType(cX, cY, cZ, dX, dY, dZ, R)
     {}
 
@@ -251,7 +251,5 @@ private:
 ///@} addtogroup block
 
 }  // namespace Kratos.
-
-#undef PI
 
 #endif // KRATOS_CYLINDER_2_LEVEL_SET_H_INCLUDED  defined

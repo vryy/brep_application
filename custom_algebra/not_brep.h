@@ -134,7 +134,7 @@ public:
     /// 0: the cell is completely inside the domain bounded by level set
     /// 1: completely outside
     /// -1: the cell is cut by level set
-    int CutStatus(GeometryType& r_geom, const int& configuration) const final
+    int CutStatus(GeometryType& r_geom, const int configuration) const final
     {
         int stat = mpBRep->CutStatus(r_geom, configuration);
         return this->NotCutStatus(stat);
@@ -168,7 +168,7 @@ public:
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
+    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t nsampling, const int configuration) const final
     {
         int stat = mpBRep->CutStatusBySampling(r_geom, nsampling, configuration);
         return this->NotCutStatus(stat);
@@ -261,7 +261,7 @@ private:
     ///@{
 
     /// Reverse the cut status
-    int NotCutStatus(const int& stat) const
+    int NotCutStatus(const int stat) const
     {
         if (stat == _OUT)
         {

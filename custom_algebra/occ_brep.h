@@ -145,7 +145,7 @@ public:
     }
 
     /// Compute the intersection of the OCCBRep with a line connect by 2 points.
-    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& tol) const final
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double tol) const final
     {
         KRATOS_ERROR << "Calling the base " << __FUNCTION__;
     }

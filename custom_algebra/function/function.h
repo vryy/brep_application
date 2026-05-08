@@ -109,13 +109,13 @@ public:
         KRATOS_ERROR << "Call the base class";
     }
 
-    virtual TOutputType GetDerivative(const int& component, const TInputType& P) const
+    virtual TOutputType GetDerivative(const int component, const TInputType& P) const
     {
         Function::Pointer pDerivative = this->GetDiffFunction(component);
         return pDerivative->GetValue(P);
     }
 
-    virtual TOutputType GetSecondDerivative(const int& component_1, const int& component_2, const TInputType& P) const
+    virtual TOutputType GetSecondDerivative(const int component_1, const int component_2, const TInputType& P) const
     {
         Function::Pointer pSecondDerivative = this->GetDiffFunction(component_1)->GetDiffFunction(component_2);
         return pSecondDerivative->GetValue(P);
@@ -136,7 +136,7 @@ public:
         KRATOS_ERROR << "Call the base class";
     }
 
-    virtual Function::Pointer GetDiffFunction(const int& component) const
+    virtual Function::Pointer GetDiffFunction(const int component) const
     {
         KRATOS_ERROR << "Call the base class";
     }

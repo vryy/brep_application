@@ -78,11 +78,11 @@ public:
     ///@{
 
     /// Default constructor.
-    HydrostaticPressureFunctionOnSurface(const double& Pressure, const double& GradientPressure, const array_1d<double, 3>& Normal)
+    HydrostaticPressureFunctionOnSurface(const double Pressure, const double GradientPressure, const array_1d<double, 3>& Normal)
         : BaseType(), mPressure(Pressure), mGradientPressure(GradientPressure), mNormal(Normal / norm_2(Normal))
     {}
 
-    // HydrostaticPressureFunctionOnSurface(const double& Pressure, const double& GradientPressure, const Vector& Normal)
+    // HydrostaticPressureFunctionOnSurface(const double Pressure, const double GradientPressure, const Vector& Normal)
     // : BaseType(), mPressure(Pressure), mGradientPressure(GradientPressure), mNormal(Normal)
     // {
     //     if (Normal.size() < 3)
@@ -127,7 +127,7 @@ public:
     }
 
     /// inherit from Function
-    BaseType::Pointer GetDiffFunction(const int& component) const final
+    BaseType::Pointer GetDiffFunction(const int component) const final
     {
         if (component == 0)
         {

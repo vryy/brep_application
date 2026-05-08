@@ -124,19 +124,19 @@ public:
     }
 
     /// inherit from Function
-    OutputType GetDerivative(const int& component, const InputType& t) const override
+    OutputType GetDerivative(const int component, const InputType& t) const override
     {
         KRATOS_ERROR << "Error calling abstract function";
     }
 
     /// inherit from Function
-    OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const override
+    OutputType GetSecondDerivative(const int component_1, const int component_2, const InputType& t) const override
     {
         KRATOS_ERROR << "Error calling abstract function";
     }
 
     /// inherit from Function
-    BaseType::Pointer GetDiffFunction(const int& component) const override
+    BaseType::Pointer GetDiffFunction(const int component) const override
     {
         KRATOS_ERROR << "Error calling abstract function";
     }
@@ -159,6 +159,8 @@ public:
         int nsampling = DataValueContainer::GetValue(CURVE_NUMBER_OF_SAMPLING);
         // return this->ComputeLengthByTrapezoidalQuadrature(tmin, tmax, nsampling);
         return this->ComputeLengthByGaussQuadrature(tmin, tmax, 2, nsampling);
+        // double tol = DataValueContainer::GetValue(CURVE_SEARCH_TOLERANCE);
+        // return this->ComputeLengthRecursively(tmin, tmax, tol);
     }
 
     /// Compute the distance from a point to a curve

@@ -141,7 +141,7 @@ public:
         {
             std::stringstream buffer;
             buffer << ComponentName << " #" << ThisKey << " is not found.";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << buffer.str();
         }
 
         return i_result;

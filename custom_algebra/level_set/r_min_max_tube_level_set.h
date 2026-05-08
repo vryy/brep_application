@@ -145,17 +145,17 @@ public:
     ///@name Access
     ///@{
 
-    void SetValue(const Variable<bool>& rVariable, const bool& rValue) override
+    void SetValue(const Variable<bool>& rVariable, const bool rValue) override
     {
         mpLevelSet->SetValue(rVariable, rValue);
     }
 
-    void SetValue(const Variable<int>& rVariable, const int& rValue) override
+    void SetValue(const Variable<int>& rVariable, const int rValue) override
     {
         mpLevelSet->SetValue(rVariable, rValue);
     }
 
-    void SetValue(const Variable<double>& rVariable, const double& rValue) override
+    void SetValue(const Variable<double>& rVariable, const double rValue) override
     {
         mpLevelSet->SetValue(rVariable, rValue);
     }

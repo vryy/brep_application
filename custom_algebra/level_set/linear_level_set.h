@@ -71,15 +71,15 @@ public:
     ///@{
 
     /// Default constructor.
-    LinearLevelSet(const double& A, const double& B, const double& C)
+    LinearLevelSet(const double A, const double B, const double C)
         : BaseType()
     {
         double aux = sqrt(pow(A, 2) + pow(B, 2));
 
         if (aux < 1.0e-10)
-            KRATOS_THROW_ERROR(std::logic_error, "The line is degenerated", "")
+            KRATOS_ERROR << "The line is degenerated (sqrt(a^2+b^2) < 1e-10)";
 
-            mA = A / aux;
+        mA = A / aux;
         mB = B / aux;
         mC = C / aux;
     }
@@ -155,18 +155,17 @@ public:
     /// Generate the sampling points on the level set surface
     void GeneratePoints(std::vector<PointType>& points,
                         const PointType& StartPoint, const PointType& EndPoint,
-                        const std::size_t& nsampling) const
+                        const std::size_t nsampling) const
     {
         // check if the start point and end point are on the line
         double f;
         f = this->GetValue(StartPoint);
         if (f > this->Tolerance())
-            KRATOS_THROW_ERROR(std::logic_error, "The start point does not lie on the line", "")
-            f = this->GetValue(EndPoint);
+            KRATOS_ERROR << "The start point does not lie on the line";
+        f = this->GetValue(EndPoint);
         if (f > this->Tolerance())
-            KRATOS_THROW_ERROR(std::logic_error, "The end point does not lie on the line", "")
-
-            BRepMeshUtility::GenerateSamplingPoints(points, StartPoint, EndPoint, nsampling);
+            KRATOS_ERROR << "The end point does not lie on the line";
+        BRepMeshUtility::GenerateSamplingPoints(points, StartPoint, EndPoint, nsampling);
     }
 
     /// Create the conditions based on sampling points on the line
@@ -175,8 +174,8 @@ public:
             Properties::Pointer pProperties,
             const PointType& StartPoint,
             const PointType& EndPoint,
-            const int& type,
-            const std::size_t& nsampling) const
+            const int type,
+            const std::size_t nsampling) const
     {
         // firstly create the sampling points on surface
         std::vector<PointType> sampling_points;

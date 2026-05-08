@@ -118,7 +118,7 @@ public:
     std::string Name() const {return mName;}
 
     /// Set for geometric tolerance
-    void SetTolerance(const double& TOL) {mTOL = TOL;}
+    void SetTolerance(const double TOL) {mTOL = TOL;}
 
     /// Get for geometric tolerance
     double GetTolerance() const {return mTOL;}
@@ -151,7 +151,7 @@ public:
     /// Check if a point is inside/outside of the BRep
     /// The point will be interpolated in reference configuration
     /// Since now C++ does not support virtual template function, this function must be separated to 2 functions
-    bool IsInside(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords, const int& configuration) const
+    bool IsInside(const GeometryType& rGeometry, const CoordinatesArrayType& local_coords, const int configuration) const
     {
         if (configuration == 0)
         {
@@ -183,16 +183,16 @@ public:
     }
 
     /// Check if an element is cut by the brep
-    int CutStatus(Element::Pointer p_elem, const int& configuration) const;
+    int CutStatus(Element::Pointer p_elem, const int configuration) const;
 
     /// Check if a geometry is cut by the brep
-    int CutStatus(GeometryType::Pointer p_geom, const int& configuration) const;
+    int CutStatus(GeometryType::Pointer p_geom, const int configuration) const;
 
     /// Check if a geometry is cut by the BRep
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    virtual int CutStatus(GeometryType& r_geom, const int& configuration) const;
+    virtual int CutStatus(GeometryType& r_geom, const int configuration) const;
 
     /// Check if a set of points is cut by the BRep
     /// 0: the cell is completely inside the domain bounded by BRep
@@ -211,22 +211,22 @@ public:
                           const std::vector<PointType>& r_points) const;
 
     /// return the string of the cut status
-    static std::string CutStatusStr(const int& stat);
+    static std::string CutStatusStr(const int stat);
 
     /// Check if an element is cut by the brep by sampling the elemental geometry
-    int CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const;
+    int CutStatusBySampling(Element::Pointer p_elem, const std::size_t nsampling, const int configuration) const;
 
     /// Check if a geometry is cut by the brep by sampling the geometry
-    int CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t& nsampling, const int& configuration) const;
+    int CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t nsampling, const int configuration) const;
 
     /// Check if a geometry is cut by the BRep by sampling the geometry
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    virtual int CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const;
+    virtual int CutStatusBySampling(const GeometryType& r_geom, const std::size_t nsampling, const int configuration) const;
 
     /// Compute the intersection of the BRep with a line
-    virtual int Bisect(PointType& P, const std::vector<PointType>& Points, const double& Tol) const
+    virtual int Bisect(PointType& P, const std::vector<PointType>& Points, const double Tol) const
     {
         if (Points.size() == 2)
         {
@@ -244,14 +244,14 @@ public:
     }
 
     /// Compute the intersection of the BRep with a line connected by 2 points
-    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& Tol) const
+    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double Tol) const
     {
         KRATOS_ERROR << "Calling the base class";
     }
 
     /// Compute the intersection of the BRep with a line connected by 3 points
     /// Remark: P3 is the middle point, the line is interpolated by using Lagrange shape function
-    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const PointType& P3, const double& Tol) const
+    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const PointType& P3, const double Tol) const
     {
         KRATOS_ERROR << "Calling the base class";
     }
@@ -319,13 +319,13 @@ public:
     ///@{
 
     /// Set value of internal variable
-    virtual void SetValue(const Variable<bool>& rVariable, const bool& rValue);
+    virtual void SetValue(const Variable<bool>& rVariable, const bool rValue);
 
     /// Set value of internal variable
-    virtual void SetValue(const Variable<int>& rVariable, const int& rValue);
+    virtual void SetValue(const Variable<int>& rVariable, const int rValue);
 
     /// Set value of internal variable
-    virtual void SetValue(const Variable<double>& rVariable, const double& rValue);
+    virtual void SetValue(const Variable<double>& rVariable, const double rValue);
 
     /// Get value of internal variable
     virtual bool& GetValue(const Variable<bool>& rThisVariable, bool& rValue) const;

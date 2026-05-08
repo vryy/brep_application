@@ -219,7 +219,7 @@ private:
     ///@{
 
     /// OR the 2 cut statuses
-    int OrCutStatus(const int& stat1, const int& stat2) const
+    int OrCutStatus(const int stat1, const int stat2) const
     {
         if (stat1 == _OUT && stat2 == _OUT)
         {

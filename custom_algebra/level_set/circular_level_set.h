@@ -78,7 +78,7 @@ public:
     ///@{
 
     /// Default constructor.
-    CircularLevelSet(const double& cX, const double& cY, const double& R)
+    CircularLevelSet(const double cX, const double cY, const double R)
         : BaseType(), mcX(cX), mcY(cY), mR(R)
     {}
 
@@ -145,7 +145,7 @@ public:
         double vector_length = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2));
         if (vector_length == 0)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project node that's in the center of Brep circle", "");
+            KRATOS_ERROR << "trying to project node that's in the center of Brep circle";
         }
 
         Proj(0) = (P(0) - mcX) * mR / vector_length + mcX;
@@ -166,7 +166,7 @@ public:
         double vector_length = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2));
         if (vector_length == 0)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project node that's in the center of Brep circle", "");
+            KRATOS_ERROR << "trying to project node that's in the center of Brep circle";
         }
 
         noalias(Derivatives) = ZeroMatrix(3, 3);
@@ -186,8 +186,8 @@ public:
 
     /// Generate the sampling points on the level set surface
     void GeneratePoints(std::vector<PointType>& radial_points,
-                        const double& start_angle, const double& end_angle,
-                        const std::size_t& nsampling_radial) const
+                        const double start_angle, const double end_angle,
+                        const std::size_t nsampling_radial) const
     {
         radial_points.resize(nsampling_radial);
         double small_angle = (end_angle - start_angle) / nsampling_radial;
@@ -206,7 +206,7 @@ public:
 
     /// Generate the sampling points on the level set surface
     void GeneratePoints(std::vector<PointType>& radial_points,
-                        const std::size_t& nsampling_radial) const
+                        const std::size_t nsampling_radial) const
     {
         this->GeneratePoints(radial_points, 0.0, 2 * PI, nsampling_radial);
     }
@@ -215,9 +215,9 @@ public:
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> CreateLineElements(ModelPart& r_model_part,
             const std::string& sample_element_name,
             Properties::Pointer pProperties,
-            const double& start_angle,
-            const double& end_angle,
-            const std::size_t& nsampling_radial,
+            const double start_angle,
+            const double end_angle,
+            const std::size_t nsampling_radial,
             const bool close = false) const
     {
         // firstly create the sampling points on surface

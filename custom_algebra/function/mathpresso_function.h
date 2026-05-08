@@ -124,7 +124,7 @@ public:
         // Handle possible syntax or compilation error.
         if (err != mathpresso::kErrorOk)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "Expression Error: ", err);
+            KRATOS_ERROR << "Expression Error: " << err;
         }
     }
 
@@ -147,7 +147,7 @@ public:
         return mStr;
     }
 
-//    virtual typename BaseType::Pointer GetDiffFunction(const int& component) const
+//    virtual typename BaseType::Pointer GetDiffFunction(const int component) const
 //    {
 //        return typename BaseType::Pointer(new ZeroFunction<BaseType>());
 //    }

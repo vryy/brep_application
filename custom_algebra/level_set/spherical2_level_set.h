@@ -67,7 +67,7 @@ public:
     ///@{
 
     /// Default constructor.
-    Spherical2LevelSet(const double& cX, const double& cY, const double& cZ, const double& R)
+    Spherical2LevelSet(const double cX, const double cY, const double cZ, const double R)
         : BaseType(cX, cY, cZ, R)
     {}
 

@@ -111,7 +111,7 @@ public:
         return "0.0";
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final
+    typename BaseType::Pointer GetDiffFunction(const int component) const final
     {
         return typename BaseType::Pointer(new ZeroFunction());
     }

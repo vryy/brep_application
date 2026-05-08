@@ -170,7 +170,7 @@ void BRepApplication_AddFunctionsToPython()
 
     typedef ScalarFunction<FunctionR1R1> ScalarFunctionR1R1;
     class_<ScalarFunctionR1R1, ScalarFunctionR1R1::Pointer, boost::noncopyable, bases<FunctionR1R1> >
-    ("ScalarFunctionR1R1", init<const double&>())
+    ("ScalarFunctionR1R1", init<const double>())
     ;
 
     typedef ZeroFunction<FunctionR1R1> ZeroFunctionR1R1;
@@ -230,8 +230,8 @@ void BRepApplication_AddFunctionsToPython()
     /**************************************************************/
 
     array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetValue)(const double&) const = &FunctionR1R3::GetValue;
-    array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetDerivative)(const int&, const double&) const = &FunctionR1R3::GetDerivative;
-    array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetSecondDerivative)(const int&, const int&, const double&) const = &FunctionR1R3::GetSecondDerivative;
+    array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetDerivative)(const int, const double&) const = &FunctionR1R3::GetDerivative;
+    array_1d<double, 3>(FunctionR1R3::*FunctionR1R3_pointer_to_GetSecondDerivative)(const int, const int, const double&) const = &FunctionR1R3::GetSecondDerivative;
 
     class_<FunctionR1R3, FunctionR1R3::Pointer, boost::noncopyable>
     ("FunctionR1R3", init<>())
@@ -1805,8 +1805,8 @@ void BRepApplication_AddFunctionsToPython()
     ;
 
     class_<HydrostaticPressureFunctionOnSurface, HydrostaticPressureFunctionOnSurface::Pointer, boost::noncopyable, bases<FunctionR3R3> >
-    ("HydrostaticPressureFunctionOnSurface", init<const double&, const double&, const array_1d<double, 3>&>())
-    // .def(init<const double&, const double&, const Vector&>())
+    ("HydrostaticPressureFunctionOnSurface", init<const double, const double, const array_1d<double, 3>&>())
+    // .def(init<const double, const double, const Vector&>())
     ;
 
     /**************************************************************/
@@ -1827,5 +1827,7 @@ void BRepApplication_AddFunctionsToPython()
     ;
 
 }
+
 }  // namespace Python.
+
 }  // namespace Kratos.

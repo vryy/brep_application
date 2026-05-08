@@ -68,7 +68,7 @@ public:
     ///@{
 
     /// Default constructor.
-    SphericalLevelSet(const double& cX, const double& cY, const double& cZ, const double& R)
+    SphericalLevelSet(const double cX, const double cY, const double cZ, const double R)
         : BaseType(), mcX(cX), mcY(cY), mcZ(cZ), mR(R)
     {}
 
@@ -119,7 +119,7 @@ public:
         double vector_length = sqrt(pow(P(0) - mcX, 2) + pow(P(1) - mcY, 2) + pow(P(2) - mcZ, 2));
         if (vector_length == 0)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's in the center of Brep sphere  ", "");
+            KRATOS_ERROR << "trying to project point that's in the center of Brep sphere";
         }
 
         Proj(0) = (P(0) - mcX) * mR / vector_length + mcX;

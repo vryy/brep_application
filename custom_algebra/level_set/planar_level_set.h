@@ -70,15 +70,15 @@ public:
     ///@{
 
     /// Default constructor.
-    PlanarLevelSet(const double& A, const double& B, const double& C, const double& D)
+    PlanarLevelSet(const double A, const double B, const double C, const double D)
         : BaseType()
     {
         double aux = sqrt(pow(A, 2) + pow(B, 2) + pow(C, 2));
 
         if (aux < 1.0e-10)
-            KRATOS_THROW_ERROR(std::logic_error, "The plane is degenerated", "")
+            KRATOS_ERROR << "The plane is degenerated (sqrt(a^2+b^2+c^2) < 1e-10)";
 
-            mA = A / aux;
+        mA = A / aux;
         mB = B / aux;
         mC = C / aux;
         mD = D / aux;
@@ -188,13 +188,13 @@ public:
     /// inherit from BRep
     /// Compute the intersection of the level set with a line connect by 2 points.
     /// Note that, the checking of the intersection of the level set with the line is not performed. Hence one should ensure that before calling this function.
-    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& Tol) const final
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double Tol) const final
     {
         double f1 = this->GetValue(P1);
         double f2 = this->GetValue(P2);
         if (f1 * f2 > 0.0)
         {
-            // KRATOS_THROW_ERROR(std::logic_error, "Bisect does not work with two ends at the same side", "")
+            // KRATOS_ERROR << "Bisect does not work with two ends at the same side";
             return -1;
         }
 

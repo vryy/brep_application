@@ -205,7 +205,7 @@ public:
 
     /// inherit from BRep
     /// Check if a geometry is cut by the level set
-    int CutStatus(GeometryType& r_geom, const int& configuration) const override
+    int CutStatus(GeometryType& r_geom, const int configuration) const override
     {
         if (configuration == 0)
         {
@@ -239,7 +239,7 @@ public:
     /// 0: the cell is completely inside the domain bounded by BRep
     /// 1: completely outside
     /// -1: the cell is cut by BRep
-    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const override
+    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t nsampling, const int configuration) const override
     {
         return BRep::CutStatusBySampling(r_geom, nsampling, configuration);
     }
@@ -247,7 +247,7 @@ public:
     /// inherit from BRep
     /// Compute the intersection of the level set with a line connect by 2 points.
     /// Note that, the checking of the intersection of the level set with the line is not performed. Hence one should ensure that before calling this function.
-    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& Tol) const override
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double Tol) const override
     {
         double f1 = this->GetValue(P1);
         double f2 = this->GetValue(P2);
@@ -298,7 +298,7 @@ public:
     /// inherit from BRep
     /// Compute the intersection of the level set with a line connect by 2 points.
     /// Note that, the checking of the intersection of the level set with the line is not performed. Hence one should ensure that before calling this function.
-    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const PointType& P3, const double& Tol) const override
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const PointType& P3, const double Tol) const override
     {
         double f1 = this->GetValue(P1);
         double f2 = this->GetValue(P2);

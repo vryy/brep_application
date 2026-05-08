@@ -72,7 +72,7 @@ public:
     ///@{
 
     /// Default constructor.
-    ScalarFunction(const double& S)
+    ScalarFunction(const double S)
         : BaseType(), mS(S)
     {}
 
@@ -92,7 +92,7 @@ public:
     ///@name Operations
     ///@{
 
-    static typename BaseType::Pointer Create(const double& S)
+    static typename BaseType::Pointer Create(const double S)
     {
         return typename BaseType::Pointer(new ScalarFunction(S));
     }
@@ -114,7 +114,7 @@ public:
         return ss.str();
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final
+    typename BaseType::Pointer GetDiffFunction(const int component) const final
     {
         return typename BaseType::Pointer(new ZeroFunction<BaseType>());
     }

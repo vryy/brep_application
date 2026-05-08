@@ -128,7 +128,7 @@ public:
         return ss.str();
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final
+    typename BaseType::Pointer GetDiffFunction(const int component) const final
     {
         if (ma == 1.0)
         {

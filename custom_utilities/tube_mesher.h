@@ -578,8 +578,6 @@ private:
     ///@name Static Member Variables
     ///@{
 
-    static constexpr double Pi = 3.1415926535897932384626433832795028841971693;
-
     ///@}
     ///@name Member Variables
     ///@{

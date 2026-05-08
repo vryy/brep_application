@@ -110,7 +110,7 @@ public:
         return ss.str();
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final
+    typename BaseType::Pointer GetDiffFunction(const int component) const final
     {
         return typename BaseType::Pointer(
                    new NegateFunction<TFunction>(

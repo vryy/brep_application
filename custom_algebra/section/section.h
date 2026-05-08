@@ -101,13 +101,13 @@ public:
     /// Compute the center of the section
     virtual void ComputeCenter(PointType& rPoint) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Obtain a triangulation from the section
     virtual int Triangulation(std::vector<PointType>& rPoints, std::vector<std::vector<std::size_t> >& connectivities) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     ///@}

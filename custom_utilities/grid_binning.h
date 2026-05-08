@@ -87,12 +87,12 @@ public:
 
     virtual ElementsContainerType::iterator find(const PointType& P)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     virtual ElementsContainerType::iterator end()
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     ///@}

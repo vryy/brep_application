@@ -69,7 +69,7 @@ public:
     ///@{
 
     /// Default constructor.
-    Circular2LevelSet(const double& cX, const double& cY, const double& R)
+    Circular2LevelSet(const double cX, const double cY, const double R)
         : BaseType(cX, cY, R)
     {}
 

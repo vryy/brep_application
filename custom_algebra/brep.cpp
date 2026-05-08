@@ -40,17 +40,17 @@ bool BRep::IsInside1(const GeometryType& rGeometry, const CoordinatesArrayType& 
     return this->IsInside(P);
 }
 
-int BRep::CutStatus(Element::Pointer p_elem, const int& configuration) const
+int BRep::CutStatus(Element::Pointer p_elem, const int configuration) const
 {
     return this->CutStatus(p_elem->GetGeometry(), configuration);
 }
 
-int BRep::CutStatus(GeometryType::Pointer p_geom, const int& configuration) const
+int BRep::CutStatus(GeometryType::Pointer p_geom, const int configuration) const
 {
     return this->CutStatus(*p_geom, configuration);
 }
 
-int BRep::CutStatus(GeometryType& r_geom, const int& configuration) const
+int BRep::CutStatus(GeometryType& r_geom, const int configuration) const
 {
     if (configuration == 0)
     {
@@ -82,17 +82,17 @@ int BRep::CutStatus(const GeometryType& r_geom,
     return this->CutStatusOfPoints(r_points);
 }
 
-int BRep::CutStatusBySampling(Element::Pointer p_elem, const std::size_t& nsampling, const int& configuration) const
+int BRep::CutStatusBySampling(Element::Pointer p_elem, const std::size_t nsampling, const int configuration) const
 {
     return this->CutStatusBySampling(p_elem->GetGeometry(), nsampling, configuration);
 }
 
-int BRep::CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t& nsampling, const int& configuration) const
+int BRep::CutStatusBySampling(GeometryType::Pointer p_geom, const std::size_t nsampling, const int configuration) const
 {
     return this->CutStatusBySampling(*p_geom, nsampling, configuration);
 }
 
-int BRep::CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const
+int BRep::CutStatusBySampling(const GeometryType& r_geom, const std::size_t nsampling, const int configuration) const
 {
     std::vector<PointType> SamplingPoints;
     if (configuration == 0)
@@ -110,7 +110,7 @@ int BRep::CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsa
     return this->CutStatus(SamplingPoints);
 }
 
-std::string BRep::CutStatusStr(const int& stat)
+std::string BRep::CutStatusStr(const int stat)
 {
     if (stat == _CUT)
     {
@@ -159,17 +159,17 @@ Section::Pointer BRep::Intersect(GeometryType& r_geom) const
     return pSection;
 }
 
-void BRep::SetValue(const Variable<bool>& rVariable, const bool& Value)
+void BRep::SetValue(const Variable<bool>& rVariable, const bool Value)
 {
     // DO NOTHING
 }
 
-void BRep::SetValue(const Variable<int>& rVariable, const int& Value)
+void BRep::SetValue(const Variable<int>& rVariable, const int Value)
 {
     // DO NOTHING
 }
 
-void BRep::SetValue(const Variable<double>& rVariable, const double& rValue)
+void BRep::SetValue(const Variable<double>& rVariable, const double rValue)
 {
     // DO NOTHING
 }

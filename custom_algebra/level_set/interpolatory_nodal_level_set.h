@@ -125,7 +125,7 @@ public:
 
     /// inherit from BRep
     /// Check if a geometry is cut by the BRep by sampling the geometry
-    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t& nsampling, const int& configuration) const final
+    int CutStatusBySampling(const GeometryType& r_geom, const std::size_t nsampling, const int configuration) const final
     {
         std::vector<CoordinatesArrayType> SamplingLocalPoints;
         BRepMeshUtility::GenerateSamplingLocalPoints(SamplingLocalPoints, r_geom, nsampling);
@@ -137,7 +137,7 @@ public:
 
     /// inherit from BRep
     /// Check if a geometry is cut by the level set
-    int CutStatus(GeometryType& r_geom, const int& configuration) const final
+    int CutStatus(GeometryType& r_geom, const int configuration) const final
     {
         std::vector<std::size_t> in_list, out_list, on_list;
         for (std::size_t v = 0; v < r_geom.size(); ++v)

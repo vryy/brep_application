@@ -23,7 +23,7 @@ struct ComputeMirrorTransformationMatrix_Helper
 {
     static void Execute(TMatrixType& trans_mat)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling unimplemented function";
     }
 };
 

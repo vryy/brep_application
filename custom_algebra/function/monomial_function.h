@@ -163,7 +163,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<TDegreeX, TDegreeY, TDegreeZ>(Format);
     }
 
-    BaseType::Pointer GetDiffFunction(const int& component) const final
+    BaseType::Pointer GetDiffFunction(const int component) const final
     {
         if (component == 0)
         {
@@ -311,7 +311,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<0, TDegreeY, TDegreeZ>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -360,7 +360,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<TDegreeX, 0, TDegreeZ>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -409,7 +409,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<TDegreeX, TDegreeY, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -458,7 +458,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<TDegreeX, 0, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -507,7 +507,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<0, TDegreeY, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -556,7 +556,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<0, 0, TDegreeZ>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -605,7 +605,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<0, 0, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         return BaseType::Pointer(new ZeroFunction<BaseType>());
     }
@@ -670,7 +670,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<TDegreeX, TDegreeY, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -814,7 +814,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<TDegreeX, 0, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -859,7 +859,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<0, TDegreeY, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -904,7 +904,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<0, 0, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         return BaseType::Pointer(new ZeroFunction<BaseType>());
     }
@@ -965,7 +965,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<TDegree, 0, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         if (component == 0)
         {
@@ -1108,7 +1108,7 @@ public:
         return GetFormulaMonomialFunctionR3R1<0, 0, 0>(Format);
     }
 
-    virtual BaseType::Pointer GetDiffFunction(const int& component) const
+    virtual BaseType::Pointer GetDiffFunction(const int component) const
     {
         return BaseType::Pointer(new ZeroFunction<BaseType>());
     }

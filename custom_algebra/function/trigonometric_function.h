@@ -112,7 +112,7 @@ public:
         return "cos(" + mp_func->GetFormula(Format) + ")";
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final;
+    typename BaseType::Pointer GetDiffFunction(const int component) const final;
 
     ///@}
     ///@name Access
@@ -275,7 +275,7 @@ public:
         return "sin(" + mp_func->GetFormula(Format) + ")";
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final;
+    typename BaseType::Pointer GetDiffFunction(const int component) const final;
 
     ///@}
     ///@name Access
@@ -438,7 +438,7 @@ public:
         return "acos(" + mp_func->GetFormula(Format) + ")";
     }
 
-    typename BaseType::Pointer GetDiffFunction(const int& component) const final;
+    typename BaseType::Pointer GetDiffFunction(const int component) const final;
 
     ///@}
     ///@name Access
@@ -603,7 +603,7 @@ inline std::ostream& operator << (std::ostream& rOStream, const AcosFunction<TFu
 ///@} addtogroup block
 
 template<class TFunction>
-typename CosFunction<TFunction>::BaseType::Pointer CosFunction<TFunction>::GetDiffFunction(const int& component) const
+typename CosFunction<TFunction>::BaseType::Pointer CosFunction<TFunction>::GetDiffFunction(const int component) const
 {
     return typename BaseType::Pointer(
                new NegateFunction<TFunction>(
@@ -618,7 +618,7 @@ typename CosFunction<TFunction>::BaseType::Pointer CosFunction<TFunction>::GetDi
 }
 
 template<class TFunction>
-typename SinFunction<TFunction>::BaseType::Pointer SinFunction<TFunction>::GetDiffFunction(const int& component) const
+typename SinFunction<TFunction>::BaseType::Pointer SinFunction<TFunction>::GetDiffFunction(const int component) const
 {
     return typename BaseType::Pointer(
                new ProductFunction<TFunction>(
@@ -629,7 +629,7 @@ typename SinFunction<TFunction>::BaseType::Pointer SinFunction<TFunction>::GetDi
 }
 
 template<class TFunction>
-typename AcosFunction<TFunction>::BaseType::Pointer AcosFunction<TFunction>::GetDiffFunction(const int& component) const
+typename AcosFunction<TFunction>::BaseType::Pointer AcosFunction<TFunction>::GetDiffFunction(const int component) const
 {
     return typename BaseType::Pointer(
                new NegateFunction<TFunction>(

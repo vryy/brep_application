@@ -180,13 +180,13 @@ public:
     ElementsContainerType::iterator find(const PointType& P) override
     {
         // TODO
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     ElementsContainerType::iterator end() override
     {
         // TODO
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     ///@}

@@ -125,7 +125,7 @@ public:
     }
 
     /// inherit from Function
-    OutputType GetDerivative(const int& component, const InputType& t) const final
+    OutputType GetDerivative(const int component, const InputType& t) const final
     {
         OutputType P;
 
@@ -137,7 +137,7 @@ public:
     }
 
     /// inherit from Function
-    OutputType GetSecondDerivative(const int& component_1, const int& component_2, const InputType& t) const final
+    OutputType GetSecondDerivative(const int component_1, const int component_2, const InputType& t) const final
     {
         OutputType P;
 

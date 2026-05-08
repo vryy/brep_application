@@ -204,7 +204,7 @@ private:
     ///@{
 
     /// Reverse the cut status
-    int NotCutStatus(const int& stat) const
+    int NotCutStatus(const int stat) const
     {
         if (stat == _OUT)
         {

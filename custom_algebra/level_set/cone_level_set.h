@@ -77,15 +77,15 @@ public:
     ///@{
 
     /// Default constructor.
-    ConeLevelSet(const double& cX, const double& cY, const double& cZ, const double& dX, const double& dY, const double& dZ, const double& phi)
+    ConeLevelSet(const double cX, const double cY, const double cZ, const double dX, const double dY, const double dZ, const double phi)
         : BaseType(), mcX(cX), mcY(cY), mcZ(cZ), mphi(phi)
     {
         mLength = sqrt(pow(dX, 2) + pow(dY, 2) + pow(dZ, 2));
 
         if (mLength == 0.0)
-            KRATOS_THROW_ERROR(std::logic_error, "The director vector can't be null", "")
+            KRATOS_ERROR << "The director vector can't be null";
 
-            mdX = dX / mLength;
+        mdX = dX / mLength;
         mdY = dY / mLength;
         mdZ = dZ / mLength;
     }
@@ -139,14 +139,14 @@ public:
     // }
 
     // /// Generate the sampling points on the level set surface
-    // std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial,
-    //     const double& start_angle, const double& end_angle) const
+    // std::vector<std::vector<PointType> > GeneratePoints(const std::size_t nsampling_axial, const std::size_t nsampling_radial,
+    //     const double start_angle, const double end_angle) const
     // {
     //
     // }
 
     // /// Generate the sampling points on the level set surface
-    // std::vector<std::vector<PointType> > GeneratePoints(const std::size_t& nsampling_axial, const std::size_t& nsampling_radial) const
+    // std::vector<std::vector<PointType> > GeneratePoints(const std::size_t nsampling_axial, const std::size_t nsampling_radial) const
     // {
     //     return GeneratePoints(nsampling_axial, nsampling_radial, 0.0, 2*PI);
     // }
@@ -161,7 +161,7 @@ public:
         double vector_length = sqrt(pow(P(0) - pX, 2) + pow(P(1) - pY, 2) + pow(P(2) - pZ, 2));
         if (vector_length == 0)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "trying to project point that's on the center line  ", "");
+            KRATOS_ERROR << "trying to project point that's on the center line";
         }
 
         Proj(0) = (P(0) - pX) * (t * std::tan(mphi * PI / 180)) / vector_length + pX;

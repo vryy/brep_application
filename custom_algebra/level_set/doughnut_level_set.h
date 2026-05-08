@@ -68,7 +68,7 @@ public:
     ///@{
 
     /// Default constructor.
-    DoughnutLevelSet(const double& R, const double& r)
+    DoughnutLevelSet(const double R, const double r)
         : BaseType(), mR(R), mr(r)
     {
     }

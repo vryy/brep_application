@@ -118,7 +118,7 @@ public:
     }
 
     /// inherit from Function
-    BaseType::Pointer GetDiffFunction(const int& component) const final
+    BaseType::Pointer GetDiffFunction(const int component) const final
     {
         return BaseType::Pointer(
                    new ParametricVolume(

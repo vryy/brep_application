@@ -116,7 +116,7 @@ public:
     ///@{
 
     ///
-    void SetReferenceCenter(const double& X, const double& Y)
+    void SetReferenceCenter(const double X, const double Y)
     {
         mRefCenter[0] = X;
         mRefCenter[1] = Y;
@@ -124,16 +124,16 @@ public:
     }
 
     /// The reference point shall be the first point of the profile
-    void SetReferencePoint(const double& X, const double& Y)
+    void SetReferencePoint(const double X, const double Y)
     {
         mRefAngle = std::atan2(Y - mRefCenter[1], X - mRefCenter[0]);
         KRATOS_WATCH(mRefAngle)
     }
 
     /// Add the arc to the BRep. The arc must be in counter-clockwise direction.
-    void AddArc(const double& X1, const double& Y1,
-                const double& X2, const double& Y2,
-                const double& X3, const double& Y3)
+    void AddArc(const double X1, const double Y1,
+                const double X2, const double Y2,
+                const double X3, const double Y3)
     {
         double x1 = X2 - X1, y1 = Y2 - Y1;
         double x2 = X3 - X1, y2 = Y3 - Y1;
@@ -242,7 +242,7 @@ public:
 
                 if (points.size() == 0 || points.size() == 2)
                 {
-                    KRATOS_THROW_ERROR(std::logic_error, "Something wrong with the profile. The line from center to point must cut the arc in 2 points", "")
+                    KRATOS_ERROR << "Something wrong with the profile. The line from center to point must cut the arc in 2 points";
                 }
 
                 // KRATOS_WATCH(points[0])
@@ -302,7 +302,7 @@ public:
 
         KRATOS_WATCH(P)
         KRATOS_WATCH(alpha)
-        KRATOS_THROW_ERROR(std::logic_error, "That is not possible, the point does not lie within any domain covered by the arc", "")
+        KRATOS_ERROR << "That is not possible, the point does not lie within any domain covered by the arc";
 
         return false;
     }
@@ -310,13 +310,13 @@ public:
     /// Check if a point is on the boundary within a tolerance
     virtual bool IsOnBoundary(const PointType& P) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     /// Compute the intersection of the NATMArcBRep with a line connect by 2 points.
-    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double& tol) const
+    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double tol) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     ///@}

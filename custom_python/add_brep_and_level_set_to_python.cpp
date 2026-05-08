@@ -65,7 +65,7 @@ namespace Python
 
 using namespace boost::python;
 
-bool BRep_IsInside2(BRep& rDummy, const double& x, const double& y)
+bool BRep_IsInside2(BRep& rDummy, const double x, const double y)
 {
     BRep::PointType P;
     P[0] = x;
@@ -74,7 +74,7 @@ bool BRep_IsInside2(BRep& rDummy, const double& x, const double& y)
     return rDummy.IsInside(P);
 }
 
-bool BRep_IsInside3(BRep& rDummy, const double& x, const double& y, const double& z)
+bool BRep_IsInside3(BRep& rDummy, const double x, const double y, const double z)
 {
     BRep::PointType P;
     P[0] = x;
@@ -84,7 +84,7 @@ bool BRep_IsInside3(BRep& rDummy, const double& x, const double& y, const double
 }
 
 bool BRep_IsInside4Element(BRep& rDummy, Element::Pointer pElement,
-                           const BRep::CoordinatesArrayType& local_coords, const int& configuration)
+                           const BRep::CoordinatesArrayType& local_coords, const int configuration)
 {
     return rDummy.IsInside(pElement->GetGeometry(), local_coords, configuration);
 }
@@ -182,10 +182,10 @@ boost::python::list LevelSet_CreateQ4Elements(
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
-    const int& nsampling_axial,
-    const int& nsampling_radial,
-    const double& start_radial_angle, // in degree
-    const double& end_radial_angle) // in degree
+    const int nsampling_axial,
+    const int nsampling_radial,
+    const double start_radial_angle, // in degree
+    const double end_radial_angle) // in degree
 {
     const double Pi = 3.1415926535897932384626433;
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
@@ -204,8 +204,8 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoop(
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
-    const int& nsampling_axial,
-    const int& nsampling_radial)
+    const int nsampling_axial,
+    const int nsampling_radial)
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
         = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties,
@@ -222,10 +222,10 @@ boost::python::list LevelSet_CreateQ4ElementsClosedLoopWithRange(
     ModelPart& r_model_part,
     const std::string& sample_element_name,
     Properties::Pointer pProperties,
-    const int& nsampling_axial,
-    const int& nsampling_radial,
-    const double& tmin,
-    const double& tmax)
+    const int nsampling_axial,
+    const int nsampling_radial,
+    const double tmin,
+    const double tmax)
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ElementsContainerType> Results
         = rDummy.CreateQ4ElementsClosedLoop(r_model_part, sample_element_name, pProperties,
@@ -242,11 +242,11 @@ boost::python::list LevelSet_CreateQ4ConditionsClosedLoopWithRange(
     ModelPart& r_model_part,
     const std::string& sample_condition_name,
     Properties::Pointer pProperties,
-    const int& nsampling_axial,
-    const int& nsampling_radial,
-    const double& tmin,
-    const double& tmax,
-    const bool& reverse)
+    const int nsampling_axial,
+    const int nsampling_radial,
+    const double tmin,
+    const double tmax,
+    const bool reverse)
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
         = rDummy.CreateQ4ConditionsClosedLoop(r_model_part, sample_condition_name, pProperties,
@@ -263,7 +263,7 @@ boost::python::list LinearLevelSet_CreateLineConditions(
     const std::string& sample_condition_name,
     Properties::Pointer pProperties,
     const BRep::PointType& StartPoint, const BRep::PointType& EndPoint,
-    const int& type, const int& nsampling)
+    const int type, const int nsampling)
 {
     std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> Results
         = rDummy.CreateLineConditions(r_model_part, sample_condition_name, pProperties,
@@ -275,13 +275,13 @@ boost::python::list LinearLevelSet_CreateLineConditions(
 }
 
 void NodalLevelSet_InitializeFromNodes(NodalLevelSet& dummy,
-                                       const ModelPart::NodesContainerType& rNodes, const int& configuration)
+                                       const ModelPart::NodesContainerType& rNodes, const int configuration)
 {
     dummy.Initialize(rNodes, configuration);
 }
 
 void NodalLevelSet_InitializeFromElements(NodalLevelSet& dummy,
-        const ModelPart::ElementsContainerType& rElements, const int& configuration)
+        const ModelPart::ElementsContainerType& rElements, const int configuration)
 {
     dummy.Initialize(rElements, configuration);
 }
@@ -382,13 +382,13 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     /**************************************************************/
 
     bool(BRep::*pointer_to_IsInside)(const BRep::PointType&) const = &BRep::IsInside;
-    int(BRep::*pointer_to_CutStatusElement)(Element::Pointer, const int&) const = &BRep::CutStatus;
-    int(BRep::*pointer_to_CutStatusGeometry)(Element::GeometryType::Pointer, const int&) const = &BRep::CutStatus;
-    int(BRep::*pointer_to_CutStatusBySamplingElement)(Element::Pointer, const std::size_t&, const int&) const = &BRep::CutStatusBySampling;
-    int(BRep::*pointer_to_CutStatusBySamplingGeometry)(Element::GeometryType::Pointer, const std::size_t&, const int&) const = &BRep::CutStatusBySampling;
-    void(BRep::*pointer_to_SetValueBool)(const Variable<bool>&, const bool&) = &BRep::SetValue;
-    void(BRep::*pointer_to_SetValueInt)(const Variable<int>&, const int&) = &BRep::SetValue;
-    void(BRep::*pointer_to_SetValueDouble)(const Variable<double>&, const double&) = &BRep::SetValue;
+    int(BRep::*pointer_to_CutStatusElement)(Element::Pointer, const int) const = &BRep::CutStatus;
+    int(BRep::*pointer_to_CutStatusGeometry)(Element::GeometryType::Pointer, const int) const = &BRep::CutStatus;
+    int(BRep::*pointer_to_CutStatusBySamplingElement)(Element::Pointer, const std::size_t, const int) const = &BRep::CutStatusBySampling;
+    int(BRep::*pointer_to_CutStatusBySamplingGeometry)(Element::GeometryType::Pointer, const std::size_t, const int) const = &BRep::CutStatusBySampling;
+    void(BRep::*pointer_to_SetValueBool)(const Variable<bool>&, const bool) = &BRep::SetValue;
+    void(BRep::*pointer_to_SetValueInt)(const Variable<int>&, const int) = &BRep::SetValue;
+    void(BRep::*pointer_to_SetValueDouble)(const Variable<double>&, const double) = &BRep::SetValue;
 
     class_<BRep, BRep::Pointer, boost::noncopyable>
     ( "BRep", init<>() )
@@ -472,47 +472,47 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ;
 
     class_<CircularLevelSet, CircularLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "CircularLevelSet", init<const double&, const double&, const double&>() )
+    ( "CircularLevelSet", init<const double, const double, const double>() )
     ;
 
     class_<Circular2LevelSet, Circular2LevelSet::Pointer, boost::noncopyable, bases<CircularLevelSet> >
-    ( "Circular2LevelSet", init<const double&, const double&, const double&>() )
+    ( "Circular2LevelSet", init<const double, const double, const double>() )
     ;
 
     class_<SphericalLevelSet, SphericalLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "SphericalLevelSet", init<const double&, const double&, const double&, const double&>() )
+    ( "SphericalLevelSet", init<const double, const double, const double, const double>() )
     ;
 
     class_<Spherical2LevelSet, Spherical2LevelSet::Pointer, boost::noncopyable, bases<SphericalLevelSet> >
-    ( "Spherical2LevelSet", init<const double&, const double&, const double&, const double&>() )
+    ( "Spherical2LevelSet", init<const double, const double, const double, const double>() )
     ;
 
     class_<DoughnutLevelSet, DoughnutLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "DoughnutLevelSet", init<const double&, const double&>() )
+    ( "DoughnutLevelSet", init<const double, const double>() )
     ;
 
     class_<CylinderLevelSet, CylinderLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "CylinderLevelSet", init<const double&, const double&, const double&, const double&, const double&, const double&, const double&>() )
+    ( "CylinderLevelSet", init<const double, const double, const double, const double, const double, const double, const double>() )
     .def("CreateQ4Elements", &LevelSet_CreateQ4Elements<CylinderLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoop<CylinderLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoopWithRange<CylinderLevelSet>)
     ;
 
     class_<Cylinder2LevelSet, Cylinder2LevelSet::Pointer, boost::noncopyable, bases<CylinderLevelSet> >
-    ( "Cylinder2LevelSet", init<const double&, const double&, const double&, const double&, const double&, const double&, const double&>() )
+    ( "Cylinder2LevelSet", init<const double, const double, const double, const double, const double, const double, const double>() )
     ;
 
     class_<ConeLevelSet, ConeLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "ConeLevelSet", init<const double&, const double&, const double&, const double&, const double&, const double&, const double&>() )
+    ( "ConeLevelSet", init<const double, const double, const double, const double, const double, const double, const double>() )
     ;
 
     class_<LinearLevelSet, LinearLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "LinearLevelSet", init<const double&, const double&, const double&>() )
+    ( "LinearLevelSet", init<const double, const double, const double>() )
     .def("CreateLineConditions", &LinearLevelSet_CreateLineConditions)
     ;
 
     class_<PlanarLevelSet, PlanarLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "PlanarLevelSet", init<const double&, const double&, const double&, const double&>() )
+    ( "PlanarLevelSet", init<const double, const double, const double, const double>() )
     .def(init<const BRep::PointType&, const BRep::PointType&>())
     ;
 
@@ -542,7 +542,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ;
 
     class_<DistanceToCurveLevelSet, DistanceToCurveLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
-    ( "DistanceToCurveLevelSet", init<const Curve::Pointer, const double&>() )
+    ( "DistanceToCurveLevelSet", init<const Curve::Pointer, const double>() )
     .def("CreateQ4Elements", &LevelSet_CreateQ4Elements<DistanceToCurveLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoop<DistanceToCurveLevelSet>)
     .def("CreateQ4ElementsClosedLoop", &LevelSet_CreateQ4ElementsClosedLoopWithRange<DistanceToCurveLevelSet>)
