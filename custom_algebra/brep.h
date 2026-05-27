@@ -295,11 +295,14 @@ public:
         KRATOS_ERROR << "Calling the base class";
     }
 
-    /// projects a point on the surface of brep
+    /// projects a point on the brep
     virtual int ProjectOnSurface(const PointType& P, PointType& Proj) const
     {
         KRATOS_ERROR << "Calling the base class";
     }
+
+    /// modifies and projects the node on the brep
+    int ProjectOnSurface(NodeType& rNode) const;
 
     /// compute the derivatives of the projection point w.r.t to the original point.
     /// The derivatives are organized as;

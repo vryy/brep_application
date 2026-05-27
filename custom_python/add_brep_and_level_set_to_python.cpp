@@ -157,6 +157,11 @@ BRep::PointType BRep_ProjectOnSurface(BRep& rDummy, const BRep::PointType& rPoin
     }
 }
 
+int BRep_ProjectOnSurfaceForNode(const BRep& rDummy, BRep::NodeType& rNode)
+{
+    return rDummy.ProjectOnSurface(rNode);
+}
+
 /// Helper function of GetValue for Python interface
 template<typename TBRepType, typename TDataType>
 TDataType BRep_GetValue(TBRepType& rDummy, const Variable<TDataType>& rThisVariable)
@@ -409,6 +414,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     .def("Bisect", &BRep_Bisect3)
     .def("Intersect", &BRep_IntersectElement)
     .def("ProjectOnSurface", &BRep_ProjectOnSurface)
+    .def("ProjectOnSurface", &BRep_ProjectOnSurfaceForNode)
     .def("Clone", &BRep::CloneBRep)
     .def("SetValue", pointer_to_SetValueBool)
     .def("SetValue", pointer_to_SetValueInt)

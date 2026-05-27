@@ -189,4 +189,15 @@ double& BRep::GetValue(const Variable<double>& rThisVariable, double& rValue) co
     return rValue;
 }
 
+int BRep::ProjectOnSurface(NodeType& rNode) const
+{
+    PointType P;
+    int error_code = this->ProjectOnSurface(rNode, P);
+    rNode.Set(FREEZE, false);
+    noalias(rNode) = P;
+    rNode.SetInitialPosition(P);
+    rNode.Set(FREEZE, true);
+    return error_code;
+}
+
 }  // namespace Kratos.
