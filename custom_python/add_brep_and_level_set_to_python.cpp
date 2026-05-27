@@ -479,6 +479,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
 
     class_<CircularLevelSet, CircularLevelSet::Pointer, boost::noncopyable, bases<LevelSet> >
     ( "CircularLevelSet", init<const double, const double, const double>() )
+    .def("Radius", &CircularLevelSet::Radius)
     ;
 
     class_<Circular2LevelSet, Circular2LevelSet::Pointer, boost::noncopyable, bases<CircularLevelSet> >
@@ -622,5 +623,7 @@ void BRepApplication_AddBRepAndLevelSetToPython()
     ;
 
 }
+
 }  // namespace Python.
+
 }  // namespace Kratos.

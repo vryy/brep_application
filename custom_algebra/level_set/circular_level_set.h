@@ -22,6 +22,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "utilities/math_utils.h"
 #include "custom_algebra/level_set/level_set.h"
 #include "custom_utilities/brep_mesh_utility.h"
 
@@ -65,14 +66,6 @@ public:
 
     typedef LevelSet BaseType;
 
-#if defined(__clang__) || defined(__INTEL_COMPILER) || defined(_MSC_VER)
-    static constexpr double PI = 3.1415926535897932384626433832795028841971693;
-#elif defined(__GNUC__) || defined(__GNUG__)
-    static constexpr double PI = std::atan(1.0) * 4;
-#else
-    static constexpr double PI = std::atan(1.0) * 4;
-#endif
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -106,6 +99,20 @@ public:
     std::size_t WorkingSpaceDimension() const final
     {
         return 2;
+    }
+
+    array_1d<double, 3> Center() const
+    {
+        array_1d<double, 3> C;
+        C[0] = mcX;
+        C[1] = mcY;
+        C[2] = 0.0;
+        return C;
+    }
+
+    double Radius() const
+    {
+        return mR;
     }
 
     double GetValue(const PointType& P) const override
@@ -208,6 +215,7 @@ public:
     void GeneratePoints(std::vector<PointType>& radial_points,
                         const std::size_t nsampling_radial) const
     {
+        const double PI = MathUtils<double>::Pi();
         this->GeneratePoints(radial_points, 0.0, 2 * PI, nsampling_radial);
     }
 
