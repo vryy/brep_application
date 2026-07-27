@@ -320,19 +320,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, OCCBRep& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const OCCBRep& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

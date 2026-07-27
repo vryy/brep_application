@@ -229,19 +229,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream LoadFunctionR3Rn
-inline std::istream& operator >> (std::istream& rIStream, LoadFunctionR3Rn& rThis)
-{}
-
-/// output stream LoadFunctionR3Rn
-inline std::ostream& operator << (std::ostream& rOStream, const LoadFunctionR3Rn& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

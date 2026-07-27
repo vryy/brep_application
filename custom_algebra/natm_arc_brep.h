@@ -181,25 +181,25 @@ public:
     ///@{
 
     /// Clone this BRep
-    virtual BRep::Pointer CloneBRep() const
+    BRep::Pointer CloneBRep() const override
     {
         return BRep::Pointer(new NATMArcBRep(*this));
     }
 
     /// Get working space dimension
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const override
     {
         return 2;
     }
 
     /// Get local space dimension
-    virtual std::size_t LocalSpaceDimension() const
+    std::size_t LocalSpaceDimension() const override
     {
         return 1;
     }
 
     /// Check if a point is inside/outside of the NATMArcBRep
-    virtual bool IsInside(const PointType& P) const
+    bool IsInside(const PointType& P) const override
     {
         // check which arc the point is in
         const double pi = std::atan(1) * 4;
@@ -308,13 +308,13 @@ public:
     }
 
     /// Check if a point is on the boundary within a tolerance
-    virtual bool IsOnBoundary(const PointType& P) const
+    bool IsOnBoundary(const PointType& P) const override
     {
         KRATOS_ERROR << "Not yet implemented";
     }
 
     /// Compute the intersection of the NATMArcBRep with a line connect by 2 points.
-    virtual int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double tol) const
+    int Bisect(PointType& P, const PointType& P1, const PointType& P2, const double tol) const override
     {
         KRATOS_ERROR << "Not yet implemented";
     }
@@ -332,19 +332,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "NATM Arc BRep";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -431,20 +431,6 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, NATMArcBRep& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const NATMArcBRep& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 
 ///@}
 

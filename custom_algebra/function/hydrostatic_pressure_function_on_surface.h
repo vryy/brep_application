@@ -91,11 +91,11 @@ public:
 
     /// Copy constructor.
     HydrostaticPressureFunctionOnSurface(HydrostaticPressureFunctionOnSurface const& rOther)
-        : BaseType(rOther), mPressure(rOther.mPressure), mGradientPressure(mGradientPressure), mNormal(rOther.mNormal)
+        : BaseType(rOther), mPressure(rOther.mPressure), mGradientPressure(rOther.mGradientPressure), mNormal(rOther.mNormal)
     {}
 
     /// Destructor.
-    virtual ~HydrostaticPressureFunctionOnSurface() {}
+    ~HydrostaticPressureFunctionOnSurface() override {}
 
     ///@}
     ///@name Operators
@@ -158,6 +158,11 @@ public:
                            ScalarFunction<FunctionR3R1>::Create(mGradientPressure)
                        )
                    );
+        }
+        else
+        {
+            KRATOS_ERROR << "Invalid index " << component;
+            return nullptr;
         }
     }
 
@@ -277,19 +282,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream, HydrostaticPressureFunctionOnSurface& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const HydrostaticPressureFunctionOnSurface& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block
