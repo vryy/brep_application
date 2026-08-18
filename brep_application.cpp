@@ -19,11 +19,7 @@ namespace Kratos
 {
 
 KratosBRepApplication::KratosBRepApplication()
-#ifdef SD_APP_FORWARD_COMPATIBILITY
-    : KratosApplication("KratosBRepApplication")
-#else
-    : KratosApplication()
-#endif
+    : KratosApplication("BRepApplication")
 {}
 
 void KratosBRepApplication::Register()
