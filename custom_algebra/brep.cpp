@@ -176,6 +176,7 @@ void BRep::SetValue(const Variable<double>& rVariable, const double rValue)
 
 bool& BRep::GetValue(const Variable<bool>& rThisVariable, bool& rValue) const
 {
+    rValue = false;
     return rValue;
 }
 
